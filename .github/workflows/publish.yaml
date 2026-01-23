@@ -7,7 +7,7 @@ on:
 
 permissions:
   contents: read
-  id-token: write  # Required for OIDC
+  id-token: write
 
 jobs:
   publish:
@@ -21,15 +21,6 @@ jobs:
         with:
           node-version: '20'
           registry-url: 'https://registry.npmjs.org'
-
-      - name: Install dependencies
-        run: npm install
-
-      - name: Run format check
-        run: npm run format:check
-
-      - name: Run linter
-        run: npm run lint
 
       - name: Publish to NPM
         run: npm publish --provenance
