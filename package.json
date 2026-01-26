@@ -67,7 +67,7 @@
     "glob": "^11.0.3",
     "husky": "^9.1.7",
     "ignore": "^7.0.5",
-    "jest": "^30.0.4",
+    "jest": "^30.2.0",
     "js-yaml": "^4.1.0",
     "lint-staged": "^16.1.1",
     "markdownlint-cli2": "^0.19.1",
