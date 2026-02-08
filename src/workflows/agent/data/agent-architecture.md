@@ -301,8 +301,8 @@ Two forms:
 
 | Type | Path | Features |
 |------|------|----------|
-| WITHOUT sidecar | `data/reference/simple-examples/commit-poet.agent.yaml` | Poetic persona, 4 prompts, 7 menu items, 127 lines |
-| WITH sidecar | `data/reference/expert-examples/journal-keeper/` | First-person persona with memory, critical_actions, sidecar updates |
+| WITHOUT sidecar | `data/reference/without-sidecar/commit-poet.agent.yaml` | Poetic persona, 4 prompts, 7 menu items, 127 lines |
+| WITH sidecar | `data/reference/with-sidecar/journal-keeper/` | First-person persona with memory, critical_actions, sidecar updates |
 
 ---
 

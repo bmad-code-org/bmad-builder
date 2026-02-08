@@ -9,8 +9,8 @@ agentTypesDoc: ../data/understanding-agent-types.md
 agentMetadata: ../data/agent-metadata.md
 
 # Example Agents (for reference)
-noSidecarExample: ../data/reference/simple-examples/commit-poet.agent.yaml
-withSidecarExample: ../data/reference/expert-examples/journal-keeper/journal-keeper.agent.yaml
+noSidecarExample: ../data/reference/without-sidecar/commit-poet.agent.yaml
+withSidecarExample: ../data/reference/with-sidecar/journal-keeper/journal-keeper.agent.yaml
 
 # Task References
 advancedElicitationTask: '{project-root}/_bmad/core/workflows/advanced-elicitation/workflow.xml'

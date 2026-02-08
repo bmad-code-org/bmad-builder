@@ -1,8 +1,8 @@
 # Understanding Agent Types
 
 > **For the LLM running this workflow:** Load and review the example files referenced below when helping users choose an agent configuration.
-> - Without sidecar: `{workflow_path}/data/reference/simple-examples/commit-poet.agent.yaml`
-> - With sidecar: `{workflow_path}/data/reference/expert-examples/journal-keeper/`
+> - Without sidecar: `{workflow_path}/data/reference/without-sidecar/commit-poet.agent.yaml`
+> - With sidecar: `{workflow_path}/data/reference/with-sidecar/journal-keeper/`
 
 ---
 
@@ -74,7 +74,7 @@ agent-name.agent.yaml (~250 lines max)
 - Can have critical_actions for activation behaviors (quotes, data fetches, etc.)
 - Must NOT reference sidecar files (no sidecar exists)
 
-**Reference:** `./data/reference/simple-examples/commit-poet.agent.yaml`
+**Reference:** `./data/reference/without-sidecar/commit-poet.agent.yaml`
 
 ---
 
@@ -110,7 +110,7 @@ agent-name.agent.yaml
 - Language tutor (tracks vocabulary, learning history)
 - Domain advisor with custom knowledge base
 
-**Reference:** `./data/reference/expert-examples/journal-keeper/`
+**Reference:** `./data/reference/with-sidecar/journal-keeper/`
 
 **Required critical_actions:**
 ```yaml

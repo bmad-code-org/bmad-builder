@@ -149,8 +149,8 @@ Yes. Package your agent as a standalone module and share it with your team or th
 
 **Where can I see example agents?**
 Study the reference agents in `src/modules/bmb/reference/agents/`:
-- [commit-poet](https://github.com/bmad-code-org/BMAD-METHOD/tree/main/src/modules/bmb/reference/agents/simple-examples/commit-poet.agent.yaml) (Simple)
-- [journal-keeper](https://github.com/bmad-code-org/BMAD-METHOD/tree/main/src/modules/bmb/reference/agents/expert-examples/journal-keeper) (Expert)
+- [commit-poet](https://github.com/bmad-code-org/BMAD-METHOD/tree/main/src/modules/bmb/reference/agents/without-sidecar/commit-poet.agent.yaml) (Simple)
+- [journal-keeper](https://github.com/bmad-code-org/BMAD-METHOD/tree/main/src/modules/bmb/reference/agents/with-sidecar/journal-keeper) (Expert)
 
 ## Getting Help
 

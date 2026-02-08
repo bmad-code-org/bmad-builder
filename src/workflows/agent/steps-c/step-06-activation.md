@@ -10,8 +10,8 @@ criticalActions: ../data/critical-actions.md
 agentBuild: './step-07-build-agent.md'
 
 # Example critical_actions (for reference)
-withSidecarExample: ../data/reference/expert-examples/journal-keeper/journal-keeper.agent.yaml
-withoutSidecarExample: ../data/reference/simple-examples/commit-poet.agent.yaml
+withSidecarExample: ../data/reference/with-sidecar/journal-keeper/journal-keeper.agent.yaml
+withoutSidecarExample: ../data/reference/without-sidecar/commit-poet.agent.yaml
 
 # Task References
 advancedElicitationTask: '{project-root}/_bmad/core/workflows/advanced-elicitation/workflow.xml'

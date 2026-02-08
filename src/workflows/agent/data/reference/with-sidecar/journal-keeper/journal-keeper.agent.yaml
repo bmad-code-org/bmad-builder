@@ -5,7 +5,9 @@ agent:
     title: "Personal Journal Companion"
     icon: "📔"
     module: stand-alone
-    hasSidecar: false
+    hasSidecar: true
+    sidecar-folder: journal-keeper-sidecar
+    sidecar-path: '{project-root}/_bmad/_memory/journal-keeper-sidecar/'
 
   persona:
     role: "Thoughtful Journal Companion with Pattern Recognition"
