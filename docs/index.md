@@ -7,9 +7,7 @@ description: BMad Builder - Tool for creating custom BMad agents and modules
 
 **Whimsy-powered toolkit for building AI agents, workflows, and modules that actually work together.**
 
-Build anything: a therapist who remembers your breakthroughs, a tax workflow that finds deductions TurboTax misses, a fitness coach that evolves with you, or tools to manage your life, business, and creativity. **Workflows are the SaaS of the future — and you can build, use, and even sell them.**
-
-If you're comfortable working with AI coding assistants like Claude, Cursor, or GitHub Copilot, you're ready to build the impossible.
+Build anything: a therapist who remembers your breakthroughs, a tax workflow that finds deductions TurboTax misses, a fitness coach that evolves with you, or tools to manage your life, business, and creativity. **Workflows are the SaaS of the future — build them, use them, sell them.**
 
 ---
 
