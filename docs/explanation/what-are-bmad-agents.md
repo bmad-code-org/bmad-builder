@@ -2,80 +2,155 @@
 title: "Agents"
 ---
 
-BMad Agents are AI Persona files that your agent can adopt to better help you accomplish tasks, communicate with, or interact with. Each agent has a unique personality, specialized capabilities, and an interactive help menu.
+BMad Agents are AI Persona files that your LLM can adopt to better help you accomplish tasks. Each agent has a unique personality, specialized capabilities, and an interactive menu.
 
-Additionally, some agents can optionally have their own file system-based memory, making them capable of remembering vast amounts of relevant information. This can open up many interesting use cases for you to explore.
+Agents can optionally have a **sidecar** — a companion folder containing memory files, instructions, and workflows. This enables persistent context across sessions.
 
-## Agent Types
+## Single Agent Architecture
 
-BMad has two primary agent types for different use cases:
+BMad uses **one agent type** with a `hasSidecar` boolean configuration:
 
-### Simple Agents
+```yaml
+hasSidecar: false  # or true
+```
 
-**Self-contained, focused, ready to use.**
+The difference between agents is not capability — all agents have equal power. The difference is in **memory and state management**.
 
-Simple agents are complete in a single file. They excel at well-defined tasks and require minimal setup.
+## Decision Guide: hasSidecar
+
+Use this decision tree to choose:
+
+```
+Need memory across sessions OR need to restrict file access?
+├── YES → hasSidecar: true
+└── NO  → hasSidecar: false
+```
+
+| hasSidecar | Structure | Use When |
+|------------|-----------|----------|
+| `false` | Single YAML file (~250 lines) | Stateless, single-purpose, personality-driven |
+| `true` | YAML + sidecar folder | Persistent memory, long-term tracking, relationship-driven |
+
+### Without Sidecar (`hasSidecar: false`)
+
+**Single file, stateless, ~250 lines max**
+
+```
+agent-name.agent.yaml
+├── metadata.hasSidecar: false
+├── persona
+├── prompts (inline)
+└── menu (triggers → #prompt-id or inline)
+```
 
 **Best for:**
-- Single-purpose assistants (code review, documentation, commit messages)
-- Quick deployment
-- Projects that don't require persistent memory
-- Getting started fast
+- Single-purpose utilities with helpful persona
+- Each session is independent
+- All logic fits in ~250 lines
+- No need to remember past sessions
 
-**Example:** A commit message agent that reads your git diff and generates conventional commits.
+**Examples:** Commit Poet, Snarky Weather Bot, Pun Barista, Gym Bro
 
-### Expert Agents
+### With Sidecar (`hasSidecar: true`)
 
-**Memory-equipped, domain specialists.**
+**Persistent memory, knowledge, workflows**
 
-Expert agents have a **sidecar**, a companion folder containing additional instructions, workflows, and memory files. They remember context across sessions and handle complex, multi-step tasks.
+```
+agent-name.agent.yaml
+└── agent-name-sidecar/
+    ├── memories.md           # User profile, session history
+    ├── instructions.md       # Protocols, boundaries
+    ├── [custom-files].md     # Tracking, goals, etc.
+    ├── workflows/            # Large workflows on-demand
+    └── knowledge/            # Domain reference
+```
 
 **Best for:**
-- Domain specialists (design, legal, therapy, companion)
-- Agents with built-in commands defined in separate files that only they will use. These are generally more complex than the simple one or two line prompts for simple agent custom menu items
-  - Note: These commands will be launched by loading the agent. Another option is to create a simple agent and separate skills.
+- Must remember things across sessions
+- User preferences, settings, progress tracking
+- Personal knowledge base that grows
+- Domain-specific with restricted file access
+- Long-term relationship with user
 
-**Example:** An accounting expert with specialized workflows for tax preparation. It remembers previous work and personal details about you.
+**Examples:** Journal companion, Novel writing buddy, Fitness coach, Language tutor
+
+:::tip[Quick Decision]
+Choose `hasSidecar: false` for focused utilities. Choose `hasSidecar: true` when you need memory or file restrictions.
+:::
 
 ## Key Differences
 
-| Feature          | Simple         | Expert                     |
-| ---------------- | -------------- | -------------------------- |
-| **Files**        | Single file    | Agent + sidecar folder     |
-| **Memory**       | Usually no     | Persistent across sessions |
-| **Capabilities** | Focused scope  | Multi-domain, extensible   |
-| **Setup**        | Zero configuration    | Sidecar initialization     |
-| **Best Use**     | Specific tasks | Ongoing projects           |
-
-## Which Should You Use?
-
-:::tip[Quick Decision]
-Choose **Simple** for focused, one-off tasks with no memory needs. Choose **Expert** when you need persistent context and complex workflows.
-:::
+| Aspect | Without Sidecar | With Sidecar |
+|--------|----------------|--------------|
+| **Structure** | Single YAML | YAML + sidecar/ |
+| **Persistent memory** | No | Yes |
+| **critical_actions** | Optional | MANDATORY |
+| **Workflows** | Inline prompts | Sidecar files |
+| **File access** | Project/output | Restricted to sidecar |
+| **Session state** | Stateless | Remembers |
+| **Best for** | Focused skills | Long-term relationships |
 
 ## Agent Components
 
 All agents share these building blocks:
 
-### Persona
-- **Role**: What the agent does (expertise domain)
-- **Identity**: Who the agent is (personality, character)
-- **Communication Style**: How the agent speaks (tone, voice)
-- **Principles**: Why the agent acts (values, decision framework)
+### Persona (Four-Field System)
 
-### Capabilities
-- Skills, tools, and knowledge the agent can apply
-- Mapped to specific menu commands
+| Field | Purpose | Content |
+|-------|---------|---------|
+| `role` | WHAT agent does | Capabilities, skills, expertise |
+| `identity` | WHO agent is | Background, experience, context |
+| `communication_style` | HOW agent talks | Verbal patterns, tone, voice |
+| `principles` | GUIDES decisions | Beliefs, operating philosophy |
+
+**Rule:** Keep fields SEPARATE. Do not blur purposes.
+
+### Prompts
+
+Reusable templates referenced via `#id`:
+
+```yaml
+prompts:
+  - id: write-commit
+    content: |
+      <instructions>What this does</instructions>
+      <process>1. Step 2. Step</process>
+```
 
 ### Menu Items
-- Interactive command list
-- Triggers, descriptions, and handlers
-- Auto-includes help, chat, bmad-help and exit options
 
-### Critical Actions (optional)
-- Instructions that execute before the agent starts
-- Enable autonomous behaviors (for example, "check git status before changes")
+Interactive commands with triggers and handlers:
+
+```yaml
+menu:
+  - trigger: WC or fuzzy match on write
+    action: "#write-commit"
+    description: "[WC] Write commit message"
+```
+
+**Auto-included items** (never add these yourself):
+- MH: Menu/Help
+- CH: Chat
+- PM: Party Mode
+- DA: Dismiss Agent
+
+### Critical Actions
+
+Numbered steps executing FIRST on agent activation:
+
+- **With sidecar:** MANDATORY — load memories, instructions, restrict file access
+- **Without sidecar:** OPTIONAL — only for activation behaviors
+
+## Escalate to Module Builder When
+
+If you need:
+- Multiple distinct personas
+- Many specialized workflows
+- Multiple users with mixed data scope
+- Shared resources across agents
+
+Then use the **Module Builder** instead of a single agent.
 
 ## Creating Custom Agents
 
-See the [Agent Creation Guide](https://github.com/bmad-code-org/bmad-builder/blob/main/docs/tutorials/create-custom-agent.md) for step-by-step instructions on how to create your own agents and use them in the BMad Ecosystem.
+See the [Agent Creation Tutorial](docs/tutorials/create-custom-agent.md) for step-by-step instructions.

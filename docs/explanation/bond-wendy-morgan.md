@@ -163,12 +163,12 @@ Their communication styles are optimized for their domain:
 
 Start with the builder that matches your goal:
 
-- **[Create a Custom Agent](../tutorials/create-custom-agent.md)** — Work with Bond
-- **[Create Your First Workflow](../tutorials/create-your-first-workflow.md)** — Work with Wendy
-- **[Create Your First Module](../tutorials/create-your-first-module.md)** — Work with Morgan
+- **[Create a Custom Agent](docs/tutorials/create-custom-agent.md)** — Work with Bond
+- **[Create Your First Workflow](docs/tutorials/create-your-first-workflow.md)** — Work with Wendy
+- **[Create Your First Module](docs/tutorials/create-your-first-module.md)** — Work with Morgan
 
 ## See Also
 
-- **[Builder Commands Reference](../reference/builder-commands.md)** — All builder commands
-- **[What Are Agents](what-are-bmad-agents.md)** — Understanding agents
-- **[What Are Workflows](what-are-workflows.md)** — Understanding workflows
+- **[Builder Commands Reference](docs/reference/builder-commands.md)** — All builder commands
+- **[What Are Agents](docs/explanation/what-are-bmad-agents.md)** — Understanding agents
+- **[What Are Workflows](docs/explanation/what-are-workflows.md)** — Understanding workflows

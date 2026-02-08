@@ -392,11 +392,11 @@ Once you've decided:
 | If You Chose... | Next Step |
 |-----------------|-----------|
 | **Skill** | Add as an action to an existing agent or workflow |
-| **Agent** | [Create a Custom Agent](../tutorials/create-custom-agent.md) |
-| **Agent with sidecar** | [Create a Custom Agent](../tutorials/create-custom-agent.md) (enable sidecar) |
-| **Workflow** | [Create Your First Workflow](../tutorials/create-your-first-workflow.md) |
-| **Module** | [Create Your First Module](../tutorials/create-your-first-module.md) |
-| **Still Unsure** | [Discover Your Module Idea](discover-your-module-idea.md) |
+| **Agent** | [Create a Custom Agent](docs/tutorials/create-custom-agent.md) |
+| **Agent with sidecar** | [Create a Custom Agent](docs/tutorials/create-custom-agent.md) (enable sidecar) |
+| **Workflow** | [Create Your First Workflow](docs/tutorials/create-your-first-workflow.md) |
+| **Module** | [Create Your First Module](docs/tutorials/create-your-first-module.md) |
+| **Still Unsure** | [Discover Your Module Idea](docs/how-to/discover-your-module-idea.md) |
 
 ## Tips
 

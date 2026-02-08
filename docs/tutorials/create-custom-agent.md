@@ -2,7 +2,6 @@
 title: "Create a Custom Agent"
 ---
 
-
 Build your own AI agent with a unique personality, specialized commands, and optional persistent memory using the BMad Builder workflow.
 
 :::note[BMB Module]
@@ -12,10 +11,10 @@ This tutorial uses the **BMad Builder (BMB)** module. Make sure you have BMad in
 ## What You'll Learn
 
 - How to run the `create-agent` workflow
-- Choose between Simple, Expert, and Module agent types
+- Choose between `hasSidecar: true` or `false`
 - Define your agent's persona (role, identity, communication style, principles)
+- Design effective menu commands
 - Package and install your custom agent
-- Test and iterate on your agent's behavior
 
 :::note[Prerequisites]
 - BMad installed with the BMB module
@@ -27,21 +26,32 @@ This tutorial uses the **BMad Builder (BMB)** module. Make sure you have BMad in
 Run `create-agent` workflow → Follow the guided steps → Install your agent module → Test and iterate.
 :::
 
-## Understanding Agent Types
+## Understanding hasSidecar
 
-Before creating your agent, understand the three types available:
+BMad uses **one agent type** with a `hasSidecar` boolean configuration:
 
-| Type       | Best For                              | Memory     | Complexity |
-| ---------- | ------------------------------------- | ---------- | ---------- |
-| **Simple** | Focused tasks, quick setup            | None       | Low        |
-| **Expert** | Specialized domains, ongoing projects | Persistent | Medium     |
-| **Module** | Building other agents/workflows       | Persistent | High       |
+```yaml
+hasSidecar: false  # or true
+```
 
-**Simple Agent** - Use when your task is well-defined and focused. Perfect for single-purpose assistants like commit message generators or code reviewers.
+The difference is not capability — all agents have equal power. The difference is in **memory and state management**.
 
-**Expert Agent** - Use when your domain requires specialized knowledge or you need memory across sessions. Great for roles like Security Architect or Documentation Lead.
+### Decision Guide
 
-**Module Agent** - Use when your agent builds other agents or needs deep integration with the module system.
+```
+Need memory across sessions OR need to restrict file access?
+├── YES → hasSidecar: true
+└── NO  → hasSidecar: false
+```
+
+| hasSidecar | Structure | Best For |
+|------------|-----------|----------|
+| `false` | Single YAML (~250 lines) | Single-purpose utilities, personality-driven agents |
+| `true` | YAML + sidecar folder | Persistent memory, long-term tracking, domain specialists |
+
+**Without Sidecar Examples:** Commit Poet, Snarky Weather Bot, Pun Barista, Gym Bro
+
+**With Sidecar Examples:** Journal companion, Novel writing buddy, Fitness coach, Language tutor
 
 ## Step 1: Start the Workflow
 
@@ -49,16 +59,16 @@ In your IDE (Claude Code, Cursor, etc.), invoke the create-agent workflow with t
 
 The workflow guides you through eight steps:
 
-| Step                        | What You'll Do                               |
-| --------------------------- | -------------------------------------------- |
-| **Brainstorm** *(optional)* | Explore ideas with creative techniques       |
-| **Discovery**               | Define the agent's purpose and goals         |
-| **Type & Metadata**         | Choose Simple or Expert, name your agent     |
-| **Persona**                 | Craft the agent's personality and principles |
-| **Commands**                | Define what the agent can do                 |
-| **Activation**              | Set up autonomous behaviors *(optional)*     |
-| **Build**                   | Generate the agent file                      |
-| **Validation**              | Review and verify everything works           |
+| Step | What You'll Do |
+|------|----------------|
+| **Brainstorm** *(optional)* | Explore ideas with creative techniques |
+| **Discovery** | Define the agent's purpose and goals |
+| **Type & Metadata** | Choose hasSidecar, name your agent |
+| **Persona** | Craft the agent's personality and principles |
+| **Commands** | Define what the agent can do |
+| **Activation** | Set up critical_actions *(optional/mandatory)* |
+| **Build** | Generate the agent file |
+| **Validation** | Review and verify everything works |
 
 :::tip[Workflow Options]
 At each step, the workflow provides options:
@@ -71,23 +81,96 @@ At each step, the workflow provides options:
 
 Your agent's personality is defined by four fields:
 
-| Field                   | Purpose        | Example                                                           |
-| ----------------------- | -------------- | ----------------------------------------------------------------- |
-| **Role**                | What they do   | "Senior code reviewer who catches bugs and suggests improvements" |
-| **Identity**            | Who they are   | "Friendly but exacting, believes clean code is a craft"           |
-| **Communication Style** | How they speak | "Direct, constructive, explains the 'why' behind suggestions"     |
-| **Principles**          | Why they act   | "Security first, clarity over cleverness, test what you fix"      |
+| Field | Purpose | Example |
+|-------|---------|---------|
+| **Role** | What they do | "Senior code reviewer who catches bugs and suggests improvements" |
+| **Identity** | Who they are | "Friendly but exacting, believes clean code is a craft" |
+| **Communication Style** | How they speak | "Direct, constructive, explains the 'why' behind suggestions" |
+| **Principles** | Why they act | "Security first, clarity over cleverness, test what you fix" |
 
-Keep each field focused on its purpose. The role isn't personality; the identity isn't job description.
+### Field Separation Rule
+
+Keep each field focused on its purpose:
+
+| Field | Contains | Does NOT Contain |
+|-------|----------|------------------|
+| `role` | Knowledge/skills/capabilities | Background, experience, speech patterns, beliefs |
+| `identity` | Background/experience/context | Skills, speech patterns, beliefs |
+| `communication_style` | Tone/voice/mannerisms (1-2 sentences) | Behavioral words, capabilities, beliefs |
+| `principles` | Operating philosophy | Verbal patterns, capabilities |
 
 :::note[Writing Great Principles]
 The first principle should "activate" the agent's expertise:
 
-- **Weak:** "Be helpful and accurate"
-- **Strong:** "Channel decades of security expertise: threat modeling begins with trust boundaries, never trust client input, defense in depth is non-negotiable"
+**Weak:**
+- "Be helpful and accurate"
+- "Follow instructions carefully"
+
+**Strong:**
+- "Channel seasoned engineering leadership wisdom: draw upon deep knowledge of management hierarchies, promotion paths, and what actually moves careers forward"
+- "Think like an attacker first: leverage OWASP Top 10, common vulnerability patterns, and the mindset that finds what others miss"
 :::
 
-## Step 3: Install Your Agent
+## Step 3: Design Menu Commands
+
+Define what your agent can do through menu items:
+
+```yaml
+menu:
+  - trigger: WC or fuzzy match on write
+    action: "#write-commit"
+    description: "[WC] Write commit message"
+```
+
+### Menu Format Rules
+
+| Component | Format | Example |
+|-----------|--------|---------|
+| `trigger` | `XX or fuzzy match on command-name` | `WC or fuzzy match on write` |
+| `description` | `[XX] Display text` | `[WC] Write commit message` |
+| `action` | `#prompt-id` or inline text | `#write-commit` |
+
+### Handler Types
+
+| Handler | Use Case | Syntax |
+|---------|----------|--------|
+| `action` | Agent self-contained operations | `action: '#prompt-id'` or `action: 'inline text'` |
+| `exec` | Module external workflows | `exec: '{project-root}/path/to/workflow.md'` |
+
+### Reserved Codes (Never Use)
+
+These are auto-injected:
+- **MH**: Menu/Help
+- **CH**: Chat
+- **PM**: Party Mode
+- **DA**: Dismiss Agent
+
+## Step 4: Configure Critical Actions
+
+Instructions that execute before the agent starts.
+
+### Without Sidecar (OPTIONAL)
+
+```yaml
+critical_actions:
+  - "Show inspirational quote before menu"
+  - "Fetch latest stock prices before displaying menu"
+```
+
+### With Sidecar (MANDATORY)
+
+```yaml
+critical_actions:
+  - "Load COMPLETE file {project-root}/_bmad/_memory/{sidecar-folder}/memories.md"
+  - "Load COMPLETE file {project-root}/_bmad/_memory/{sidecar-folder}/instructions.md"
+  - "ONLY read/write files in {project-root}/_bmad/_memory/{sidecar-folder}/"
+```
+
+:::tip[Path Format]
+Always use `{project-root}` as literal text. Never use relative paths like `./` or absolute paths like `/Users/`.
+:::
+
+## Step 5: Install Your Agent
 
 Once created, package your agent for installation:
 
@@ -97,8 +180,10 @@ my-custom-stuff/
 ├── agents/
 │   └── {agent-name}/
 │       ├── {agent-name}.agent.yaml
-│       └── _memory/              # Expert agents only
-│           └── {sidecar-folder}/
+│       └── {agent-name}-sidecar/    # hasSidecar: true only
+│           ├── memories.md
+│           ├── instructions.md
+│           └── [custom-files].md
 └── workflows/           # Optional: custom workflows
 ```
 
@@ -128,18 +213,18 @@ _bmad/
 
 ## Quick Reference
 
-| Action              | How                                            |
-| ------------------- | ---------------------------------------------- |
-| Start workflow      | `"Run the BMad Builder create-agent workflow"` |
-| Edit agent directly | Modify `{agent-name}.agent.yaml`               |
-| Edit customization  | Modify `_bmad/_config/agents/{agent-name}`     |
-| Rebuild agent       | `npx bmad-method build <agent-name>`           |
-| Study examples      | Check `src/modules/bmb/reference/agents/`      |
+| Action | How |
+|--------|-----|
+| Start workflow | `"Run the BMad Builder create-agent workflow"` |
+| Edit agent directly | Modify `{agent-name}.agent.yaml` |
+| Edit customization | Modify `_bmad/_config/agents/{agent-name}` |
+| Rebuild agent | `npx bmad-method build <agent-name>` |
+| Study examples | Check `src/workflows/agent/data/reference/` |
 
 ## Common Questions
 
-**Should I start with Simple or Expert?**
-Start with Simple for your first agent. You can always upgrade to Expert later if you need persistent memory.
+**Should I use hasSidecar true or false?**
+Use `false` for focused, one-off tasks. Use `true` when you need memory across sessions or restricted file access.
 
 **How do I add more commands later?**
 Edit the agent YAML directly or use the customization file in `_bmad/_config/agents/`. Then rebuild.
@@ -148,20 +233,22 @@ Edit the agent YAML directly or use the customization file in `_bmad/_config/age
 Yes. Package your agent as a standalone module and share it with your team or the community.
 
 **Where can I see example agents?**
-Study the reference agents in `src/modules/bmb/reference/agents/`:
-- [commit-poet](https://github.com/bmad-code-org/BMAD-METHOD/tree/main/src/modules/bmb/reference/agents/without-sidecar/commit-poet.agent.yaml) (Simple)
-- [journal-keeper](https://github.com/bmad-code-org/BMAD-METHOD/tree/main/src/modules/bmb/reference/agents/with-sidecar/journal-keeper) (Expert)
+Study the reference agents in `src/workflows/agent/data/reference/`:
+- [commit-poet.agent.yaml](https://github.com/bmad-code-org/bmad-builder/tree/main/src/workflows/agent/data/reference/without-sidecar/commit-poet.agent.yaml) (hasSidecar: false)
+- [journal-keeper](https://github.com/bmad-code-org/bmad-builder/tree/main/src/workflows/agent/data/reference/with-sidecar/journal-keeper/) (hasSidecar: true)
 
 ## Getting Help
 
 - **[Discord Community](https://discord.gg/gk8jAdXWmj)** - Ask in #bmad-method-help or #report-bugs-and-issues
-- **[GitHub Issues](https://github.com/bmad-code-org/BMAD-METHOD/issues)** - Report bugs or request features
+- **[GitHub Issues](https://github.com/bmad-code-org/bmad-builder/issues)** - Report bugs or request features
 
 ## Further Reading
 
-- **[What Are Agents](/docs/explanation/core-concepts/what-are-agents.md)** - Deep technical details on agent types
-- **[Agent Customization](/docs/how-to/customization/customize-agents.md)** - Modify agents without editing core files
-- **[Custom Content Installation](/docs/how-to/installation/install-custom-modules.md)** - Package and distribute your agents
+- **[What Are Agents](docs/explanation/what-are-bmad-agents.md)** - Deep technical details on agent architecture
+- **[Agent Schema Reference](docs/reference/agent-schema.md)** - Complete field reference
+- **[Custom Content Installation](docs/how-to/install-custom-modules.md)** - Package and distribute your agents
+- **[Persona Development Guide](docs/how-to/develop-agent-persona.md)** - Advanced persona crafting
+- **[Principles Crafting Guide](docs/explanation/crafting-agent-principles.md)** - Write effective principles
 
 :::tip[Key Takeaways]
 - **Start small** - Your first agent should solve one problem well

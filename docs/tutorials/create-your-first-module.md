@@ -205,8 +205,8 @@ Morgan created spec files during the build step. Now implement your agents and w
 3. **Add tools** or templates as needed
 
 For details on creating agents and workflows, see:
-- **[Create a Custom Agent](create-custom-agent.md)**
-- **[Create Your First Workflow](create-your-first-workflow.md)**
+- **[Create a Custom Agent](docs/tutorials/create-custom-agent.md)**
+- **[Create Your First Workflow](docs/tutorials/create-your-first-workflow.md)**
 
 ## Step 5: Validate Your Module
 
@@ -305,9 +305,9 @@ Don't publish to npm. Share the module folder directly, or host it in a private 
 
 ## Further Reading
 
-- **[What Are Modules](../explanation/what-are-modules.md)** — Deep technical details on module architecture
+- **[What Are Modules](docs/explanation/what-are-modules.md)** — Deep technical details on module architecture
 - **[bmad-module-template](https://github.com/bmad-code-org/bmad-module-template)** — Starting point for new modules
-- **[Install Custom Modules](../how-to/install-custom-modules.md)** — Installing and using modules
+- **[Install Custom Modules](docs/how-to/install-custom-modules.md)** — Installing and using modules
 
 :::tip[Key Takeaways]
 - **Plan first** — The brief ensures your module has a clear vision

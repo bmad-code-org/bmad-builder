@@ -175,6 +175,6 @@ If validation fails and you're not sure why:
 
 ## Related Guides
 
-- **[Edit Agents and Workflows](edit-agents-and-workflows.md)** — Fixing validation issues
-- **[Create a Custom Agent](../tutorials/create-custom-agent.md)** — Agent creation
-- **[Create Your First Workflow](../tutorials/create-your-first-workflow.md)** — Workflow creation
+- **[Edit Agents and Workflows](docs/how-to/edit-agents-and-workflows.md)** — Fixing validation issues
+- **[Create a Custom Agent](docs/tutorials/create-custom-agent.md)** — Agent creation
+- **[Create Your First Workflow](docs/tutorials/create-your-first-workflow.md)** — Workflow creation

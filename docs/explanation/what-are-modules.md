@@ -35,4 +35,4 @@ You can create your own modules for your domain. This includes team-specific wor
 
 ## Installing Modules
 
-Choose which modules to install during setup, or add/remove modules later by re-running the installer. See [Installation Guide](/docs/how-to/install-custom-modules.md) for details.
+Choose which modules to install during setup, or add/remove modules later by re-running the installer. See [Installation Guide](docs/how-to/install-custom-modules.md) for details.

@@ -159,9 +159,9 @@ After completing this guide, you'll have:
 - **A starting point** (agent, workflow, or full module)
 
 You'll be ready to move to:
-- **[Create a Custom Agent](../tutorials/create-custom-agent.md)** — If you chose agent
-- **[Create Your First Workflow](../tutorials/create-your-first-workflow.md)** — If you chose workflow
-- **[Create Your First Module](../tutorials/create-your-first-module.md)** — If you chose module
+- **[Create a Custom Agent](docs/tutorials/create-custom-agent.md)** — If you chose agent
+- **[Create Your First Workflow](docs/tutorials/create-your-first-workflow.md)** — If you chose workflow
+- **[Create Your First Module](docs/tutorials/create-your-first-module.md)** — If you chose module
 
 ## Example: From Frustration to Module
 

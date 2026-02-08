@@ -247,6 +247,6 @@ For phased entries, include context about when in the journey to use this step.
 
 ## See Also
 
-- **[Create Your First Module](../tutorials/create-your-first-module.md)** — Module creation tutorial
-- **[Module YAML Reference](module-yaml.md)** — Module configuration
-- **[What Are Modules](../explanation/what-are-modules.md)** — Module concepts
+- **[Create Your First Module](docs/tutorials/create-your-first-module.md)** — Module creation tutorial
+- **[Module YAML Reference](docs/reference/module-yaml.md)** — Module configuration
+- **[What Are Modules](docs/explanation/what-are-modules.md)** — Module concepts

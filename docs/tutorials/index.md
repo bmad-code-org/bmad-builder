@@ -28,11 +28,11 @@ Soon you'll be able to publish your modules to the BMad marketplace — where ot
 
 | Tutorial | Description | Time |
 |----------|-------------|------|
-| **[Create a Custom Agent](create-custom-agent.md)** | Build your first AI agent with persona, commands, and memory | 15-30 min |
-| **[Create Your First Workflow](create-your-first-workflow.md)** | Design structured step-by-step workflows with progressive disclosure | 30-45 min |
+| **[Create a Custom Agent](docs/tutorials/create-custom-agent.md)** | Build your first AI agent with persona, commands, and memory | 15-30 min |
+| **[Create Your First Workflow](docs/tutorials/create-your-first-workflow.md)** | Design structured step-by-step workflows with progressive disclosure | 30-45 min |
 
 ## Module Creation
 
 | Tutorial | Description | Builder | Time |
 |----------|-------------|---------|------|
-| **[Create Your First Module](create-your-first-module.md)** | Package agents and workflows into shareable modules | Morgan | 45-60 min |
+| **[Create Your First Module](docs/tutorials/create-your-first-module.md)** | Package agents and workflows into shareable modules | Morgan | 45-60 min |

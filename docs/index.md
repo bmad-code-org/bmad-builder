@@ -24,9 +24,9 @@ If you're comfortable working with AI coding assistants like Claude, Cursor, or 
 
 | Tutorial | Description | Time |
 |----------|-------------|------|
-| **[Create a Custom Agent](tutorials/create-custom-agent.md)** | Build your first AI agent | 15-30 min |
-| **[Create Your First Workflow](tutorials/create-your-first-workflow.md)** | Design structured workflows | 30-45 min |
-| **[Create Your First Module](tutorials/create-your-first-module.md)** | Package and publish modules | 45-60 min |
+| **[Create a Custom Agent](docs/tutorials/create-custom-agent.md)** | Build your first AI agent | 15-30 min |
+| **[Create Your First Workflow](docs/tutorials/create-your-first-workflow.md)** | Design structured workflows | 30-45 min |
+| **[Create Your First Module](docs/tutorials/create-your-first-module.md)** | Package and publish modules | 45-60 min |
 
 ## What You Can Build
 

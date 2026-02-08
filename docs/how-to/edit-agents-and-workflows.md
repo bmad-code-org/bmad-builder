@@ -195,6 +195,6 @@ menu:
 
 ## Related Guides
 
-- **[Validate Agents and Workflows](validate-agents-and-workflows.md)** — Quality assurance
-- **[Create a Custom Agent](../tutorials/create-custom-agent.md)** — Creating agents
-- **[Create Your First Workflow](../tutorials/create-your-first-workflow.md)** — Creating workflows
+- **[Validate Agents and Workflows](docs/how-to/validate-agents-and-workflows.md)** — Quality assurance
+- **[Create a Custom Agent](docs/tutorials/create-custom-agent.md)** — Creating agents
+- **[Create Your First Workflow](docs/tutorials/create-your-first-workflow.md)** — Creating workflows
