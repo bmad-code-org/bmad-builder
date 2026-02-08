@@ -13,7 +13,8 @@
    COLOR PALETTE - Light Mode
    ============================================ */
 :root {
-  --sl-nav-height: 3.5rem;
+  --ai-banner-height: 2.75rem;
+  --sl-nav-height: 6.25rem; /* Base nav height (~3.5rem) + banner height (2.75rem) */
 
   /* Full-width content - override Starlight's default 45rem/67.5rem */
   --sl-content-width: 100%;
@@ -210,7 +211,7 @@ header.header {
 
 header.header .header.sl-flex {
   padding: 0 1.5rem;
-  height: var(--sl-nav-height);
+  height: calc(var(--sl-nav-height) - var(--ai-banner-height));
   width: 100%;
 }
 
