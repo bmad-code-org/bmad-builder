@@ -18,6 +18,7 @@ build/*.txt
 
 # Environment variables
 .env
+.ruff*
 
 # Python
 __pycache__/

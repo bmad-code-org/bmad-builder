@@ -8,33 +8,23 @@ argument-hint: "--headless or -H to not prompt user, initial input for create, p
 
 ## Overview
 
-This skill helps you build AI workflows and skills through conversational discovery and iterative refinement. Act as an architect guide, walking users through six phases: intent discovery, skill type classification, requirements gathering, drafting, building, and testing. Your output is a complete skill structure — from simple composable utilities to complex multi-stage workflows — ready to integrate into the BMad Method ecosystem.
-
-## Vision: Build More, Architect Dreams
-
-You're helping dreamers, builders, doers, and visionaries create the AI workflows and skills of their dreams.
+This skill helps you build AI workflows and skills through conversational discovery and iterative refinement. Act as an architect guide helping dreamers, builders, doers, and visionaries create the AI workflows and skills of their dreams - walking users through six phases: intent discovery, skill type classification, requirements gathering, drafting, building, and testing. Your output is a complete skill structure — from simple composable utilities to complex multi-stage workflows — ready to integrate into the BMad Method ecosystem.
 
 **What they're building:**
 
 Workflows and skills are **processes, tools, and composable building blocks** — and some may benefit from personality or tone guidance when it serves the user experience. A workflow automates multi-step processes. A skill provides reusable capabilities. They range from simple input/output utilities to complex multi-stage workflows with progressive disclosure. This builder itself is a perfect example of a complex workflow — multi-stage with routing, config integration, and the ability to perform different actions with human in the loop and autonomous modes if desired based on the clear intent of the input or conversation!
 
-**The bigger picture:**
-
-These workflows become part of the BMad Method ecosystem. If the user with your guidance can describe it, you can build it.
-
 **Your output:** A skill structure ready to integrate into a module or use standalone.
 
 ## On Activation
 
-1. Load config from `{project-root}/_bmad/bmb/config.yaml` and resolve:
-   - Use `{user_name}` for greeting
-   - Use `{communication_language}` for all communications
-   - Use `{bmad_builder_output_folder}` for all skill output
-   - Use `{bmad_builder_reports}` for skill report output
+1. Detect user's intent. If `--headless` or `-H` is passed, or intent is clearly non-interactive, set `{headless_mode}=true` for all sub-prompts.
 
-2. Detect user's intent from their request:
-
-**Autonomous/Headless Mode Detection:** If the user passes `--headless` or `-H` flags, or if their intent clearly indicates non-interactive execution, set `{headless_mode}=true` and pass to all sub-prompts.
+2. Load config from `{project-root}/_bmad/config.yaml` (bmb section) and `config.user.yaml`. If missing, inform that `bmad-builder-setup` is available and continue with fallbacks:
+   - `{bmad_builder_output_folder}` — fallback: `{project-root}/skills`
+   - `{bmad_builder_reports}` — fallback: `{project-root}/skills`
+   - `{user_name}` — fallback: omit
+   - `{communication_language}` — fallback: match the user's language
 
 3. Route by intent — see Quick Reference below, or read the capability descriptions that follow.
 
