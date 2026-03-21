@@ -27,6 +27,7 @@ extract_module_codes = merge_help_csv_mod.extract_module_codes
 filter_rows = merge_help_csv_mod.filter_rows
 read_csv_rows = merge_help_csv_mod.read_csv_rows
 write_csv = merge_help_csv_mod.write_csv
+cleanup_legacy_csvs = merge_help_csv_mod.cleanup_legacy_csvs
 HEADER = merge_help_csv_mod.HEADER
 
 
@@ -181,6 +182,55 @@ class TestEndToEnd(unittest.TestCase):
             skill_names = [r[2] for r in result_rows]
             self.assertNotIn("old-skill", skill_names)
             self.assertNotIn("another-old", skill_names)
+
+
+class TestCleanupLegacyCsvs(unittest.TestCase):
+    def test_deletes_module_and_core_csvs(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            legacy_dir = os.path.join(tmpdir, "_bmad")
+            for subdir in ("core", "bmb"):
+                d = os.path.join(legacy_dir, subdir)
+                os.makedirs(d)
+                with open(os.path.join(d, "module-help.csv"), "w") as f:
+                    f.write("header\nrow\n")
+
+            deleted = cleanup_legacy_csvs(legacy_dir, "bmb")
+            self.assertEqual(len(deleted), 2)
+            self.assertFalse(os.path.exists(os.path.join(legacy_dir, "core", "module-help.csv")))
+            self.assertFalse(os.path.exists(os.path.join(legacy_dir, "bmb", "module-help.csv")))
+            # Directories still exist
+            self.assertTrue(os.path.isdir(os.path.join(legacy_dir, "core")))
+            self.assertTrue(os.path.isdir(os.path.join(legacy_dir, "bmb")))
+
+    def test_leaves_other_module_csvs_alone(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            legacy_dir = os.path.join(tmpdir, "_bmad")
+            for subdir in ("bmb", "cis"):
+                d = os.path.join(legacy_dir, subdir)
+                os.makedirs(d)
+                with open(os.path.join(d, "module-help.csv"), "w") as f:
+                    f.write("header\nrow\n")
+
+            deleted = cleanup_legacy_csvs(legacy_dir, "bmb")
+            self.assertEqual(len(deleted), 1)  # only bmb, not cis
+            self.assertTrue(os.path.exists(os.path.join(legacy_dir, "cis", "module-help.csv")))
+
+    def test_no_legacy_files_returns_empty(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            deleted = cleanup_legacy_csvs(tmpdir, "bmb")
+            self.assertEqual(deleted, [])
+
+    def test_handles_only_core_no_module(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            legacy_dir = os.path.join(tmpdir, "_bmad")
+            core_dir = os.path.join(legacy_dir, "core")
+            os.makedirs(core_dir)
+            with open(os.path.join(core_dir, "module-help.csv"), "w") as f:
+                f.write("header\nrow\n")
+
+            deleted = cleanup_legacy_csvs(legacy_dir, "bmb")
+            self.assertEqual(len(deleted), 1)
+            self.assertFalse(os.path.exists(os.path.join(core_dir, "module-help.csv")))
 
 
 if __name__ == "__main__":

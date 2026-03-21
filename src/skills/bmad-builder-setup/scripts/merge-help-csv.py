@@ -9,6 +9,10 @@ Reads a source CSV with module help entries and merges them into a target CSV.
 Uses an anti-zombie pattern: all existing rows matching the source module code
 are removed before appending fresh rows.
 
+Legacy cleanup: when --legacy-dir and --module-code are provided, deletes old
+per-module module-help.csv files from {legacy-dir}/{module-code}/ and
+{legacy-dir}/core/. Only the current module and core are touched.
+
 Exit codes: 0=success, 1=validation error, 2=runtime error
 """
 
@@ -52,6 +56,14 @@ def parse_args():
         "--source",
         required=True,
         help="Path to the source module-help.csv with entries to merge",
+    )
+    parser.add_argument(
+        "--legacy-dir",
+        help="Path to _bmad/ directory to check for legacy per-module CSV files.",
+    )
+    parser.add_argument(
+        "--module-code",
+        help="Module code (required with --legacy-dir for scoping cleanup).",
     )
     parser.add_argument(
         "--verbose",
@@ -111,6 +123,24 @@ def write_csv(path: str, header: list[str], rows: list[list[str]], verbose: bool
             writer.writerow(row)
 
 
+def cleanup_legacy_csvs(
+    legacy_dir: str, module_code: str, verbose: bool = False
+) -> list:
+    """Delete legacy per-module module-help.csv files for this module and core only.
+
+    Returns list of deleted file paths.
+    """
+    deleted = []
+    for subdir in (module_code, "core"):
+        legacy_path = Path(legacy_dir) / subdir / "module-help.csv"
+        if legacy_path.exists():
+            if verbose:
+                print(f"Deleting legacy CSV: {legacy_path}", file=sys.stderr)
+            legacy_path.unlink()
+            deleted.append(str(legacy_path))
+    return deleted
+
+
 def main():
     args = parse_args()
 
@@ -159,6 +189,19 @@ def main():
     # Write result
     write_csv(args.target, header, merged_rows, args.verbose)
 
+    # Legacy cleanup: delete old per-module CSV files
+    legacy_deleted = []
+    if args.legacy_dir:
+        if not args.module_code:
+            print(
+                "Error: --module-code is required when --legacy-dir is provided",
+                file=sys.stderr,
+            )
+            sys.exit(1)
+        legacy_deleted = cleanup_legacy_csvs(
+            args.legacy_dir, args.module_code, args.verbose
+        )
+
     # Output result summary as JSON
     result = {
         "status": "success",
@@ -168,6 +211,7 @@ def main():
         "rows_removed": removed_count,
         "rows_added": len(source_rows),
         "total_rows": len(merged_rows),
+        "legacy_csvs_deleted": legacy_deleted,
     }
     print(json.dumps(result, indent=2))
 
