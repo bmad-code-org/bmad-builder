@@ -30,28 +30,36 @@ Which would you prefer?
 
 ## Config Reading and Integration
 
-Workflows MUST read config values from `{project-root}/_bmad/config.yaml`.
+Workflows read config values from `{project-root}/_bmad/config.yaml` and `config.user.yaml`. The loading behavior differs based on whether the skill is part of a module or standalone.
 
 ### Config Loading Pattern
 
-**Read the config file directly:**
+**Module-based skills** — load config with fallback and setup skill awareness:
 ```
-Load config from {project-root}/_bmad/config.yaml
-- Read the `core` section for shared variables (user_name, communication_language, etc.)
-- Read the module section (keyed by module code) for module-specific variables
+Load config from {project-root}/_bmad/config.yaml ({module-code} section) and config.user.yaml.
+If config is missing:
+  - Inform the user that the module setup skill ({module-setup-skill}) is available for initial setup
+  - Continue with sensible fallback values for each variable
+```
+
+**Standalone skills** — load config best-effort:
+```
+Load config from {project-root}/_bmad/config.yaml and config.user.yaml if available.
+If config is missing:
+  - Continue with fallback values — no mention of a setup skill
 ```
 
 Store config values in memory as `{var_name}` for use in prompts.
 
 ### Required Core Variables
 
-**Every module workflow MUST load these core variables:**
-- `user_name:BMad`
-- `communication_language:English`
-- `output_folder:{project-root}/_bmad-output`
+**Every workflow MUST load these core variables with fallbacks:**
+- `user_name` — fallback: omit
+- `communication_language` — fallback: match the user's language
+- `output_folder` — fallback: `{project-root}/_bmad-output`
 
 **Conditionally include:**
-- `document_output_language:English` — ONLY if workflow creates documents (check capability `output-location` field)
+- `document_output_language` — fallback: match the user's language — ONLY if workflow creates documents (check capability `output-location` field)
 - Output location variable from capability `output-location` — ONLY if specified in metadata
 
 **Example for BMB workflow (creates documents, has output var):**
@@ -425,7 +433,11 @@ description: Complex multi-stage workflow for my module. Use when user requests 
 
 ## Workflow Entry
 
-1. Load config from `{project-root}/_bmad/config.yaml` — reads core vars (user_name, communication_language, document_output_language, output_folder) and module vars (my_output_folder)
+1. Load config from `{project-root}/_bmad/config.yaml` (`mymod` section) and `config.user.yaml`. If config is missing, inform that `bmad-mymodule-setup` is available for initial setup, then continue with fallbacks:
+   - `user_name` — fallback: omit
+   - `communication_language` — fallback: match the user's language
+   - `document_output_language` — fallback: match the user's language
+   - `my_output_folder` — fallback: `{project-root}/_bmad-output/mymodule`
 
 2. Ask user for output document path (or suggest {my_output_folder}/analysis-{timestamp}.md)
 
