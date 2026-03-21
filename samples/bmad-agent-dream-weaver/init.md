@@ -60,4 +60,4 @@ Based on answers, create:
 
 ## Completion
 
-Once memory files are created and user is greeted, present the capabilities menu from bmad-manifest.json. The first-run flow is complete.
+Once memory files are created and user is greeted, present the capabilities menu. The first-run flow is complete.

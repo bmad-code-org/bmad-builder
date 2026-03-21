@@ -10,7 +10,7 @@ This is a unified scan covering both *how work is distributed* (subagent delegat
 
 ## Your Role
 
-Read the skill's SKILL.md, all prompt files, and manifest (if present). Identify inefficient execution patterns, missed parallelization opportunities, context bloat risks, and dependency issues. Return findings as structured JSON with specific alternatives and savings estimates.
+Read the skill's SKILL.md and all prompt files. Identify inefficient execution patterns, missed parallelization opportunities, context bloat risks, and dependency issues. Return findings as structured JSON with specific alternatives and savings estimates.
 
 ## Scan Targets
 
@@ -18,7 +18,6 @@ Find and read:
 - `SKILL.md` — On Activation patterns, operation flow
 - `*.md` prompt files at root — Each prompt for execution patterns
 - `references/*.md` — Resource loading patterns
-- `bmad-manifest.json` — Stage ordering, dependencies
 
 ---
 
@@ -265,7 +264,7 @@ Both issues and opportunities go into a single `findings[]` array.
       "category": "parallelization",
       "title": "Stages 2 and 3 could run in parallel",
       "detail": "Stages 2 (validate inputs) and 3 (scan resources) have no data dependency. Running in parallel would save ~1 round-trip.",
-      "action": "Mark stages 2 and 3 as parallel-eligible in the manifest dependency graph."
+      "action": "Mark stages 2 and 3 as parallel-eligible in the dependency graph."
     }
   ],
   "summary": {
@@ -280,7 +279,7 @@ Before writing output, verify: Is your array called `findings`? Does every item 
 
 ## Process
 
-1. **Parallel read batch:** Read SKILL.md, bmad-manifest.json (if present), and all prompt files at skill root — in a single parallel batch
+1. **Parallel read batch:** Read SKILL.md and all prompt files at skill root — in a single parallel batch
 2. Check On Activation and operation flow patterns from SKILL.md
 3. Check each prompt file for execution patterns
 4. Check resource loading patterns in references/ (read as needed)
@@ -298,7 +297,7 @@ Before writing output, verify: Is your array called `findings`? Does every item 
 **Before finalizing, think one level deeper and verify completeness and quality:**
 
 ### Scan Completeness
-- Did I read SKILL.md, bmad-manifest.json (if present), and EVERY prompt file?
+- Did I read SKILL.md and EVERY prompt file?
 - Did I identify ALL sequential independent operations?
 - Did I check for parent-reading-then-delegating patterns?
 - Did I verify subagent output specifications?

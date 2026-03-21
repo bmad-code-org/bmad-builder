@@ -22,7 +22,7 @@ The BMad Builder classifies workflows into three tiers based on complexity.
 
 | Type | Description | Example |
 | ---- | ----------- | ------- |
-| **Simple Utility** | A single-purpose tool that does one thing well | Validate a manifest, convert a file format |
+| **Simple Utility** | A single-purpose tool that does one thing well | Validate a schema, convert a file format |
 | **Simple Workflow** | A short guided process with a few sequential steps | Create a quick tech spec |
 | **Complex Workflow** | A multi-stage process with branching paths, progressive disclosure, and potentially multiple outputs | Create and manage PRDs — covering create, edit, validate, convert, and polish |
 
@@ -50,14 +50,6 @@ Guided mode is no longer the slow multi-step process of earlier BMad versions. I
 ## Headless (Autonomous) Mode
 
 Like agents, workflows can support a **Headless Mode**. When invoked headless — through a scheduler, orchestrator, or another skill — the workflow skips interactive prompts and completes its process end-to-end without waiting for user input.
-
-## Registering With BMad Help
-
-Workflows carry a **manifest** with sequencing metadata, just like agents. You declare what the workflow runs before, what it runs after, whether it is required or optional, and what output artifact it produces.
-
-:::note[Example]
-You build a `security-review` workflow and mark it as required after `create-prd` and before `create-architecture`. BMad Help will recommend it at the right point in the planning sequence and flag when its output artifact is missing.
-:::
 
 ## When to Build a Workflow vs. an Agent
 

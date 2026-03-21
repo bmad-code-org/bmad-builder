@@ -26,5 +26,4 @@ Create world-class AI agents and workflows with the BMad Builder.
 | Resource | Description |
 |----------|-------------|
 | **[Builder Commands](/reference/builder-commands.md)** | All capabilities, modes, and phases for both builders |
-| **[Skill Manifest](/reference/bmad-skill-manifest.md)** | Field reference for bmad-manifest.json |
 | **[Workflow Patterns](/reference/workflow-patterns.md)** | Skill types, structure patterns, and execution models |

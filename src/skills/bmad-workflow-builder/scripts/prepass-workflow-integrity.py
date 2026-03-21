@@ -408,10 +408,6 @@ def scan_workflow_integrity(skill_path: Path) -> dict:
     prompt_details, prompt_findings = check_prompt_basics(skill_path)
     all_findings.extend(prompt_findings)
 
-    # Manifest check
-    manifest_path = skill_path / 'bmad-manifest.json'
-    has_manifest = manifest_path.exists()
-
     # Build severity summary
     by_severity = {'critical': 0, 'high': 0, 'medium': 0, 'low': 0}
     for f in all_findings:
@@ -436,7 +432,6 @@ def scan_workflow_integrity(skill_path: Path) -> dict:
             'frontmatter': frontmatter,
             'sections': sections,
             'workflow_type': workflow_type,
-            'has_manifest': has_manifest,
         },
         'stage_summary': stage_summary,
         'prompt_details': prompt_details,

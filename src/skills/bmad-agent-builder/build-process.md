@@ -34,9 +34,10 @@ Walk through each planned capability with the user and apply these filters:
 - File/directory structure checks (existence, naming conventions, required files)
 - Pattern matching against known standards (path conventions, naming rules)
 - Comparison operations (diff, version compare, before/after, cross-reference checking)
-- Dependency graphing (parsing imports, references, manifest entries)
+- Dependency graphing (parsing imports, references, skill entries)
 - Memory structure validation (required sections, path correctness)
 - Access boundary extraction and verification
+- Dependency graphing (parsing imports, references, skill entries)
 - Pre-processing for LLM capabilities (extract compact metrics from large files so the LLM works from structured data, not raw content)
 - Post-processing validation (verify LLM output conforms to expected schema/structure)
 
@@ -105,7 +106,6 @@ Once you have a cohesive idea, think one level deeper. Once you have done this, 
 - Load `references/quality-dimensions.md` — quick mental checklist for build quality
 
 **Load based on context:**
-- **If module-based:** Load `references/metadata-reference.md` — manifest.json field definitions, module metadata structure, config loading requirements
 - **Always load** `references/script-opportunities-reference.md` — script opportunity spotting guide, catalog, and output standards. Use this to identify additional script opportunities not caught in Phase 2, even if no scripts were initially planned.
 
 When confirmed:
@@ -119,42 +119,10 @@ When confirmed:
    - **autonomous-wake.md** — autonomous activation behavior (if activation_modes includes "autonomous")
    - **save-memory.md** — explicit memory save capability (if sidecar enabled)
 
-3. **Generate bmad-manifest.json** — Use `scripts/manifest.py` (validation is automatic on every write). **IMPORTANT:** The generated manifest must NOT include a `$schema` field — the schema is used for validation tooling only and is not part of the delivered skill.
-   ```bash
-   # Create manifest with agent identity
-   python3 scripts/manifest.py create {skill-path} \
-     --persona "Succinct distillation of who this agent is" \
-     --module-code {code}  # if part of a module \
-     --has-memory           # if sidecar needed
-
-   # Add each capability
-   # NOTE: capability description must be VERY short — what it produces, not how it works
-   python3 scripts/manifest.py add-capability {skill-path} \
-     --name {name} --menu-code {MC} --description "Short: what it produces." \
-     --supports-autonomous \
-     --prompt {name}.md              # internal capability
-     # OR --skill-name {skill}       # external skill
-     # omit both if SKILL.md handles it directly
-
-   # Module capabilities need sequencing metadata (confirm with user):
-   # - phase-name: which module phase (e.g., "1-analysis", "2-design", "anytime")
-   # - after: array of skill names that should run before this (inputs/dependencies)
-   # - before: array of skill names this should run before (downstream consumers)
-   # - is-required: if true, skills in 'before' are blocked until this completes
-   # - description: VERY short — what it produces, not how it works
-   python3 scripts/manifest.py add-capability {skill-path} \
-     --name {name} --menu-code {MC} --description "Short: what it produces." \
-     --phase-name anytime \
-     --after skill-a skill-b \
-     --before skill-c \
-     --is-required
-   ```
-
-4. **Folder structure:**
+3. **Folder structure:**
 ```
 {skill-name}/
 ├── SKILL.md               # Contains full persona content (agent.md embedded)
-├── bmad-manifest.json     # Capabilities, persona, memory, module integration
 ├── init.md                # First-run setup (if sidecar)
 ├── autonomous-wake.md     # Autonomous activation (if autonomous mode)
 ├── save-memory.md         # Explicit memory save (if sidecar)
@@ -176,9 +144,9 @@ When confirmed:
 
 Only create subfolders that are needed — most skills won't need all four.
 
-5. Output to `bmad_builder_output_folder` from config, or `{project-root}/bmad-builder-creations/`
+4. Output to `bmad_builder_output_folder` from config, or `{project-root}/bmad-builder-creations/`
 
-6. **Lint gate** — run deterministic validation scripts:
+5. **Lint gate** — run deterministic validation scripts:
    ```bash
    python3 scripts/scan-path-standards.py {skill-path}
    python3 scripts/scan-scripts.py {skill-path}

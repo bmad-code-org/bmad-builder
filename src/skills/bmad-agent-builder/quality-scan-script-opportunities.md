@@ -88,11 +88,9 @@ LLM instructions that compare two things for differences or verify consistency b
 **Signal phrases:** "compare", "diff", "match against", "cross-reference", "verify consistency", "check alignment"
 
 **Examples:**
-- Comparing manifest entries against actual files → Python script
 - Diffing two versions of a document → git diff or Python difflib
 - Cross-referencing prompt names against SKILL.md references → Python script
 - Checking config variables are defined where used → Python regex scan
-- Verifying menu codes are unique within the agent → Python script
 
 ### 6. Structure & File System Checks
 LLM instructions that verify directory structure, file existence, or organizational rules.
@@ -111,7 +109,7 @@ LLM instructions that trace references, imports, or relationships between files.
 **Signal phrases:** "dependency", "references", "imports", "relationship", "graph", "trace"
 
 **Examples:**
-- Building skill dependency graph from manifest → Python script
+- Building skill dependency graph → Python script
 - Tracing which resources are loaded by which prompts → Python regex
 - Detecting circular references → Python graph algorithm
 - Mapping capability → prompt file → resource file chains → Python script
@@ -136,7 +134,7 @@ Operations where a script could verify that LLM-generated output meets structura
 **Examples:**
 - Validating generated JSON against schema → Python jsonschema
 - Checking generated markdown has required sections → Python script
-- Verifying generated manifest has required fields → Python script
+- Verifying generated output has required fields → Python script
 
 ---
 

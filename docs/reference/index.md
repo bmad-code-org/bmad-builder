@@ -10,5 +10,4 @@ Technical documentation for BMad Builder configuration and schemas.
 | Reference | Description |
 |-----------|-------------|
 | **[Builder Skills](/reference/builder-commands.md)** | Agent Builder and Workflow Builder skills, commands, and capabilities |
-| **[Skill Manifest](/reference/bmad-skill-manifest.md)** | bmad-manifest.json field reference for agents and workflows |
 | **[Workflow & Skill Patterns](/reference/workflow-patterns.md)** | Structure types, design patterns, and execution models |

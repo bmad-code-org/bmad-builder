@@ -8,8 +8,6 @@ can use instead of reading all files itself. Covers:
 - Template artifact detection
 - Agent name validation (bmad-{code}-agent-{name} or bmad-agent-{name})
 - Required agent sections (Overview, Identity, Communication Style, Principles, On Activation)
-- bmad-manifest.json validation (persona field for agent detection, capabilities)
-- Capability cross-referencing with prompt files at skill root
 - Memory path consistency checking
 - Language/directness pattern grep
 - On Exit / Exiting section detection (invalid)
@@ -214,183 +212,6 @@ def find_template_artifacts(filepath: Path, rel_path: str) -> list[dict]:
     return findings
 
 
-def validate_manifest(skill_path: Path) -> tuple[dict, list[dict]]:
-    """Validate bmad-manifest.json for agent requirements."""
-    findings = []
-    validation = {
-        'found': False,
-        'valid_json': False,
-        'is_agent': False,
-        'has_capabilities': False,
-        'capability_count': 0,
-        'menu_codes': [],
-        'duplicate_menu_codes': [],
-        'capability_issues': [],
-    }
-
-    manifest_path = skill_path / 'bmad-manifest.json'
-    if not manifest_path.exists():
-        findings.append({
-            'file': 'bmad-manifest.json', 'line': 0,
-            'severity': 'high', 'category': 'manifest',
-            'issue': 'bmad-manifest.json not found at skill root',
-        })
-        return validation, findings
-
-    validation['found'] = True
-
-    try:
-        data = json.loads(manifest_path.read_text(encoding='utf-8'))
-    except json.JSONDecodeError as e:
-        findings.append({
-            'file': 'bmad-manifest.json', 'line': 0,
-            'severity': 'critical', 'category': 'manifest',
-            'issue': f'Invalid JSON in bmad-manifest.json: {e}',
-        })
-        return validation, findings
-
-    validation['valid_json'] = True
-
-    # Check if this is an agent (agents have a persona field)
-    has_persona = 'persona' in data
-    validation['is_agent'] = has_persona
-    if not has_persona:
-        findings.append({
-            'file': 'bmad-manifest.json', 'line': 0,
-            'severity': 'high', 'category': 'manifest',
-            'issue': 'Missing "persona" field — agents are identified by having a persona field',
-        })
-
-    # Check capabilities
-    capabilities = data.get('capabilities')
-    if capabilities is None:
-        findings.append({
-            'file': 'bmad-manifest.json', 'line': 0,
-            'severity': 'high', 'category': 'manifest',
-            'issue': 'Missing "capabilities" field',
-        })
-        return validation, findings
-
-    if not isinstance(capabilities, list):
-        findings.append({
-            'file': 'bmad-manifest.json', 'line': 0,
-            'severity': 'high', 'category': 'manifest',
-            'issue': '"capabilities" is not an array',
-        })
-        return validation, findings
-
-    validation['has_capabilities'] = True
-    validation['capability_count'] = len(capabilities)
-
-    # Check each capability for required fields and unique menu codes
-    required_fields = {'name', 'menu-code', 'description'}
-    menu_codes = []
-
-    for i, cap in enumerate(capabilities):
-        if not isinstance(cap, dict):
-            findings.append({
-                'file': 'bmad-manifest.json', 'line': 0,
-                'severity': 'high', 'category': 'manifest',
-                'issue': f'Capability at index {i} is not an object',
-            })
-            continue
-
-        missing = required_fields - set(cap.keys())
-        if missing:
-            cap_name = cap.get('name', f'index-{i}')
-            findings.append({
-                'file': 'bmad-manifest.json', 'line': 0,
-                'severity': 'high', 'category': 'manifest',
-                'issue': f'Capability "{cap_name}" missing required fields: {", ".join(sorted(missing))}',
-            })
-
-        mc = cap.get('menu-code')
-        if mc:
-            menu_codes.append(mc)
-
-    validation['menu_codes'] = menu_codes
-
-    # Check for duplicate menu codes
-    seen = set()
-    dupes = set()
-    for mc in menu_codes:
-        if mc in seen:
-            dupes.add(mc)
-        seen.add(mc)
-
-    if dupes:
-        validation['duplicate_menu_codes'] = sorted(dupes)
-        findings.append({
-            'file': 'bmad-manifest.json', 'line': 0,
-            'severity': 'high', 'category': 'manifest',
-            'issue': f'Duplicate menu codes: {", ".join(sorted(dupes))}',
-        })
-
-    return validation, findings
-
-
-def cross_reference_capabilities(skill_path: Path) -> tuple[dict, list[dict]]:
-    """Cross-reference manifest capabilities with prompt files."""
-    findings = []
-    crossref = {
-        'manifest_prompt_caps': [],
-        'missing_prompt_files': [],
-        'orphaned_prompt_files': [],
-    }
-
-    manifest_path = skill_path / 'bmad-manifest.json'
-
-    if not manifest_path.exists():
-        return crossref, findings
-
-    try:
-        data = json.loads(manifest_path.read_text(encoding='utf-8'))
-    except (json.JSONDecodeError, OSError):
-        return crossref, findings
-
-    capabilities = data.get('capabilities', [])
-    if not isinstance(capabilities, list):
-        return crossref, findings
-
-    # Get prompt-type capabilities from manifest
-    prompt_cap_names = set()
-    for cap in capabilities:
-        if isinstance(cap, dict) and cap.get('type') == 'prompt':
-            name = cap.get('name')
-            if name:
-                prompt_cap_names.add(name)
-                crossref['manifest_prompt_caps'].append(name)
-
-    # Get actual prompt files (at skill root, excluding SKILL.md and non-prompt files)
-    actual_prompts = set()
-    skip_files = {'SKILL.md', 'bmad-manifest.json', 'bmad-skill-manifest.yaml'}
-    for f in skill_path.iterdir():
-        if f.is_file() and f.suffix == '.md' and f.name not in skip_files:
-                actual_prompts.add(f.stem)
-
-    # Missing prompt files (in manifest but no file)
-    missing = prompt_cap_names - actual_prompts
-    for name in sorted(missing):
-        crossref['missing_prompt_files'].append(name)
-        findings.append({
-            'file': 'bmad-manifest.json', 'line': 0,
-            'severity': 'high', 'category': 'capability-crossref',
-            'issue': f'Prompt capability "{name}" has no matching file {name}.md at skill root',
-        })
-
-    # Orphaned prompt files (file exists but not in manifest)
-    orphaned = actual_prompts - prompt_cap_names
-    for name in sorted(orphaned):
-        crossref['orphaned_prompt_files'].append(name)
-        findings.append({
-            'file': f'{name}.md', 'line': 0,
-            'severity': 'medium', 'category': 'capability-crossref',
-            'issue': f'Prompt file {name}.md not referenced as a prompt capability in manifest',
-        })
-
-    return crossref, findings
-
-
 def extract_memory_paths(skill_path: Path) -> tuple[list[str], list[dict]]:
     """Extract all memory path references across files and check consistency."""
     findings = []
@@ -449,7 +270,7 @@ def check_prompt_basics(skill_path: Path) -> tuple[list[dict], list[dict]]:
     """Check each prompt file for config header and progression conditions."""
     findings = []
     prompt_details = []
-    skip_files = {'SKILL.md', 'bmad-manifest.json', 'bmad-skill-manifest.yaml'}
+    skip_files = {'SKILL.md'}
 
     prompt_files = [f for f in sorted(skill_path.iterdir())
                     if f.is_file() and f.suffix == '.md' and f.name not in skip_files]
@@ -545,15 +366,6 @@ def scan_structure_capabilities(skill_path: Path) -> dict:
                 'issue': message,
             })
 
-    # Manifest validation
-    manifest_validation, manifest_findings = validate_manifest(skill_path)
-    all_findings.extend(manifest_findings)
-    has_manifest = manifest_validation['found']
-
-    # Capability cross-reference
-    capability_crossref, crossref_findings = cross_reference_capabilities(skill_path)
-    all_findings.extend(crossref_findings)
-
     # Memory path consistency
     memory_paths, memory_findings = extract_memory_paths(skill_path)
     all_findings.extend(memory_findings)
@@ -585,9 +397,6 @@ def scan_structure_capabilities(skill_path: Path) -> dict:
         'metadata': {
             'frontmatter': frontmatter,
             'sections': sections,
-            'has_manifest': has_manifest,
-            'manifest_validation': manifest_validation,
-            'capability_crossref': capability_crossref,
         },
         'prompt_details': prompt_details,
         'memory_paths': memory_paths,

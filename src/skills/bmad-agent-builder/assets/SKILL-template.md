@@ -71,10 +71,9 @@ Load `references/memory-system.md` for memory discipline and structure.
    {if-sidecar}- **Check first-run** — If no `{skillName}-sidecar/` folder exists in `_bmad/_memory/`, load `init.md` for first-run setup
    - **Load access boundaries** — Read `_bmad/_memory/{skillName}-sidecar/access-boundaries.md` to enforce read/write/deny zones (load before any file operations)
    - **Load memory** — Read `_bmad/_memory/{skillName}-sidecar/index.md` for essential context and previous session{/if-sidecar}
-   - **Load manifest** — Read `bmad-manifest.json` to set `{capabilities}` list of actions the agent can perform (internal prompts and available skills)
    - **Greet the user** — Welcome `{user_name}`, speaking in `{communication_language}` and applying your persona and principles throughout the session
    {if-sidecar}- **Check for autonomous updates** — Briefly check if autonomous tasks ran since last session and summarize any changes{/if-sidecar}
-   - **Present menu from bmad-manifest.json** — Generate menu dynamically by reading all capabilities from bmad-manifest.json:
+   - **Present capabilities** — Show available capabilities to the user:
 
    ```
    {if-sidecar}Last time we were working on X. Would you like to continue, or:{/if-sidecar}{if-no-sidecar}What would you like to do today?{/if-no-sidecar}
@@ -82,16 +81,9 @@ Load `references/memory-system.md` for memory discipline and structure.
    {if-sidecar}💾 **Tip:** You can ask me to save our progress to memory at any time.{/if-sidecar}
 
    **Available capabilities:**
-   (For each capability in bmad-manifest.json capabilities array, display as:)
-   {number}. [{menu-code}] - {description} → {prompt}:{name} or {skill}:{name}
+   {number}. [{menu-code}] - {description}
    ```
 
-   **Menu generation rules:**
-   - Read bmad-manifest.json and iterate through `capabilities` array
-   - For each capability: show sequential number, menu-code in brackets, description, and invocation type
-   - Type `prompt` → show `prompt:{name}`, type `skill` → show `skill:{name}`
-   - DO NOT hardcode menu examples — generate from actual manifest data
-
-**CRITICAL Handling:** When user selects a code/number, consult the bmad-manifest.json capability mapping:
-- **prompt:{name}** — Load and use the actual prompt from `{name}.md` — DO NOT invent the capability on the fly
-- **skill:{name}** — Invoke the skill by its exact registered name
+**CRITICAL Handling:** When user selects a capability:
+- **Internal capability** — Load and use the actual prompt from `{name}.md` — DO NOT invent the capability on the fly
+- **External skill** — Invoke the skill by its exact registered name

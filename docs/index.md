@@ -58,7 +58,7 @@ Build better skills with these guides distilled from real-world BMad development
 | ------- | ------- |
 | **[Concepts](/explanation/)** | What agents, workflows, and skills are — and how they relate |
 | **[Design Patterns](/explanation/#design-patterns)** | Progressive disclosure, subagent orchestration, authoring best practices |
-| **[Reference](/reference/)** | Manifest schema, builder commands, workflow patterns |
+| **[Reference](/reference/)** | Builder commands, workflow patterns |
 
 ## Community
 

@@ -14,7 +14,7 @@
 
 ### Removed
 
-- Obsolete sample and manifest files from old skill structure
+- Obsolete sample files from old skill structure
 - Unneeded images from project root
 
 ## [1.0.0] - 2026-03-15

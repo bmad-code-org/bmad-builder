@@ -79,7 +79,6 @@ Replace all content placeholders with skill-specific values:
 ## Path References
 
 All generated skills use these paths:
-- `bmad-manifest.json` — Module metadata (if module-based)
 - `references/{reference}.md` — Reference documents loaded on demand
 - `01-{stage}.md` — Numbered stage prompts at skill root (complex workflows)
 - `scripts/` — Python/shell scripts for deterministic operations (if needed)

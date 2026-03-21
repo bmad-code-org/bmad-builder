@@ -46,7 +46,6 @@ All generated agents use these paths:
 - `init.md` — First-run setup
 - `{name}.md` — Individual capability prompts
 - `references/memory-system.md` — Memory discipline (if sidecar needed)
-- `bmad-manifest.json` — Capabilities and metadata with menu codes
 - `scripts/` — Python/shell scripts for deterministic operations (if needed)
 
 ## Frontmatter Placeholders

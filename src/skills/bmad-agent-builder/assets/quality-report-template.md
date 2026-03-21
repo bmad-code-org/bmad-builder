@@ -79,7 +79,6 @@
 - Capabilities: {capabilities-count}
 - Memory sidecar: {has-memory}
 - Headless mode: {has-headless}
-- Manifest valid: {manifest-valid}
 - Structure assessment: {structure-assessment}
 {/if-structure-metadata}
 

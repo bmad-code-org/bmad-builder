@@ -69,7 +69,7 @@ Work through conversationally, adapted per skill type, so you can either glean f
   - File/directory structure checks (existence, naming conventions, required files)
   - Pattern matching against known standards (path conventions, naming rules)
   - Comparison operations (diff, version compare, before/after, cross-reference checking)
-  - Dependency graphing (parsing imports, references, manifest entries)
+  - Dependency graphing (parsing imports, references, skill entries)
   - Template artifact detection (orphaned placeholders, unresolved variables)
   - Pre-processing for LLM steps (extract compact metrics from large files so the LLM works from structured data, not raw content)
   - Post-processing validation (verify LLM output conforms to expected schema/structure)
@@ -123,7 +123,6 @@ Once you have a cohesive idea, think one level deeper, clarify with the user any
 
 **Load based on skill type:**
 - **If Complex Workflow:** Load `references/complex-workflow-patterns.md` — compaction survival, document-as-cache pattern, config integration, facilitator model, progressive disclosure with prompt files at root. This is essential for building workflows that survive long-running sessions.
-- **If module-based (any type):** Load `references/metadata-reference.md` — bmad-manifest.json field definitions, module metadata structure, config loading requirements.
 - **Always load** `references/script-opportunities-reference.md` — script opportunity spotting guide, catalog, and output standards. Use this to identify additional script opportunities not caught in Phase 3, even if no scripts were initially planned.
 
 When confirmed:
@@ -140,7 +139,6 @@ When confirmed:
 ```
 {skill-name}/
 ├── SKILL.md           # name (same as folder name), description
-├── bmad-manifest.json # Capabilities, module integration, optional persona/memory
 ├── *.md               # Prompt files and subagent definitions at root
 ├── references/        # Reference data, schemas, guides (read for context)
 ├── assets/            # Templates, starter files (copied/transformed into output)
@@ -158,32 +156,9 @@ When confirmed:
 
 Only create subfolders that are needed — most skills won't need all four.
 
-5. **Generate bmad-manifest.json** — Use `scripts/manifest.py` (validation is automatic on every write). **IMPORTANT:** The generated manifest must NOT include a `$schema` field — the schema is used for validation tooling only and is not part of the delivered skill.
-   ```bash
-   # Create manifest
-   python3 scripts/manifest.py create {skill-path} \
-     --module-code {code}  # if part of a module \
-     --has-memory           # if state persists across sessions
+5. Output to {`bmad_builder_output_folder`}
 
-   # Add each capability (even single-purpose skills get one)
-   # NOTE: capability description must be VERY short — what it produces, not how it works
-   python3 scripts/manifest.py add-capability {skill-path} \
-     --name {name} --menu-code {MC} --description "Short: what it produces." \
-     --supports-autonomous \
-     --prompt {name}.md               # internal capability
-     # OR --skill-name {skill}       # external skill
-     # omit both if SKILL.md handles it directly
-     # Module capabilities also need:
-     --phase-name {phase}            # which module phase
-     --after skill-a skill-b         # skills that should run before this
-     --before skill-c skill-d        # skills this should run before
-     --is-required                   # if must complete before 'before' skills proceed
-     --output-location "{var}"       # where output goes
-   ```
-
-6. Output to {`bmad_builder_output_folder`}
-
-7. **Lint gate** — run deterministic validation scripts:
+6. **Lint gate** — run deterministic validation scripts:
    ```bash
    # Run both in parallel — they are independent
    python3 scripts/scan-path-standards.py {skill-path}

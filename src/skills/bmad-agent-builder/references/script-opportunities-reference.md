@@ -83,19 +83,7 @@ All scripts use PEP 723 and `--help`. When a skill's prompt needs to invoke a sc
 
 ---
 
-### 2. Manifest Schema Validator
-
-**Status:** ✅ Already exists at `scripts/manifest.py` (create, add-capability, update, read, validate)
-
-**Enhancement opportunities:**
-- Add `--agent-path` flag for auto-discovery
-- Check menu code uniqueness within agent
-- Verify prompt files exist for `type: "prompt"` capabilities
-- Verify external skill names are registered (could check against skill registry)
-
----
-
-### 3. Template Artifact Scanner
+### 2. Template Artifact Scanner
 
 **What:** Scan for orphaned template substitution artifacts
 
@@ -107,7 +95,7 @@ All scripts use PEP 723 and `--help`. When a skill's prompt needs to invoke a sc
 
 ---
 
-### 4. Access Boundaries Extractor
+### 3. Access Boundaries Extractor
 
 **What:** Extract and validate access boundaries from memory-system.md
 
@@ -128,30 +116,11 @@ All scripts use PEP 723 and `--help`. When a skill's prompt needs to invoke a sc
 
 ---
 
-### 5. Prompt Frontmatter Comparator
-
-**What:** Compare prompt file frontmatter against bmad-manifest.json
-
-**Why:** Capability misalignment causes runtime errors
-
-**Checks:**
-```python
-# For each prompt .md file at skill root:
-- Has frontmatter (name, description, menu-code)
-- name matches manifest capability name
-- menu-code matches manifest (case-insensitive)
-- description is present
-```
-
-**Output:** JSON with mismatches, missing files
-
-**Implementation:** Python, reads bmad-manifest.json and all prompt .md files at skill root
-
 ---
 
 ## Priority 2: Analysis Scripts
 
-### 6. Token Counter
+### 4. Token Counter
 
 **What:** Count tokens in each file of an agent
 
@@ -171,7 +140,7 @@ All scripts use PEP 723 and `--help`. When a skill's prompt needs to invoke a sc
 
 ---
 
-### 7. Dependency Graph Generator
+### 5. Dependency Graph Generator
 
 **What:** Map skill → external skill dependencies
 
@@ -179,8 +148,8 @@ All scripts use PEP 723 and `--help`. When a skill's prompt needs to invoke a sc
 
 **Checks:**
 ```python
-# Parse bmad-manifest.json for external skills
 # Parse SKILL.md for skill invocation patterns
+# Parse prompt files for external skill references
 # Build dependency graph
 ```
 
@@ -190,7 +159,7 @@ All scripts use PEP 723 and `--help`. When a skill's prompt needs to invoke a sc
 
 ---
 
-### 8. Activation Flow Analyzer
+### 6. Activation Flow Analyzer
 
 **What:** Parse SKILL.md On Activation section for sequence
 
@@ -204,8 +173,7 @@ All scripts use PEP 723 and `--help`. When a skill's prompt needs to invoke a sc
 3. First-run check
 4. Access boundaries load
 5. Memory load
-6. Manifest load
-7. Greet
+6. Greet
 8. Present menu
 ```
 
@@ -215,7 +183,7 @@ All scripts use PEP 723 and `--help`. When a skill's prompt needs to invoke a sc
 
 ---
 
-### 9. Memory Structure Validator
+### 7. Memory Structure Validator
 
 **What:** Validate memory-system.md structure
 
@@ -236,7 +204,7 @@ All scripts use PEP 723 and `--help`. When a skill's prompt needs to invoke a sc
 
 ---
 
-### 10. Subagent Pattern Detector
+### 8. Subagent Pattern Detector
 
 **What:** Detect if agent uses BMAD Advanced Context Pattern
 
@@ -259,7 +227,7 @@ All scripts use PEP 723 and `--help`. When a skill's prompt needs to invoke a sc
 
 ## Priority 3: Composite Scripts
 
-### 11. Agent Health Check
+### 9. Agent Health Check
 
 **What:** Run all validation scripts and aggregate results
 
@@ -273,7 +241,7 @@ All scripts use PEP 723 and `--help`. When a skill's prompt needs to invoke a sc
 
 ---
 
-### 12. Comparison Validator
+### 10. Comparison Validator
 
 **What:** Compare two versions of an agent for differences
 
@@ -355,7 +323,6 @@ The Quality Optimizer should:
 # Run all validation scripts
 python scripts/validate-frontmatter.py --agent-path {path}
 bash scripts/scan-template-artifacts.sh --agent-path {path}
-python scripts/compare-prompts-manifest.py --agent-path {path}
 
 # Collect JSON outputs
 # Spawn sub-agents only for semantic checks
@@ -368,8 +335,7 @@ python scripts/compare-prompts-manifest.py --agent-path {path}
 
 **Phase 1 (Immediate value):**
 1. Template Artifact Scanner (Bash + jq)
-2. Prompt Frontmatter Comparator (Python)
-3. Access Boundaries Extractor (Python)
+2. Access Boundaries Extractor (Python)
 
 **Phase 2 (Enhanced validation):**
 4. Token Counter (Python)

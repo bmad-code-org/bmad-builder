@@ -21,7 +21,6 @@ This is an **opinionated, advisory scan**. Findings are suggestions, not errors.
 
 Find and read:
 - `SKILL.md` — Identity, persona, principles, description
-- `bmad-manifest.json` — All capabilities with menu codes and descriptions
 - `*.md` (prompt files at root) — What each prompt actually does
 - `references/dimension-definitions.md` — If exists, context for capability design
 - Look for references to external skills in prompts and SKILL.md
@@ -67,7 +66,7 @@ Find and read:
 
 | Check | Why It Matters |
 |-------|----------------|
-| No overlapping capabilities in manifest | Confuses users, wastes tokens |
+| No overlapping capabilities | Confuses users, wastes tokens |
 - Prompts don't duplicate functionality | Pick ONE place for each behavior |
 | Similar capabilities aren't separated | Could be consolidated into stronger single capability |
 
@@ -159,7 +158,7 @@ Write JSON findings to: `{quality-report-dir}/agent-cohesion-temp.json`
   "agent_path": "{path}",
   "findings": [
     {
-      "file": "SKILL.md|bmad-manifest.json|{name}.md",
+      "file": "SKILL.md|{name}.md",
       "severity": "high|medium|low|suggestion|strength",
       "category": "gap|redundancy|misalignment|opportunity|strength",
       "title": "Brief description",
@@ -232,22 +231,21 @@ Merge all findings into the single `findings[]` array:
 ## Process
 
 1. Read SKILL.md to understand persona and intent
-2. Read bmad-manifest.json to enumerate all capabilities
-3. Read all prompts to understand what each actually does
-4. Read dimension-definitions.md if available for context
-5. Build mental model of the agent as a whole
-6. Evaluate cohesion across all 6 dimensions
-7. Generate findings with specific, actionable suggestions
-8. Identify strengths (positive feedback is valuable!)
-9. Write JSON to `{quality-report-dir}/agent-cohesion-temp.json`
-10. Return only the filename: `agent-cohesion-temp.json`
+2. Read all prompts to understand what each actually does
+3. Read dimension-definitions.md if available for context
+4. Build mental model of the agent as a whole
+5. Evaluate cohesion across all 6 dimensions
+6. Generate findings with specific, actionable suggestions
+7. Identify strengths (positive feedback is valuable!)
+8. Write JSON to `{quality-report-dir}/agent-cohesion-temp.json`
+9. Return only the filename: `agent-cohesion-temp.json`
 
 ## Critical After Draft Output
 
 **Before finalizing, think one level deeper and verify completeness and quality:**
 
 ### Scan Completeness
-- Did I read SKILL.md, bmad-manifest.json, and ALL prompts?
+- Did I read SKILL.md and ALL prompts?
 - Did I build a complete mental model of the agent?
 - Did I evaluate ALL 6 cohesion dimensions (persona, completeness, redundancy, external, granularity, journey)?
 - Did I read dimension-definitions.md if it exists?

@@ -21,7 +21,6 @@ This is an **opinionated, advisory scan**. Findings are suggestions, not errors.
 
 Find and read:
 - `SKILL.md` — Identity, purpose, role guidance, description
-- `bmad-manifest.json` — All capabilities with dependencies and metadata
 - `*.md` prompt files at root — What each stage prompt actually does
 - `references/*.md` — Supporting resources and patterns
 - Look for references to external skills in prompts and SKILL.md
@@ -211,7 +210,7 @@ All go into a single `findings[]` array.
       "action": ""
     },
     {
-      "file": "bmad-manifest.json",
+      "file": "SKILL.md",
       "severity": "suggestion",
       "category": "opportunity",
       "title": "Consolidate stages 02 and 03 into a single analysis stage",
@@ -300,7 +299,7 @@ Before writing output, verify: Is your array called `findings`? Does every item 
 
 ## Process
 
-1. **Parallel read batch:** Read SKILL.md, bmad-manifest.json, all prompt files, and list resources/ — in a single parallel batch
+1. **Parallel read batch:** Read SKILL.md, all prompt files, and list resources/ — in a single parallel batch
 2. Build mental model of the skill as a whole from all files read
 3. Evaluate cohesion across all dimensions (flow, purpose, complexity, completeness, redundancy, dependencies, creates alignment, external integration, journey)
 4. Generate findings with specific, actionable suggestions
@@ -313,7 +312,7 @@ Before writing output, verify: Is your array called `findings`? Does every item 
 **Before finalizing, think one level deeper and verify completeness and quality:**
 
 ### Scan Completeness
-- Did I read SKILL.md, bmad-manifest.json, and ALL prompts?
+- Did I read SKILL.md and ALL prompts?
 - Did I build a complete mental model of the skill?
 - Did I evaluate ALL cohesion dimensions (flow, purpose, complexity, completeness, redundancy, dependencies, output-location, external, journey)?
 - Did I check output-location alignment with actual stage outputs?

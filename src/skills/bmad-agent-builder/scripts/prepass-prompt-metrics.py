@@ -14,7 +14,6 @@ Covers:
 - Config header and progression condition presence per prompt
 - File-level token estimates (chars / 4 rough approximation)
 - Prompt frontmatter validation (name, description, menu-code)
-- Manifest alignment check (frontmatter vs bmad-manifest.json entries)
 - Wall-of-text detection
 - Suggestive loading grep
 """
@@ -197,69 +196,6 @@ def parse_prompt_frontmatter(filepath: Path) -> dict:
     return result
 
 
-def check_manifest_alignment(skill_path: Path, prompt_frontmatters: dict[str, dict]) -> dict:
-    """Compare prompt frontmatter against bmad-manifest.json entries."""
-    alignment = {
-        'manifest_found': False,
-        'mismatches': [],
-        'manifest_only': [],
-        'prompt_only': [],
-    }
-
-    manifest_path = skill_path / 'bmad-manifest.json'
-    if not manifest_path.exists():
-        return alignment
-
-    try:
-        data = json.loads(manifest_path.read_text(encoding='utf-8'))
-    except (json.JSONDecodeError, OSError):
-        return alignment
-
-    alignment['manifest_found'] = True
-
-    capabilities = data.get('capabilities', [])
-    if not isinstance(capabilities, list):
-        return alignment
-
-    # Build manifest lookup by name
-    manifest_caps = {}
-    for cap in capabilities:
-        if isinstance(cap, dict) and cap.get('name'):
-            manifest_caps[cap['name']] = cap
-
-    # Compare
-    prompt_names = set(prompt_frontmatters.keys())
-    manifest_names = set(manifest_caps.keys())
-
-    alignment['manifest_only'] = sorted(manifest_names - prompt_names)
-    alignment['prompt_only'] = sorted(prompt_names - manifest_names)
-
-    # Check field mismatches for overlapping entries
-    for name in sorted(prompt_names & manifest_names):
-        pfm = prompt_frontmatters[name]
-        mcap = manifest_caps[name]
-
-        issues = []
-        # Compare name field
-        pfm_name = pfm.get('fields', {}).get('name')
-        if pfm_name and pfm_name != mcap.get('name'):
-            issues.append(f'name mismatch: frontmatter="{pfm_name}" manifest="{mcap.get("name")}"')
-
-        # Compare menu-code
-        pfm_mc = pfm.get('fields', {}).get('menu-code')
-        mcap_mc = mcap.get('menu-code')
-        if pfm_mc and mcap_mc and pfm_mc != mcap_mc:
-            issues.append(f'menu-code mismatch: frontmatter="{pfm_mc}" manifest="{mcap_mc}"')
-
-        if issues:
-            alignment['mismatches'].append({
-                'name': name,
-                'issues': issues,
-            })
-
-    return alignment
-
-
 def scan_file_patterns(filepath: Path, rel_path: str) -> dict:
     """Extract metrics and pattern matches from a single file."""
     content = filepath.read_text(encoding='utf-8')
@@ -357,9 +293,8 @@ def scan_prompt_metrics(skill_path: Path) -> dict:
         data['is_skill_md'] = True
         files_data.append(data)
 
-    # Prompt files at skill root — also extract frontmatter
-    prompt_frontmatters: dict[str, dict] = {}
-    skip_files = {'SKILL.md', 'bmad-manifest.json', 'bmad-skill-manifest.yaml'}
+    # Prompt files at skill root
+    skip_files = {'SKILL.md'}
 
     for f in sorted(skill_path.iterdir()):
         if f.is_file() and f.suffix == '.md' and f.name not in skip_files and f.name != 'SKILL.md':
@@ -369,10 +304,6 @@ def scan_prompt_metrics(skill_path: Path) -> dict:
             # Parse prompt frontmatter
             pfm = parse_prompt_frontmatter(f)
             data['prompt_frontmatter'] = pfm
-
-            # Use stem as key for manifest alignment
-            prompt_name = pfm.get('fields', {}).get('name', f.stem)
-            prompt_frontmatters[prompt_name] = pfm
 
             files_data.append(data)
 
@@ -387,9 +318,6 @@ def scan_prompt_metrics(skill_path: Path) -> dict:
                     'lines': len(content.split('\n')),
                     'tokens': len(content) // 4,
                 }
-
-    # Manifest alignment
-    manifest_alignment = check_manifest_alignment(skill_path, prompt_frontmatters)
 
     # Aggregate stats
     total_waste = sum(len(f['waste_patterns']) for f in files_data)
@@ -434,7 +362,6 @@ def scan_prompt_metrics(skill_path: Path) -> dict:
             'total_wall_of_text': total_walls,
         },
         'resource_sizes': resource_sizes,
-        'manifest_alignment': manifest_alignment,
         'files': files_data,
     }
 

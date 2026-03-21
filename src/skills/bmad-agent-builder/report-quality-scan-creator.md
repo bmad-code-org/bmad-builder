@@ -37,7 +37,7 @@ For each scanner file, extract not just `findings` arrays but ALL of these data 
 | Consolidation opportunities | agent-cohesion `assessments.cohesion_analysis.redundancy_level.consolidation_opportunities` | Consolidation Opportunities in Cohesion |
 | Creative suggestions | `findings[]` with severity="suggestion" (no separate creative_suggestions array) | Creative Suggestions in Cohesion section |
 | Craft & agent assessment | prompt-craft `assessments.skillmd_assessment` (incl. `persona_context`), `assessments.prompt_health`, `summary.assessment` | Prompt Craft section header + Executive Summary |
-| Structure metadata | structure `assessments.metadata` (has_memory, has_headless, manifest_valid, etc.) | Structure & Capabilities section header |
+| Structure metadata | structure `assessments.metadata` (has_memory, has_headless, etc.) | Structure & Capabilities section header |
 | User journeys | enhancement-opportunities `assessments.user_journeys[]` | User Journeys section |
 | Autonomous assessment | enhancement-opportunities `assessments.autonomous_assessment` | Autonomous Readiness section |
 | Skill understanding | enhancement-opportunities `assessments.skill_understanding` | Creative section header |
@@ -74,7 +74,7 @@ Fill the template section by section, following the `<!-- comment -->` guidance 
 - [ ] Cohesion analysis dimensional scores table (if present)
 - [ ] Consolidation opportunities from cohesion redundancy analysis
 - [ ] Craft assessment, skill type assessment, and persona context assessment
-- [ ] Structure metadata (sections_found, has_memory, has_headless, manifest_valid)
+- [ ] Structure metadata (sections_found, has_memory, has_headless)
 - [ ] ALL user journeys with ALL friction_points and bright_spots per archetype
 - [ ] The autonomous_assessment block (all fields)
 - [ ] All findings with severity="suggestion" from cohesion scanners

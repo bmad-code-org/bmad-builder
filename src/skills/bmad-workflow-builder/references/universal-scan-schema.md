@@ -206,9 +206,9 @@ Array of strings (script paths that already exist).
       "line": 12,
       "severity": "high",
       "category": "frontmatter",
-      "title": "Missing required 'version' field in frontmatter",
-      "detail": "The SKILL.md frontmatter is missing the version field. This prevents the manifest generator from producing correct output and breaks version-aware consumers.",
-      "action": "Add 'version: 1.0.0' to the YAML frontmatter block"
+      "title": "Missing 'description' field in frontmatter",
+      "detail": "The SKILL.md frontmatter is missing the description field. Without a description, the skill cannot be triggered reliably by the help system.",
+      "action": "Add a description with trigger phrases to the YAML frontmatter block"
     },
     {
       "file": "build-process.md",

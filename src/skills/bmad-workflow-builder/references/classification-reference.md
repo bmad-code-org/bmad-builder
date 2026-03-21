@@ -33,7 +33,7 @@ Classify the skill type based on user requirements. This table is for internal u
 - Other skills/workflows call it
 - Deterministic or near-deterministic behavior
 - Could be a script but needs LLM judgment
-- Examples: JSON validator, manifest checker, format converter
+- Examples: JSON validator, schema checker, format converter
 
 ### Simple Workflow Signals
 - 3-8 numbered steps
@@ -55,7 +55,7 @@ Classify the skill type based on user requirements. This table is for internal u
 ## Module Context (Orthogonal)
 
 Module context is asked for ALL types:
-- **Module-based:** Part of a BMad module. Uses `bmad-{modulecode}-{skillname}` naming. Has bmad-manifest.json.
+- **Module-based:** Part of a BMad module. Uses `bmad-{modulecode}-{skillname}` naming.
 - **Standalone:** Independent skill. Uses `bmad-{skillname}` naming.
 
 All workflows use `bmad-init` by default unless explicitly opted out (truly standalone utilities).

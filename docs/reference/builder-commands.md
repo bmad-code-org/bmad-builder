@@ -45,7 +45,7 @@ Both builders accept any of these as a starting point.
 | 2 | **Capabilities Strategy** — internal commands, external skills, or both; script opportunities | **Classify Skill Type** — Simple Utility, Simple Workflow, or Complex Workflow; module membership |
 | 3 | **Gather Requirements** — name, persona, memory, capabilities, autonomous modes, folder dominion | **Gather Requirements** — name, description, stages, config variables, output artifacts, dependencies |
 | 4 | **Draft & Refine** — present outline, iterate until ready | **Draft & Refine** — present plan, clarify gaps, iterate until ready |
-| 5 | **Build** — generate skill structure, manifest, lint gate | **Build** — generate skill structure, manifest, lint gate |
+| 5 | **Build** — generate skill structure, lint gate | **Build** — generate skill structure, lint gate |
 | 6 | **Summary** — present results, offer Quality Optimize | **Summary** — present results, run unit tests if scripts exist, offer Quality Optimize |
 
 ### Agent Builder: Phase 2-3 Details
@@ -97,7 +97,6 @@ Both builders produce the same folder structure, with components included only a
 ```
 {skill-name}/
 ├── SKILL.md              # Skill instructions (persona embedded for agents)
-├── bmad-manifest.json    # Capabilities, sequencing, optional persona/memory
 ├── prompts/              # Internal capability prompts, init, autonomous-wake
 ├── resources/            # Reference data, memory-system definition (agents)
 ├── agents/               # Subagent definitions for parallel processing

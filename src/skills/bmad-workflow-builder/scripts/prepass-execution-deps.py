@@ -5,7 +5,7 @@ Extracts dependency graph data and execution patterns from a BMad skill
 so the LLM scanner can evaluate efficiency from compact structured data.
 
 Covers:
-- Dependency graph from bmad-manifest.json (after, before arrays)
+- Dependency graph from skill structure
 - Circular dependency detection
 - Transitive dependency redundancy
 - Parallelizable stage groups (independent nodes)
@@ -160,37 +160,12 @@ def scan_sequential_patterns(filepath: Path, rel_path: str) -> list[dict]:
 
 def scan_execution_deps(skill_path: Path) -> dict:
     """Run all deterministic execution efficiency checks."""
-    # Parse manifest for dependency graph
+    # Build dependency graph from skill structure
     dep_graph: dict[str, list[str]] = {}
     prefer_after: dict[str, list[str]] = {}
     all_stages: set[str] = set()
-    manifest_found = False
 
-    for manifest_path in [
-        skill_path / 'bmad-manifest.json',
-    ]:
-        if manifest_path.exists():
-            manifest_found = True
-            try:
-                data = json.loads(manifest_path.read_text(encoding='utf-8'))
-                if isinstance(data, dict):
-                    # Single manifest
-                    name = data.get('name', manifest_path.stem)
-                    all_stages.add(name)
-                    # New unified format uses per-capability fields
-                    caps = data.get('capabilities', [])
-                    for cap in caps:
-                        cap_name = cap.get('name', name)
-                        # 'after' = hard/soft dependencies (things that should run before this)
-                        dep_graph[cap_name] = cap.get('after', []) or []
-                        # 'before' = downstream consumers (things this should run before)
-                        prefer_after[cap_name] = cap.get('before', []) or []
-                        all_stages.add(cap_name)
-            except json.JSONDecodeError:
-                pass
-            break
-
-    # Also check for stage-level prompt files at skill root
+    # Check for stage-level prompt files at skill root
     for f in sorted(skill_path.iterdir()):
         if f.is_file() and f.suffix == '.md' and f.name != 'SKILL.md':
             all_stages.add(f.stem)
@@ -259,7 +234,6 @@ def scan_execution_deps(skill_path: Path) -> dict:
         'timestamp': datetime.now(timezone.utc).isoformat(),
         'status': status,
         'dependency_graph': {
-            'manifest_found': manifest_found,
             'stages': sorted(all_stages),
             'hard_dependencies': dep_graph,
             'soft_dependencies': prefer_after,

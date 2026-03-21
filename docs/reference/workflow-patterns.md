@@ -9,7 +9,7 @@ Reference for how the BMad Builder classifies and structures skills. Every skill
 
 | Type | Description | Structure |
 | ---- | ----------- | --------- |
-| **Simple Utility** | Input/output building block. Headless, composable, often script-driven. May opt out of `bmad-init` for true standalone use | Single SKILL.md + `scripts/` |
+| **Simple Utility** | Input/output building block. Headless, composable, often script-driven. May opt out of `bmad-init` for true standalone use | SKILL.md + `scripts/` |
 | **Simple Workflow** | Multi-step process contained in a single SKILL.md. Uses `bmad-init`. Minimal or no `prompts/` | SKILL.md + optional `resources/` |
 | **Complex Workflow** | Multi-stage with progressive disclosure, stage prompts in `prompts/`, config integration. May support headless mode | SKILL.md (routing) + `prompts/` stages + `resources/` |
 
@@ -37,7 +37,7 @@ Reference for how the BMad Builder classifies and structures skills. Every skill
 - Other skills and workflows call it
 - Deterministic or near-deterministic behavior
 - Could be a script but needs LLM judgment
-- Examples: JSON validator, manifest checker, format converter
+- Examples: JSON validator, format converter, file structure checker
 
 ### Simple Workflow
 
@@ -65,7 +65,6 @@ Reference for how the BMad Builder classifies and structures skills. Every skill
 ```
 bmad-my-utility/
 ├── SKILL.md              # Complete instructions, input/output spec
-├── bmad-manifest.json    # Single capability
 └── scripts/              # Core logic
     ├── process.py
     └── tests/
@@ -76,7 +75,6 @@ bmad-my-utility/
 ```
 bmad-my-workflow/
 ├── SKILL.md              # Steps inline, config loading, output spec
-├── bmad-manifest.json    # Single capability
 └── resources/            # Optional reference data
 ```
 
@@ -85,7 +83,6 @@ bmad-my-workflow/
 ```
 bmad-my-complex-workflow/
 ├── SKILL.md              # Routing logic — dispatches to prompts/
-├── bmad-manifest.json    # Multiple capabilities
 ├── prompts/              # Stage instructions
 │   ├── 01-discovery.md
 │   ├── 02-planning.md
@@ -115,4 +112,3 @@ Module membership is orthogonal to skill type — any type can be standalone or 
 | **Module-based** | `bmad-{modulecode}-{skillname}` | Uses `bmad-init` with module code |
 | **Standalone** | `bmad-{skillname}` | Uses `bmad-init` by default; simple utilities may opt out |
 
-See [Skill Manifest Reference](/reference/bmad-skill-manifest.md) for how capabilities declare sequencing within a module.
