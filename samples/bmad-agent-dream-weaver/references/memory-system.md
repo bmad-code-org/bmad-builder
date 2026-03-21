@@ -1,6 +1,6 @@
 # Memory System for Oneira
 
-**Memory location:** `{project-root}/_bmad/.memory/dream-weaver-sidecar/`
+**Memory location:** `{project-root}/_bmad/memory/dream-weaver-sidecar/`
 
 ## Core Principle
 

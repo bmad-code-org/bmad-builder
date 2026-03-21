@@ -45,7 +45,7 @@ Before beginning, check `coaching-profile.yaml` for `recall_baseline`. If recall
 
 ## Session Flow
 
-1. **Load in parallel:** `{project-root}/_bmad/.memory/dream-weaver-sidecar/coaching-profile.yaml` for current level, active techniques, milestone status AND recent journal entries for dream sign review
+1. **Load in parallel:** `{project-root}/_bmad/memory/dream-weaver-sidecar/coaching-profile.yaml` for current level, active techniques, milestone status AND recent journal entries for dream sign review
 2. **Prior knowledge check** — "Have you tried any of these techniques already?" Skip known techniques and focus on gaps.
 3. **Ask about progress** — "How have the reality checks been going? Any moments of doubt during the day?"
 4. **Review recent dreams** — Look for dream signs, near-lucid moments, progress indicators

@@ -1,6 +1,6 @@
 # Memory System for {displayName}
 
-**Memory location:** `_bmad/.memory/{skillName}-sidecar/`
+**Memory location:** `_bmad/memory/{skillName}-sidecar/`
 
 ## Core Principle
 

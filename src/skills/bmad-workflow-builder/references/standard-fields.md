@@ -109,7 +109,7 @@ Use bare relative paths (no prefix):
 ### Project `_bmad` Paths
 Use `{project-root}/_bmad/...`:
 - `{project-root}/_bmad/planning/prd.md`
-- `{project-root}/_bmad/.memory/{skillName}-sidecar/`
+- `{project-root}/_bmad/memory/{skillName}-sidecar/`
 
 ### Config Variables
 Use directly — they already contain `{project-root}` in their resolved values:

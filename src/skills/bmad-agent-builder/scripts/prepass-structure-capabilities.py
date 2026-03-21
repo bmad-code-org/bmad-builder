@@ -218,7 +218,7 @@ def extract_memory_paths(skill_path: Path) -> tuple[list[str], list[dict]]:
     memory_paths = set()
 
     # Memory path patterns
-    mem_pattern = re.compile(r'(?:memory/|sidecar/|\.memory/|\.sidecar/)[\w\-/]+(?:\.\w+)?')
+    mem_pattern = re.compile(r'(?:memory/|sidecar/)[\w\-/]+(?:\.\w+)?')
 
     files_to_scan = []
 
@@ -240,7 +240,7 @@ def extract_memory_paths(skill_path: Path) -> tuple[list[str], list[dict]]:
 
     sorted_paths = sorted(memory_paths)
 
-    # Check for inconsistent formats (e.g., mixing memory/ and .memory/)
+    # Check for inconsistent formats
     prefixes = set()
     for p in sorted_paths:
         prefix = p.split('/')[0]

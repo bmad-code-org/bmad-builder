@@ -5,7 +5,7 @@ Welcome! Setting up your workspace.
 
 ## Memory Location
 
-Creating `_bmad/.memory/{skillName}-sidecar/` for persistent memory.
+Creating `_bmad/memory/{skillName}-sidecar/` for persistent memory.
 
 ## Initial Structure
 
@@ -30,7 +30,7 @@ Welcome! Let me set up for this environment.
 
 ## Memory Location
 
-Creating `_bmad/.memory/{skillName}-sidecar/` for persistent memory.
+Creating `_bmad/memory/{skillName}-sidecar/` for persistent memory.
 
 {custom-init-questions}
 

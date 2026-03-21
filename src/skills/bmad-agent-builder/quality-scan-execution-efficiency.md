@@ -83,7 +83,7 @@ Don't read files in parent when you could delegate the reading.
 
 ```
 BAD: Load all memory
-1. Read all files in _bmad/.memory/{skillName}-sidecar/
+1. Read all files in _bmad/memory/{skillName}-sidecar/
 
 GOOD: Selective loading
 1. Read index.md for configuration

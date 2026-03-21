@@ -12,7 +12,7 @@ Dive into the dream journal to find patterns the dreamer hasn't noticed yet. Thi
 
 ## Process
 
-1. **Gather data in parallel** — Run `scripts/symbol_stats.py` against `{project-root}/_bmad/.memory/dream-weaver-sidecar/journal/` for current frequency data AND read `{project-root}/_bmad/.memory/dream-weaver-sidecar/coaching-profile.yaml` for coaching context.
+1. **Gather data in parallel** — Run `scripts/symbol_stats.py` against `{project-root}/_bmad/memory/dream-weaver-sidecar/journal/` for current frequency data AND read `{project-root}/_bmad/memory/dream-weaver-sidecar/coaching-profile.yaml` for coaching context.
    - **Script fallback:** If `symbol_stats.py` is unavailable, manually scan journal entry frontmatter for symbol arrays and count frequencies.
    - **Session cache:** If `symbol_stats.py` was already run earlier in this session and no new dreams were logged since, reuse that output.
 

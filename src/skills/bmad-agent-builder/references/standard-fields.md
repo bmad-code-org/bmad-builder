@@ -48,13 +48,13 @@ This skill {what it does}. Use when {when to use}. Returns {output format} with 
 
 ### Memory Files (sidecar)
 
-Always use: `{project-root}/_bmad/.memory/{skillName}-sidecar/`
+Always use: `{project-root}/_bmad/memory/{skillName}-sidecar/`
 
 Examples:
-- `{project-root}/_bmad/.memory/journaling-companion-sidecar/index.md`
-- `{project-root}/_bmad/.memory/journaling-companion-sidecar/access-boundaries.md` — **Required**
-- `{project-root}/_bmad/.memory/journaling-companion-sidecar/autonomous-log.md`
-- `{project-root}/_bmad/.memory/journaling-companion-sidecar/references/tags-reference.md`
+- `{project-root}/_bmad/memory/journaling-companion-sidecar/index.md`
+- `{project-root}/_bmad/memory/journaling-companion-sidecar/access-boundaries.md` — **Required**
+- `{project-root}/_bmad/memory/journaling-companion-sidecar/autonomous-log.md`
+- `{project-root}/_bmad/memory/journaling-companion-sidecar/references/tags-reference.md`
 
 ### Access Boundaries (Standard for all agents)
 
@@ -91,9 +91,9 @@ Example pattern:
 ## Autonomous Mode
 
 When run autonomously:
-1. Load `{project-root}/_bmad/.memory/{skillName}-sidecar/index.md` to get user's journal location
+1. Load `{project-root}/_bmad/memory/{skillName}-sidecar/index.md` to get user's journal location
 2. Read entries from that location
-3. Write results to `{project-root}/_bmad/.memory/{skillName}-sidecar/autonomous-log.md`
+3. Write results to `{project-root}/_bmad/memory/{skillName}-sidecar/autonomous-log.md`
 ```
 
 ## CLI Usage (Autonomous Agents)
