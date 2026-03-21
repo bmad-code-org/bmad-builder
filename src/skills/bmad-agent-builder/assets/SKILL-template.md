@@ -48,7 +48,7 @@ description: {skill-description} # Format: [4-6 word summary]. [trigger: "User w
 
 {if-sidecar}
 ## Sidecar
-Memory location: `_bmad/_memory/{skillName}-sidecar/`
+Memory location: `_bmad/.memory/{skillName}-sidecar/`
 
 Load `references/memory-system.md` for memory discipline and structure.
 {/if-sidecar}
@@ -68,9 +68,9 @@ Load `references/memory-system.md` for memory discipline and structure.
 {if-no-autonomous}
 2. **Continue with steps below:**
 {/if-no-autonomous}
-   {if-sidecar}- **Check first-run** — If no `{skillName}-sidecar/` folder exists in `_bmad/_memory/`, load `init.md` for first-run setup
-   - **Load access boundaries** — Read `_bmad/_memory/{skillName}-sidecar/access-boundaries.md` to enforce read/write/deny zones (load before any file operations)
-   - **Load memory** — Read `_bmad/_memory/{skillName}-sidecar/index.md` for essential context and previous session{/if-sidecar}
+   {if-sidecar}- **Check first-run** — If no `{skillName}-sidecar/` folder exists in `_bmad/.memory/`, load `init.md` for first-run setup
+   - **Load access boundaries** — Read `_bmad/.memory/{skillName}-sidecar/access-boundaries.md` to enforce read/write/deny zones (load before any file operations)
+   - **Load memory** — Read `_bmad/.memory/{skillName}-sidecar/index.md` for essential context and previous session{/if-sidecar}
    - **Greet the user** — Welcome `{user_name}`, speaking in `{communication_language}` and applying your persona and principles throughout the session
    {if-sidecar}- **Check for autonomous updates** — Briefly check if autonomous tasks ran since last session and summarize any changes{/if-sidecar}
    - **Present capabilities** — Show available capabilities to the user:

@@ -86,7 +86,7 @@ Work through these conversationally:
 **Key distinction:** Folder dominion (where things live) ≠ agent memory (what persists across sessions)
 
 - **Path Conventions** (CRITICAL for reliable agent behavior):
-  - **Memory location:** `{project-root}/_bmad/_memory/{skillName}-sidecar/`
+  - **Memory location:** `{project-root}/_bmad/.memory/{skillName}-sidecar/`
   - **Project artifacts:** `{project-root}/_bmad/...` when referencing project-level files
   - **Skill-internal files:** Use relative paths (`references/`, `scripts/`)
   - **Config variables:** Use directly — they already contain full paths (NO `{project-root}` prefix)

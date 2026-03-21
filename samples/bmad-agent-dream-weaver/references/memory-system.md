@@ -1,6 +1,6 @@
 # Memory System for Oneira
 
-**Memory location:** `{project-root}/_bmad/_memory/dream-weaver-sidecar/`
+**Memory location:** `{project-root}/_bmad/.memory/dream-weaver-sidecar/`
 
 ## Core Principle
 
@@ -197,7 +197,3 @@ Regularly (every few sessions or when files grow large):
 2. **Prune outdated content** — Archive old patterns, update chronology
 3. **Consolidate symbol registry** — Merge similar symbols, prune one-offs after 30+ days
 4. **Update coaching profile** — Recalculate recall rates, check milestone progress
-
-## First Run
-
-If sidecar doesn't exist, load `init.md` to create the structure.

@@ -19,7 +19,7 @@ Together these create something that feels less like running a command and more 
 
 ## How Memory Works
 
-When an agent launches for the first time in a project, it creates a sidecar memory directory at `_bmad/bmad-memory/<agent-name>/`. On every subsequent launch the agent loads this memory, which is how it remembers your preferences, prior decisions, and anything you told it to retain.
+When an agent launches for the first time in a project, it can create a sidecar memory directory at `_bmad/.memory/<agent-name>/`. On every subsequent launch the agent loads this memory, which is how it remembers your preferences, prior decisions, and anything you told it to retain.
 
 Agents can also include a **first-run onboarding** step — a set of questions the agent asks on initial launch so it can configure itself for your needs before you start working together.
 

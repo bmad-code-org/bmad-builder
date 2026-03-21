@@ -8,7 +8,7 @@ menu-code: DL
 
 ## Preconditions
 
-Sidecar memory must be initialized. If `{project-root}/_bmad/_memory/dream-weaver-sidecar/` does not exist, redirect to init flow before proceeding. Access boundaries must be loaded.
+Sidecar memory must be initialized. If `{project-root}/_bmad/.memory/dream-weaver-sidecar/` does not exist, redirect to init flow before proceeding. Access boundaries must be loaded.
 
 # Dream Log
 
@@ -35,7 +35,7 @@ When dream content is emotionally intense (nightmares, trauma-adjacent material,
 
 ## Writing the Entry
 
-Create a journal entry at `{project-root}/_bmad/_memory/dream-weaver-sidecar/journal/{YYYY-MM-DD}-{seq}.md`:
+Create a journal entry at `{project-root}/_bmad/.memory/dream-weaver-sidecar/journal/{YYYY-MM-DD}-{seq}.md`:
 
 - Use YAML frontmatter: date, sequence number, vividness (1-10), lucid (bool), emotions (array), symbols (array), recall_quality (high/medium/low/fragment), seeded (bool — check seed-log.yaml for active seed)
 - Write the narrative in the user's voice — capture their language, not clinical rewrites

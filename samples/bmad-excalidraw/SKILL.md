@@ -32,11 +32,10 @@ Produce professional diagrams and visual aids as Excalidraw files through conver
 
 ## On Activation
 
-1. **Load config via bmad-init skill** — Store all returned vars for use:
-   - Use `{user_name}` from config for greeting
-   - Use `{communication_language}` for all communications
-   - Determine `{output_folder}`: use project output path from config if available, otherwise ask the user or default to `./diagrams/`. Store as `{output_folder}` for use in stage prompts
-   - If bmad-init has no config or fails: ask the user for their preferred output location, or default to a `diagrams` subfolder in the current project root
+1. **Load config** from `{project-root}/_bmad/config.yaml` and `config.user.yaml`. If missing, continue with fallbacks:
+   - `{user_name}` — fallback: omit
+   - `{communication_language}` — fallback: match the user's language
+   - `{output_folder}` — fallback: `{project-root}/diagrams`
 
 2. **Greet user** as `{user_name}`, speaking in `{communication_language}`
 

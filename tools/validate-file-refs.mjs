@@ -223,7 +223,7 @@ function isExternalRef(refStr, moduleCode) {
   const match = refStr.match(/\{project-root\}\/_bmad\/([^/]+)\//);
   if (!match) return false;
   const refModule = match[1];
-  // _memory, _config are special framework paths, not external modules
+  // .memory, _config are special framework paths, not external modules
   if (refModule.startsWith('_')) return false;
   return refModule !== moduleCode;
 }

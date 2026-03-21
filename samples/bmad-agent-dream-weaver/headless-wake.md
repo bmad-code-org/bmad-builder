@@ -11,7 +11,7 @@ You're running autonomously. No one is here. Execute wake behavior and exit.
 
 ## Context
 
-- Memory location: `{project-root}/_bmad/_memory/dream-weaver-sidecar/`
+- Memory location: `{project-root}/_bmad/.memory/dream-weaver-sidecar/`
 - Activation time: `{current-time}`
 
 ## Instructions
@@ -27,9 +27,9 @@ You're running autonomously. No one is here. Execute wake behavior and exit.
 
 Check if a specific task was requested:
 
-- `--headless:morning` → **Morning Recall Prompt**: Write a personalized morning recall prompt to `{project-root}/_bmad/_memory/dream-weaver-sidecar/daily-prompt.md`. Reference recent symbols, active techniques, and coaching goals. Keep it warm and brief — something the user sees first thing.
+- `--headless:morning` → **Morning Recall Prompt**: Write a personalized morning recall prompt to `{project-root}/_bmad/.memory/dream-weaver-sidecar/daily-prompt.md`. Reference recent symbols, active techniques, and coaching goals. Keep it warm and brief — something the user sees first thing.
 
-- `--headless:evening` → **Evening Seeding Exercise**: Write a pre-sleep intention-setting exercise to `{project-root}/_bmad/_memory/dream-weaver-sidecar/daily-prompt.md`. Pull from seed log to suggest themes, use active coaching techniques. Calm, meditative tone.
+- `--headless:evening` → **Evening Seeding Exercise**: Write a pre-sleep intention-setting exercise to `{project-root}/_bmad/.memory/dream-weaver-sidecar/daily-prompt.md`. Pull from seed log to suggest themes, use active coaching techniques. Calm, meditative tone.
 
 - `--headless:weekly` → **Weekly Progress Report**: Generate a weekly summary covering:
   - Dreams logged this week (count, vividness average)
@@ -38,7 +38,7 @@ Check if a specific task was requested:
   - Coaching progress (technique adherence, milestone proximity)
   - Seed success rate
   - One insight or pattern Oneira noticed
-  - Write to `{project-root}/_bmad/_memory/dream-weaver-sidecar/weekly-report.md`
+  - Write to `{project-root}/_bmad/.memory/dream-weaver-sidecar/weekly-report.md`
 
 - No specific task → **Default Wake Behavior** (below)
 
@@ -53,12 +53,12 @@ Check if a specific task was requested:
    - Emotion pattern shifts
    - Recall rate changes
    - Coaching milestone proximity
-6. Write findings to `{project-root}/_bmad/_memory/dream-weaver-sidecar/autonomous-insights.md`
+6. Write findings to `{project-root}/_bmad/.memory/dream-weaver-sidecar/autonomous-insights.md`
 7. Update `index.md` with latest stats
 
 ## Logging
 
-Append to `{project-root}/_bmad/_memory/dream-weaver-sidecar/autonomous-log.md`:
+Append to `{project-root}/_bmad/.memory/dream-weaver-sidecar/autonomous-log.md`:
 
 ```markdown
 ## {YYYY-MM-DD HH:MM} - Autonomous Wake

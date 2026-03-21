@@ -7,7 +7,7 @@ Validates all .md and .json files against BMad path conventions:
 3. Config variables used directly (no double-prefix)
 4. No ./ or ../ relative prefixes
 5. No absolute paths
-6. Memory paths must use {project-root}/_bmad/_memory/{skillName}-sidecar/
+6. Memory paths must use {project-root}/_bmad/.memory/{skillName}-sidecar/
 """
 
 # /// script
@@ -37,9 +37,9 @@ HOME_PATH_RE = re.compile(r'(?:^|[\s"`\'(])(~/\S+)', re.MULTILINE)
 RELATIVE_DOT_RE = re.compile(r'(?:^|[\s"`\'(])(\.\./\S+)', re.MULTILINE)
 RELATIVE_DOTSLASH_RE = re.compile(r'(?:^|[\s"`\'(])(\./\S+)', re.MULTILINE)
 
-# Memory path pattern: should use {project-root}/_bmad/_memory/
-MEMORY_PATH_RE = re.compile(r'_bmad/_memory/\S+')
-VALID_MEMORY_PATH_RE = re.compile(r'\{project-root\}/_bmad/_memory/\S+-sidecar/')
+# Memory path pattern: should use {project-root}/_bmad/.memory/
+MEMORY_PATH_RE = re.compile(r'_bmad/.memory/\S+')
+VALID_MEMORY_PATH_RE = re.compile(r'\{project-root\}/_bmad/.memory/\S+-sidecar/')
 
 # Fenced code block detection (to skip examples showing wrong patterns)
 FENCE_RE = re.compile(r'^```', re.MULTILINE)
@@ -118,7 +118,7 @@ def scan_file(filepath: Path, skip_fenced: bool = True) -> list[dict]:
             'action': '',
         })
 
-    # Memory path check — memory paths should use {project-root}/_bmad/_memory/{skillName}-sidecar/
+    # Memory path check — memory paths should use {project-root}/_bmad/.memory/{skillName}-sidecar/
     for match in MEMORY_PATH_RE.finditer(content):
         pos = match.start()
         if skip_fenced and is_in_fenced_block(content, pos):
@@ -135,7 +135,7 @@ def scan_file(filepath: Path, skip_fenced: bool = True) -> list[dict]:
                 'line': line_num,
                 'severity': 'high',
                 'category': 'memory-path',
-                'title': 'Memory path missing {project-root} prefix — use {project-root}/_bmad/_memory/',
+                'title': 'Memory path missing {project-root} prefix — use {project-root}/_bmad/.memory/',
                 'detail': line_content[:120],
                 'action': '',
             })
