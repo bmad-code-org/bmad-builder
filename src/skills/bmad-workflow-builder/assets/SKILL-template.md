@@ -28,14 +28,12 @@ Act as {role-guidance}.
 
 ## On Activation
 
-{if-bmad-init}
-1. **Load config via bmad-init skill** — Store all returned vars for use:
+1. **Load config** from `{project-root}/_bmad/config.yaml` — Store all returned vars for use:
    - Use `{user_name}` from config for greeting
    - Use `{communication_language}` for all communications
    {if-creates-docs}- Use `{document_output_language}` for output documents{/if-creates-docs}
 
 2. **Greet user** as `{user_name}`, speaking in `{communication_language}`
-{/if-bmad-init}
 
 3. **Proceed to workflow steps below**
 
@@ -69,15 +67,13 @@ Act as {role-guidance}.
 
 ## On Activation
 
-{if-bmad-init}
-1. **Load config via bmad-init skill** — Store all returned vars for use:
+1. **Load config** from `{project-root}/_bmad/config.yaml` — Store all returned vars for use:
    - Use `{user_name}` from config for greeting
    - Use `{communication_language}` for all communications
    {if-creates-docs}- Use `{document_output_language}` for output documents{/if-creates-docs}
    - Store any other config variables as `{var-name}` and use appropriately
 
 2. **Greet user** as `{user_name}`, speaking in `{communication_language}`
-{/if-bmad-init}
 
 3. **Check if workflow in progress:**
    - If output doc exists (user specifies path or we prompt):

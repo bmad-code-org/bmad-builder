@@ -6,6 +6,7 @@ so the LLM scanner can evaluate efficiency from compact structured data.
 
 Covers:
 - Dependency graph from skill structure
+
 - Circular dependency detection
 - Transitive dependency redundancy
 - Parallelizable stage groups (independent nodes)

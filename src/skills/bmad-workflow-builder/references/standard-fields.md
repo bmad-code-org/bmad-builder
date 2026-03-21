@@ -16,7 +16,7 @@
 |-------|-------------|---------|
 | `input-format` | What it accepts | JSON file path, stdin text |
 | `output-format` | What it returns | Validated JSON, error report |
-| `standalone` | Opts out of bmad-init? | true/false |
+| `standalone` | Fully standalone, no config needed? | true/false |
 | `composability` | How other skills use it | "Called by quality scanners for validation" |
 
 ## Simple Workflow Fields

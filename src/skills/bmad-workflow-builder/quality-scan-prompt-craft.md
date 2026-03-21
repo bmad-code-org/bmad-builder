@@ -123,7 +123,7 @@ Stage prompts (prompt `*.md` files at skill root) are the working instructions f
 | Check | Why It Matters |
 |-------|----------------|
 | Has config header establishing language and output settings | Agent needs `{communication_language}` and output format context |
-| Uses bmad-init variables, not hardcoded values | Flexibility across projects and users |
+| Uses config variables, not hardcoded values | Flexibility across projects and users |
 
 ### Progression Conditions
 

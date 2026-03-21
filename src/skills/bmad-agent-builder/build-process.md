@@ -67,7 +67,7 @@ Work through these conversationally:
   - **Save triggers:** After which interactions should memory be updated?
 - **Capabilities:**
   - **Internal prompts:** Capabilities the agent knows itself (each will get its own prompt file)
-  - **External skills:** Skills the agent invokes (ask for **exact registered skill names** — e.g., `bmad-init`, `skill-creator`)
+  - **External skills:** Skills the agent invokes (ask for **exact registered skill names** — e.g., `skill-creator`)
     - Note: Skills may exist now or be created later
 - **First-run:** What should it ask on first activation? (standalone only; module-based gets config from module's config.yaml)
 
@@ -164,4 +164,4 @@ Ask: *"Build is done. Would you like to run a Quality Scan to optimize the agent
 
 If yes, load `quality-optimizer.md` with `{scan_mode}=full` and the agent path.
 
-Remind them: BMad module system compliant. Use `bmad-init` skill to integrate into a project.
+Remind them: BMad module system compliant. Use the module-init skill to install and configure into a project.

@@ -203,7 +203,7 @@ Each entry follows the format: What it does, Why it matters for workflows, What 
 
 **Checks:**
 - Scan all `.md` files for `{variable_name}` patterns
-- Cross-reference against variables loaded by `bmad-init` or defined in config
+- Cross-reference against variables defined in `{project-root}/_bmad/config.yaml`
 - Distinguish template variables from literal text in code blocks
 - Flag undefined variables and unused loaded variables
 

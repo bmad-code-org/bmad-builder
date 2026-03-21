@@ -78,7 +78,7 @@ Capability prompts (prompt `.md` files at skill root) are the working instructio
 | Check | Why It Matters |
 |-------|----------------|
 | Has config header with language variables | Agent needs `{communication_language}` context |
-| Uses bmad-init variables, not hardcoded values | Flexibility across projects |
+| Uses config variables, not hardcoded values | Flexibility across projects |
 
 ### Self-Containment (Context Compaction Survival)
 | Check | Why It Matters |

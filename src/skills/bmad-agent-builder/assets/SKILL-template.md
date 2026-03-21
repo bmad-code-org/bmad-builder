@@ -55,7 +55,7 @@ Load `references/memory-system.md` for memory discipline and structure.
 
 ## On Activation
 
-1. **Load config via bmad-init skill** — Store all returned vars for use:
+1. **Load config** from `{project-root}/_bmad/config.yaml` — Store all returned vars for use:
    - Use `{user_name}` from config for greeting
    - Use `{communication_language}` from config for all communications
    - Store any other config variables as `{var-name}` and use appropriately

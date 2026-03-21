@@ -30,18 +30,18 @@ Which would you prefer?
 
 ## Config Reading and Integration
 
-Workflows MUST read config values using the `bmad-init` skill.
+Workflows MUST read config values from `{project-root}/_bmad/config.yaml`.
 
 ### Config Loading Pattern
 
-**Invoke the skill with parameters:**
+**Read the config file directly:**
 ```
-Use bmad-init skill:
-- module: {bmad-module-code}
-- vars: user_name:BMad,communication_language:English,document_output_language:English,output_folder:{project-root}/_bmad-output,{output-location-variable}:{default-output-path}
+Load config from {project-root}/_bmad/config.yaml
+- Read the `core` section for shared variables (user_name, communication_language, etc.)
+- Read the module section (keyed by module code) for module-specific variables
 ```
 
-The skill returns JSON with config values. Store in memory as `{var_name}` for use in prompts.
+Store config values in memory as `{var_name}` for use in prompts.
 
 ### Required Core Variables
 
@@ -425,7 +425,7 @@ description: Complex multi-stage workflow for my module. Use when user requests 
 
 ## Workflow Entry
 
-1. Use bmad-init skill (module: mm) — loads user_name, communication_language, document_output_language, output_folder, my_output_folder
+1. Load config from `{project-root}/_bmad/config.yaml` — reads core vars (user_name, communication_language, document_output_language, output_folder) and module vars (my_output_folder)
 
 2. Ask user for output document path (or suggest {my_output_folder}/analysis-{timestamp}.md)
 

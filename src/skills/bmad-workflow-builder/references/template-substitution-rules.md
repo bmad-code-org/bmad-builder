@@ -31,14 +31,6 @@ When building the workflow/skill, you MUST apply these conditional blocks to the
 - `{if-standalone}` ... `{/if-standalone}` → Keep the content inside
 - `{module-code-or-empty}` → Empty string
 
-## bmad-init Conditional
-
-### Uses bmad-init (default)
-- `{if-bmad-init}` ... `{/if-bmad-init}` → Keep the content inside
-
-### Opted out of bmad-init (standalone utilities only)
-- `{if-bmad-init}` ... `{/if-bmad-init}` → Remove the entire block including markers
-
 ## Feature Conditionals
 
 ### Headless Mode

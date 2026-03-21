@@ -29,7 +29,7 @@ For Phase 2 and 3 that follow, adapt to what you already know that the user has 
 Ask upfront:
 - Will this be part of a module? If yes:
    - What's the module code? (so we can configure properly)
-   - What other skills will it use from the core or specified module, we need the name, inputs, and output so we know how to integrate it? (bmad-init is default unless explicitly opted out, other skills should be either core skills or skills that will be part of the module)
+   - What other skills will it use from the core or specified module, we need the name, inputs, and output so we know how to integrate it? (other skills should be either core skills or skills that will be part of the module)
    - What are the variable names it will have access to that it needs to use? (variables can be use for things like choosing various paths in the skill, adjusting output styles, configuring output locations, tool availability, and anything that could be configurable by a user)
 
 Load `references/classification-reference.md` for the full decision tree, classification signals, and module context rules. Use it to classify:
@@ -79,7 +79,7 @@ Work through conversationally, adapted per skill type, so you can either glean f
 **Simple Utility additional fields:**
 - **Input format:** What does it accept?
 - **Output format:** What does it return?
-- **Standalone?** Opt out of bmad-init? (Makes it a truly standalone building block)
+- **Standalone?** No config needed? (Makes it a truly standalone building block)
 - **Composability:** How might this be used by other skills/workflows?
 - **Script needs:** What scripts does the utility require?
 

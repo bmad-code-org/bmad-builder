@@ -71,13 +71,13 @@ Workflows may include Identity, Communication Style, or Principles sections if p
 | No orphaned `{if-simple-utility}` conditionals | Should have been resolved during skill creation |
 | No bare placeholders like `{displayName}`, `{skillName}` | Should have been replaced with actual values |
 | No other template fragments (`{if-module}`, `{if-headless}`, etc.) | Conditional blocks should be removed, not left as text |
-| Variables from `bmad-init` are OK | `{user_name}`, `{communication_language}`, `{document_output_language}` are intentional runtime variables |
+| Config variables are OK | `{user_name}`, `{communication_language}`, `{document_output_language}` are intentional runtime variables |
 
 ### Config Integration
 
 | Check | Why It Matters |
 |-------|----------------|
-| bmad-init config loading present in On Activation | Config provides user preferences, language settings, project context |
+| Config loading present in On Activation | Config provides user preferences, language settings, project context |
 | Config values used where appropriate | Hardcoded values that should come from config cause inflexibility |
 
 ---
@@ -119,7 +119,7 @@ Determine workflow type from SKILL.md before applying type-specific checks:
 |-------|----------------|
 | Each stage prompt has config header specifying Language | AI needs to know what language to communicate in |
 | Stage prompts that create documents specify Output Language | Document language may differ from communication language |
-| Config header uses bmad-init variables correctly | `{communication_language}`, `{document_output_language}` |
+| Config header uses config variables correctly | `{communication_language}`, `{document_output_language}` |
 
 ### Simple Workflow
 
