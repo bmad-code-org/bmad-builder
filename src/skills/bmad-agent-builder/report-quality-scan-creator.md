@@ -65,26 +65,7 @@ Fill the template section by section, following the `<!-- comment -->` guidance 
 
 ### Step 5: Verification Pass
 
-**This step is mandatory.** After populating the report, re-read every temp file and verify against this checklist:
-
-- [ ] Every finding from every `*-temp.json` findings[] array
-- [ ] Agent identity block (persona_summary, primary_purpose, capability_count)
-- [ ] All findings with severity="strength" from any scanner
-- [ ] All positive notes from prompt-craft (severity="note")
-- [ ] Cohesion analysis dimensional scores table (if present)
-- [ ] Consolidation opportunities from cohesion redundancy analysis
-- [ ] Craft assessment, skill type assessment, and persona context assessment
-- [ ] Structure metadata (sections_found, has_memory, has_headless)
-- [ ] ALL user journeys with ALL friction_points and bright_spots per archetype
-- [ ] The autonomous_assessment block (all fields)
-- [ ] All findings with severity="suggestion" from cohesion scanners
-- [ ] All findings with severity ending in "-opportunity" from execution-efficiency
-- [ ] assessments.top_insights from enhancement-opportunities
-- [ ] Script inventory and token savings from script-opportunities
-- [ ] Skill understanding (purpose, primary_user, key_assumptions)
-- [ ] Prompt health summary from prompt-craft (if prompts exist)
-
-If any item was dropped, add it to the appropriate section before writing.
+Re-read all temp files and verify every finding appears in the report. If any item was dropped, add it to the appropriate section before writing.
 
 ### Step 6: Write and Return
 

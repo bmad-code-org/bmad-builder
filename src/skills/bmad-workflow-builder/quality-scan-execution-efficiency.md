@@ -279,43 +279,8 @@ Before writing output, verify: Is your array called `findings`? Does every item 
 
 ## Process
 
-1. **Parallel read batch:** Read SKILL.md and all prompt files at skill root — in a single parallel batch
-2. Check On Activation and operation flow patterns from SKILL.md
-3. Check each prompt file for execution patterns
-4. Check resource loading patterns in references/ (read as needed)
-5. Identify sequential operations that could be parallel
-6. Check for parent-reading-before-delegating patterns
-7. Verify subagent instructions have output specifications
-8. Evaluate stage ordering for optimization opportunities
-9. Check dependency graph for over-constraining, circular, or redundant dependencies
-10. Verify independent tool calls are batched
-11. Write JSON to `{quality-report-dir}/execution-efficiency-temp.json`
-12. Return only the filename: `execution-efficiency-temp.json`
+Read pre-pass JSON and all prompt files. Evaluate against all checks in Parts 1-3 above. Write JSON to `{quality-report-dir}/execution-efficiency-temp.json`. Return only the filename.
 
 ## Critical After Draft Output
 
-**Before finalizing, think one level deeper and verify completeness and quality:**
-
-### Scan Completeness
-- Did I read SKILL.md and EVERY prompt file?
-- Did I identify ALL sequential independent operations?
-- Did I check for parent-reading-then-delegating patterns?
-- Did I verify subagent output specifications?
-- Did I evaluate stage ordering and dependency graph?
-- Did I check resource loading patterns?
-
-### Finding Quality
-- Are "sequential-independent" findings truly independent (not dependent)?
-- Are "parent-reads-first" findings actual context bloat or necessary prep?
-- Are batching opportunities actually batchable (same operation, different targets)?
-- Are stage-ordering suggestions actually better or just different?
-- Are dependency-bloat findings truly unnecessary constraints?
-- Are estimated savings realistic?
-- Did I distinguish between necessary delegation and over-delegation?
-
-### Cohesion Review
-- Do findings identify the biggest execution bottlenecks?
-- Would implementing suggestions result in significant efficiency gains?
-- Are efficient_alternatives actually better or just different?
-
-Only after this verification, write final JSON and return filename.
+Before finalizing, verify findings target genuine inefficiencies with measurable impact.

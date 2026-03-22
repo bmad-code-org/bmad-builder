@@ -22,10 +22,10 @@ Scripts handle plumbing (fetch, transform, validate). Prompts handle judgment (i
 
 SKILL.md stays focused. Detail goes where it belongs.
 
-- Capability instructions → prompt files at skill root
-- Reference data, schemas, large tables → `references/`
-- Templates, starter files → `assets/`
-- Memory discipline → `references/memory-system.md`
+- Capability instructions → `./references/`
+- Reference data, schemas, large tables → `./references/`
+- Templates, starter files → `./assets/`
+- Memory discipline → `./references/memory-system.md`
 - Multi-capability SKILL.md under ~250 lines: fine as-is
 - Single-purpose up to ~500 lines: acceptable if focused
 
@@ -33,13 +33,13 @@ SKILL.md stays focused. Detail goes where it belongs.
 
 Two parts: `[5-8 word summary]. [Use when user says 'X' or 'Y'.]`
 
-Default to conservative triggering. See `references/standard-fields.md` for full format and examples.
+Default to conservative triggering. See `./references/standard-fields.md` for full format and examples.
 
 ## 5. Path Construction
 
 Only use `{project-root}` for `_bmad` paths. Config variables used directly — they already contain `{project-root}`.
 
-See `references/standard-fields.md` for correct/incorrect patterns.
+See `./references/standard-fields.md` for correct/incorrect patterns.
 
 ## 6. Token Efficiency
 

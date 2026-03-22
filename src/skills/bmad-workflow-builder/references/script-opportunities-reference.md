@@ -98,7 +98,6 @@ Each entry follows the format: What it does, Why it matters for workflows, What 
 **Checks:**
 - `name` exists and is kebab-case
 - `description` exists and follows "Use when..." pattern
-- `argument-hint` is present if the skill accepts arguments
 - No forbidden fields or reserved prefixes
 - Optional fields have valid values if present
 

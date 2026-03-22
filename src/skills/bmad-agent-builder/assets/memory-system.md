@@ -98,31 +98,11 @@ Update periodically after:
 
 ## Write Discipline
 
-Before writing to memory, ask:
-
-1. **Is this worth remembering?**
-   - If no → skip
-   - If yes → continue
-
-2. **What's the minimum tokens that capture this?**
-   - Condense to essence
-   - No fluff, no repetition
-
-3. **Which file?**
-   - `index.md` → essential context, active work
-   - `patterns.md` → user quirks, recurring patterns, conventions
-   - `chronology.md` → session summaries, significant events
-
-4. **Does this require index update?**
-   - If yes → update `index.md` to point to it
+Persist only what matters, condensed to minimum tokens. Route to the appropriate file based on content type (see File Structure above). Update `index.md` when other files change.
 
 ## Memory Maintenance
 
-Regularly (every few sessions or when files grow large):
-1. **Condense verbose entries** — Summarize to essence
-2. **Prune outdated content** — Move old items to chronology or remove
-3. **Consolidate patterns** — Merge similar entries
-4. **Update chronology** — Archive significant past events
+Periodically condense, prune, and consolidate memory files to keep them lean.
 
 ## First Run
 

@@ -229,43 +229,8 @@ Before writing output, verify: Is your array called `findings`? Does every item 
 
 ## Process
 
-1. **Parallel read batch:** Read SKILL.md and list all `.md` files at skill root — in a single parallel batch
-2. Validate frontmatter, sections, language, template artifacts from SKILL.md
-3. Determine workflow type (complex, simple workflow, simple utility)
-4. For complex workflows: **parallel read batch** — read all stage prompt files identified in step 1
-5. For complex workflows: cross-reference stage files with SKILL.md references, check progression conditions, config headers, naming
-6. For simple workflows: verify inline steps are numbered, clear, and complete
-7. For simple utilities: verify input/output format and transformation rules
-8. Check headless mode if declared
-9. Run logical consistency checks across all files read
-10. Write JSON to `{quality-report-dir}/workflow-integrity-temp.json`
-11. Return only the filename: `workflow-integrity-temp.json`
+Read SKILL.md and all prompt files. For complex workflows, also read all stage prompt files. Evaluate against all checks in Parts 1-3 above. Write JSON to `{quality-report-dir}/workflow-integrity-temp.json`. Return only the filename.
 
 ## Critical After Draft Output
 
-**Before finalizing, think one level deeper and verify completeness and quality:**
-
-### Scan Completeness
-- Did I read the entire SKILL.md file?
-- Did I correctly identify the workflow type?
-- Did I read ALL stage files at skill root (for complex workflows)?
-- Did I verify every stage reference in SKILL.md has a corresponding file?
-- Did I check progression conditions in every stage prompt?
-- Did I check config headers in stage prompts?
-- Did I verify frontmatter, sections, config, language, artifacts, and consistency?
-
-### Finding Quality
-- Are missing stages actually missing (not in a different directory)?
-- Are template artifacts actual orphans (not intentional runtime variables)?
-- Are severity ratings warranted (critical for things that actually break)?
-- Are naming issues real convention violations or acceptable variations?
-- Are progression condition issues genuine (vague conditions vs. intentionally flexible)?
-- Are "invalid-section" findings truly invalid (e.g., On Exit which has no system hook)?
-
-### Cross-File Consistency
-- Do SKILL.md references and actual files agree?
-- Does the declared workflow type match the actual structure?
-- Does the stage_summary accurately reflect the workflow's state?
-- Would fixing critical issues resolve the structural problems?
-
-Only after this verification, write final JSON and return filename.
+Before finalizing, verify findings are complete, severity ratings are honest, and you stayed within structural validation.

@@ -1,14 +1,15 @@
 ---
 name: bmad-agent-builder
 description: Builds, edit or validate Agent Skill through conversational discovery. Use when the user requests to "Create an Agent", "Optimize an Agent" or "Edit an Agent".
-argument-hint: "--headless or -H to not prompt user, initial input for create, path to existing skill with keywords optimize, edit, validate"
 ---
 
 # Agent Builder
 
 ## Overview
 
-This skill helps you build AI agents through conversational discovery and iterative refinement. Act as an architect guide, walking users through six phases: intent discovery, capabilities strategy, requirements gathering, drafting, building, and testing. Your output is a complete skill structure — named personas with optional memory, capabilities, and autonomous modes — ready to integrate into the BMad Method ecosystem.
+This skill helps you build AI agents through conversational discovery and iterative refinement. Act as an architect guide, walking users through six phases: intent discovery, capabilities strategy, requirements gathering, drafting, building, and testing. Your output is a complete skill structure — named personas with optional memory, capabilities, and headless modes — ready to integrate into the BMad Method ecosystem.
+
+**Args:** Accepts `--headless` / `-H` for non-interactive execution, an initial description for create, or a path to an existing agent with keywords like optimize, edit, or validate.
 
 ## Vision: Build More, Architect Dreams
 
@@ -28,11 +29,12 @@ These agents become part of the BMad Method ecosystem — personal companions th
 
 1. Detect user's intent. If `--headless` or `-H` is passed, or intent is clearly non-interactive, set `{headless_mode}=true` for all sub-prompts.
 
-2. Load config from `{project-root}/_bmad/config.yaml` (bmb section) and `config.user.yaml`. If missing, note that `bmad-builder-setup` is available and continue with fallbacks:
-   - `{bmad_builder_output_folder}` — fallback: `{project-root}/skills`
-   - `{bmad_builder_reports}` — fallback: `{project-root}/skills`
-   - `{user_name}` — fallback: omit
-   - `{communication_language}` — fallback: match the user's language
+2. Load available config from `{project-root}/_bmad/config.yaml` and `{project-root}/_bmad/config.user.yaml` (root and bmb section). If missing, and the `bmad-builder-setup` skill is available, let the user know they can run it at any time to configure. Resolve and apply throughout the session (defaults in parens):
+   - `{user_name}` (default: null) — address the user by name
+   - `{communication_language}` (default: user or system intent) — use for all communications
+   - `{document_output_language}` (default: user or system intent) — use for generated document content
+   - `{bmad_builder_output_folder}` (default: `{project-root}/skills`) — save built agents here
+   - `{bmad_builder_reports}` (default: `{project-root}/skills/reports`) — save reports (quality, eval, planning) here
 
 3. Route by intent.
 
@@ -40,7 +42,7 @@ These agents become part of the BMad Method ecosystem — personal companions th
 
 This is the core creative path — where agent ideas become reality. Through six phases of conversational discovery, you guide users from a rough vision to a complete, tested agent skill structure. This covers building new agents from scratch, converting non-compliant formats, editing existing agents, and applying improvements or fixes.
 
-Agents are named personas with optional memory, capabilities, autonomous modes, and personality. The build process includes a lint gate for structural validation. When building or modifying agents that include scripts, unit tests are created alongside the scripts and run as part of validation.
+Agents are named personas with optional memory, capabilities, headless modes, and personality. The build process includes a lint gate for structural validation. When building or modifying agents that include scripts, unit tests are created alongside the scripts and run as part of validation.
 
 Load `build-process.md` to begin.
 
@@ -50,7 +52,7 @@ For agents that already work but could work *better*. This is comprehensive vali
 
 Run this anytime you want to assess and improve an existing agent's quality.
 
-Load `quality-optimizer.md` — it orchestrates everything including scan modes, autonomous handling, and remediation options.
+Load `quality-optimizer.md` — it orchestrates everything including scan modes, headless handling, and remediation options.
 
 ---
 
@@ -60,8 +62,7 @@ Load `quality-optimizer.md` — it orchestrates everything including scan modes,
 |--------|----------------|-------|
 | **Builder** | "build/create/design/convert/edit/fix an agent", "new agent" | Load `build-process.md` |
 | **Quality Optimizer** | "quality check", "validate", "review/optimize/improve agent" | Load `quality-optimizer.md` |
-| **Unclear** | — | Present the two options above and ask |
 
-Pass `{headless_mode}` flag to all routes. Use Todo List to track progress through multi-step flows. Use subagents for parallel work (quality scanners, web research or document review).
+Regardless of what path is taken, respect and follow headless mode guidance if user requested headless_mode - if a specific instruction does not indicate how to handle headless mode, you will try to find a way.
 
-Help the user create amazing Agents!
+Enjoy the adventure and help the user create amazing Agents abd their capabilities!

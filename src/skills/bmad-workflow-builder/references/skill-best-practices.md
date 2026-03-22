@@ -1,218 +1,109 @@
 # Skill Authoring Best Practices
 
-Practical patterns for writing effective BMad skills. For field definitions and description format, see `references/standard-fields.md`. For quality dimensions, see `references/quality-dimensions.md`.
+For field definitions and description format, see `./references/standard-fields.md`. For quality dimensions, see `./references/quality-dimensions.md`.
 
-## Core Principle: Informed Autonomy
+## Core Philosophy: Outcome-Based Authoring
 
-Give the executing agent enough context to make good judgment calls — not just enough to follow steps. The right test for every piece of content is: "Would the agent make *better decisions* with this context?" If yes, keep it. If it's genuinely redundant or mechanical, cut it.
+Skills should describe **what to achieve**, not **how to achieve it**. The LLM is capable of figuring out the approach — it needs to know the goal, the constraints, and the why.
 
-## Freedom Levels
+**The test for every instruction:** Would removing this cause the LLM to produce a worse outcome? If the LLM would do it anyway — or if it's just spelling out mechanical steps — cut it.
 
-Match specificity to task fragility:
+### Outcome vs Prescriptive
 
-| Freedom | When to Use | Example |
-|---------|-------------|---------|
-| **High** (text instructions) | Multiple valid approaches, context-dependent | "Analyze structure, check for issues, suggest improvements" |
-| **Medium** (pseudocode/templates) | Preferred pattern exists, some variation OK | `def generate_report(data, format="markdown"):` |
-| **Low** (exact scripts) | Fragile operations, consistency critical | `python scripts/migrate.py --verify --backup` (do not modify) |
+| Prescriptive (avoid) | Outcome-based (prefer) |
+|---|---|
+| "Step 1: Ask about goals. Step 2: Ask about constraints. Step 3: Summarize and confirm." | "Ensure the user's vision is fully captured — goals, constraints, and edge cases — before proceeding." |
+| "Load config. Read user_name. Read communication_language. Greet the user by name in their language." | "Load available config and greet the user appropriately." |
+| "Create a file. Write the header. Write section 1. Write section 2. Save." | "Produce a report covering X, Y, and Z." |
 
-**Analogy**: Narrow bridge with cliffs = low freedom. Open field = high freedom.
+The prescriptive versions miss requirements the author didn't think of. The outcome-based versions let the LLM adapt to the actual situation.
 
-## Common Patterns
+### Why This Works
 
-### Template Pattern
+- **Why over what** — When you explain why something matters, the LLM adapts to novel situations. When you just say what to do, it follows blindly even when it shouldn't.
+- **Context enables judgment** — Give domain knowledge, constraints, and goals. The LLM figures out the approach. It's better at adapting to messy reality than any script you could write.
+- **Prescriptive steps create brittleness** — When reality doesn't match the script, the LLM either follows the wrong script or gets confused. Outcomes let it adapt.
+- **Every instruction should carry its weight** — If the LLM would do it anyway, the instruction is noise. If the LLM wouldn't know to do it without being told, that's signal.
 
-**Strict** (must follow exactly):
-````markdown
-## Report structure
-ALWAYS use this template:
-```markdown
-# [Title]
-## Summary
-[One paragraph]
-## Findings
-- Finding 1 with data
-```
-````
+### When Prescriptive Is Right
 
-**Flexible** (adapt as needed):
-````markdown
-Here's a sensible default, use judgment:
-```markdown
-# [Title]
-## Summary
-[Overview]
-```
-Adapt based on context.
-````
+Reserve exact steps for **fragile operations** where getting it wrong has consequences — script invocations, exact file paths, specific CLI commands, API calls with precise parameters. These need low freedom because there's one right way to do them.
 
-### Examples Pattern
+| Freedom | When | Example |
+|---------|------|---------|
+| **High** (outcomes) | Multiple valid approaches, LLM judgment adds value | "Ensure the user's requirements are complete" |
+| **Medium** (guided) | Preferred approach exists, some variation OK | "Present findings in a structured report with an executive summary" |
+| **Low** (exact) | Fragile, one right way, consequences for deviation | `python3 scripts/scan-path-standards.py {skill-path}` |
 
-Input/output pairs show expected style:
-````markdown
-## Commit message format
-**Example 1:**
-Input: "Added user authentication with JWT tokens"
-Output: `feat(auth): implement JWT-based authentication`
-````
+## Patterns
 
-### Conditional Workflow
-
-```markdown
-1. Determine modification type:
-   **Creating new?** → Creation workflow
-   **Editing existing?** → Editing workflow
-```
+These are patterns that naturally emerge from outcome-based thinking. Apply them when they fit — they're not a checklist.
 
 ### Soft Gate Elicitation
 
-For guided/interactive workflows, use "anything else?" soft gates at natural transition points instead of hard menus. This pattern draws out information users didn't know they had:
-
-```markdown
-## After completing a discovery section:
-Present what you've captured so far, then:
-"Anything else you'd like to add, or shall we move on?"
-```
-
-**Why it works:** Users almost always remember one more thing when given a graceful exit ramp rather than a hard stop. The low-pressure phrasing invites contribution without demanding it. This consistently produces richer, more complete artifacts than rigid section-by-section questioning.
-
-**When to use:** Any guided workflow with collaborative discovery — product briefs, requirements gathering, design reviews, brainstorming synthesis. Use at every natural transition between topics or sections.
-
-**When NOT to use:** Autonomous/headless execution, or steps where additional input would cause scope creep rather than enrich the output.
+At natural transitions, invite contribution without demanding it: "Anything else, or shall we move on?" Users almost always remember one more thing when given a graceful exit ramp. This produces richer artifacts than rigid section-by-section questioning.
 
 ### Intent-Before-Ingestion
 
-Never scan artifacts, documents, or project context until you understand WHY the user is here. Scanning without purpose produces noise, not signal.
-
-```markdown
-## On activation:
-1. Greet and understand intent — what is this about?
-2. Accept whatever inputs the user offers
-3. Ask if they have additional documents or context
-4. ONLY THEN scan artifacts, scoped to relevance
-```
-
-**Why it works:** Without knowing what the user wants, you can't judge what's relevant in a 100-page research doc vs a brainstorming report. Intent gives you the filter. Without it, scanning is a fool's errand.
-
-**When to use:** Any workflow that ingests documents, project context, or external data as part of its process.
+Understand why the user is here before scanning documents or project context. Intent gives you the relevance filter — without it, scanning is noise.
 
 ### Capture-Don't-Interrupt
 
-When users provide information beyond the current scope (e.g., dropping requirements during a product brief, mentioning platforms during vision discovery), capture it silently for later use rather than redirecting or stopping them.
-
-```markdown
-## During discovery:
-If user provides out-of-scope but valuable info:
-- Capture it (notes, structured aside, addendum bucket)
-- Don't interrupt their flow
-- Use it later in the appropriate stage or output
-```
-
-**Why it works:** Users in creative flow will share their best insights unprompted. Interrupting to say "we'll cover that later" kills momentum and may lose the insight entirely. Capture everything, distill later.
-
-**When to use:** Any collaborative discovery workflow where the user is brainstorming, explaining, or brain-dumping.
+When users provide information beyond the current scope, capture it for later rather than redirecting. Users in creative flow share their best insights unprompted — interrupting loses them.
 
 ### Dual-Output: Human Artifact + LLM Distillate
 
-Any artifact-producing workflow can output two complementary documents: a polished human-facing artifact AND a token-conscious, structured distillate optimized for downstream LLM consumption.
-
-```markdown
-## Output strategy:
-1. Primary: Human-facing document (exec summary, report, brief)
-2. Optional: LLM distillate — dense, structured, token-efficient
-   - Captures overflow that doesn't belong in the human doc
-   - Rejected ideas (so downstream doesn't re-propose them)
-   - Detail bullets with just enough context to stand alone
-   - Designed to be loaded as context for the next workflow
-```
-
-**Why it works:** Human docs are concise by design — they can't carry all the detail surfaced during discovery. But that detail has value for downstream LLM workflows (PRD creation, architecture design, etc.). The distillate bridges the gap without bloating the primary artifact.
-
-**When to use:** Any workflow producing documents that feed into subsequent LLM workflows. The distillate is always optional — offered to the user, not forced.
+Artifact-producing skills can output both a polished human-facing document and a token-efficient distillate for downstream LLM consumption. The distillate captures overflow, rejected ideas, and detail that doesn't belong in the human doc but has value for the next workflow. Always optional.
 
 ### Parallel Review Lenses
 
-Before finalizing any artifact, fan out multiple reviewers with different perspectives to catch blind spots the builder/facilitator missed.
+Before finalizing significant artifacts, fan out reviewers with different perspectives — skeptic, opportunity spotter, domain-specific lens. If subagents aren't available, do a single critical self-review pass. Multiple perspectives catch blind spots no single reviewer would.
 
-```markdown
-## Near completion:
-Fan out 2-3 review subagents in parallel:
-- Skeptic: "What's missing? What assumptions are untested?"
-- Opportunity Spotter: "What adjacent value? What angles?"
-- Contextual Reviewer: LLM picks the best third lens
-  (e.g., "regulatory risk" for healthtech, "DX critic" for devtools)
+### Three-Mode Architecture (Guided / Yolo / Headless)
 
-Graceful degradation: If subagents unavailable,
-main agent does a single critical self-review pass.
-```
+Consider whether the skill benefits from multiple execution modes:
 
-**Why it works:** A single perspective — even an expert one — has blind spots. Multiple lenses surface issues and opportunities that no single reviewer would catch. The contextually-chosen third lens ensures domain-specific concerns aren't missed.
+| Mode | When | Behavior |
+|------|------|----------|
+| **Guided** | Default | Conversational discovery with soft gates |
+| **Yolo** | "just draft it" | Ingest everything, draft complete artifact, then refine |
+| **Headless** | `--headless` / `-H` | Complete the task without user input, using sensible defaults |
 
-**When to use:** Any workflow producing a significant artifact (briefs, PRDs, designs, architecture docs). The review step is lightweight but high-value.
-
-### Three-Mode Architecture (Guided / Yolo / Autonomous)
-
-For interactive workflows, offer three execution modes that match different user contexts:
-
-| Mode | Trigger | Behavior |
-|------|---------|----------|
-| **Guided** | Default | Section-by-section with soft gates. Drafts from what it knows, questions what it doesn't. |
-| **Yolo** | `--yolo` or "just draft it" | Ingests everything, drafts complete artifact upfront, then walks user through refinement. |
-| **Headless** | `--headless` or `-H` | Headless mode. Takes inputs, produces artifact, no interaction. |
-
-**Why it works:** Not every user wants the same experience. A first-timer needs guided discovery. A repeat user with clear inputs wants yolo. A pipeline wants autonomous. Same workflow, three entry points.
-
-**When to use:** Any facilitative workflow that produces an artifact. Not all workflows need all three — but considering them during design prevents painting yourself into a single interaction model.
+Not all skills need all three. But considering them during design prevents locking into a single interaction model.
 
 ### Graceful Degradation
 
-Every subagent-dependent feature should have a fallback path. If the platform doesn't support parallel subagents (or subagents at all), the workflow must still progress.
-
-```markdown
-## Subagent-dependent step:
-Try: Fan out subagents in parallel
-Fallback: Main agent performs the work sequentially
-Never: Block the workflow because a subagent feature is unavailable
-```
-
-**Why it works:** Skills run across different platforms, models, and configurations. A skill that hard-fails without subagents is fragile. A skill that gracefully falls back to sequential processing is robust everywhere.
-
-**When to use:** Any workflow that uses subagents for research, review, or parallel processing.
+Every subagent-dependent feature should have a fallback path. A skill that hard-fails without subagents is fragile — one that falls back to sequential processing works everywhere.
 
 ### Verifiable Intermediate Outputs
 
-For complex tasks: plan → validate → execute → verify
-
-1. Analyze inputs
-2. **Create** `changes.json` with planned updates
-3. **Validate** with script before executing
-4. Execute changes
-5. Verify output
-
-Benefits: catches errors early, machine-verifiable, reversible planning.
+For complex tasks with consequences: plan → validate → execute → verify. Create a verifiable plan before executing, validate with scripts where possible. Catches errors early and makes the work reversible.
 
 ## Writing Guidelines
 
-- **Consistent terminology** — choose one term per concept, stick to it
+- **Consistent terminology** — one term per concept, stick to it
 - **Third person** in descriptions — "Processes files" not "I help process files"
 - **Descriptive file names** — `form_validation_rules.md` not `doc2.md`
 - **Forward slashes** in all paths — cross-platform
-- **One level deep** for reference files — SKILL.md → reference.md, never SKILL.md → A.md → B.md
-- **TOC for long files** — add table of contents for files >100 lines
+- **One level deep** for reference files — SKILL.md → reference.md, never chains
+- **TOC for long files** — >100 lines
 
 ## Anti-Patterns
 
 | Anti-Pattern | Fix |
 |---|---|
-| Too many options upfront | One default with escape hatch for edge cases |
+| Numbered steps for things the LLM would figure out | Describe the outcome and why it matters |
+| Explaining how to load config (the mechanic) | List the config keys and their defaults (the outcome) |
+| Prescribing exact greeting/menu format | "Greet the user and present capabilities" |
+| Spelling out headless mode in detail | "If headless, complete without user input" |
+| Too many options upfront | One default with escape hatch |
 | Deep reference nesting (A→B→C) | Keep references 1 level from SKILL.md |
 | Inconsistent terminology | Choose one term per concept |
-| Vague file names | Name by content, not sequence |
 | Scripts that classify meaning via regex | Intelligence belongs in prompts, not scripts |
 
 ## Scripts in Skills
 
-- **Execute vs reference** — "Run `analyze.py` to extract fields" (execute) vs "See `analyze.py` for the algorithm" (read)
+- **Execute vs reference** — "Run `analyze.py`" (execute) vs "See `analyze.py` for the algorithm" (read)
 - **Document constants** — explain why `TIMEOUT = 30`, not just what
-- **PEP 723 for Python** — self-contained scripts with inline dependency declarations
+- **PEP 723 for Python** — self-contained with inline dependency declarations
 - **MCP tools** — use fully qualified names: `ServerName:tool_name`

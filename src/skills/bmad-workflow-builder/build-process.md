@@ -32,17 +32,12 @@ Ask upfront:
    - What other skills will it use from the core or specified module, we need the name, inputs, and output so we know how to integrate it? (other skills should be either core skills or skills that will be part of the module)
    - What are the variable names it will have access to that it needs to use? (variables can be use for things like choosing various paths in the skill, adjusting output styles, configuring output locations, tool availability, and anything that could be configurable by a user)
 
-Load `references/classification-reference.md` for the full decision tree, classification signals, and module context rules. Use it to classify:
+Load `./references/classification-reference.md` and use it to classify the skill type. Present classification with reasoning.
 
-1. Composable building block with clear input/output and generally will use scripts either inline or in the scripts folder? → **Simple Utility**
-2. Fits in a single SKILL.md, may have some resources and a prompt, but generally not very complex. Human in the Loop and Autonomous abilities? → **Simple Workflow**
-   - **Headless mode?** Should this workflow support `--headless` invocation? (If it produces an artifact, headless mode may be valuable)
-3. Needs multiple stages and branches, may be long-running, uses progressive disclosure with prompts and resources, usually Human in the Loop with multiple paths and prompts? → **Complex Workflow**
+For Simple Workflows and Complex Workflows, also ask:
+- **Headless mode?** Should this workflow support `--headless` invocation? (If it produces an artifact, headless mode may be valuable)
 
-For Complex Workflows, also ask:
-- **Headless mode?** Should this workflow support `--headless` invocation?
-
-Present classification with reasoning. This determines template and structure.
+This determines template and structure.
 
 ## Phase 3: Gather Requirements
 
@@ -50,43 +45,22 @@ Work through conversationally, adapted per skill type, so you can either glean f
 
 **All types — Common fields:**
 - **Name:** kebab-case. If module: `bmad-{modulecode}-{skillname}`. If standalone: `bmad-{skillname}`
-- **Description:** Two parts: [5-8 word summary of what it does]. [Use when user says 'specific phrase' or 'specific phrase'.] — Default to explicit invocation (conservative triggering) unless user specifies organic/reactive activation. See `references/standard-fields.md` for format details and examples.
+- **Description:** Two parts: [5-8 word summary of what it does]. [Use when user says 'specific phrase' or 'specific phrase'.] — Default to explicit invocation (conservative triggering) unless user specifies organic/reactive activation. See `./references/standard-fields.md` for format details and examples.
 - **Overview:** 3-part formula (What/How/Why-Outcome). For interactive or complex skills, also include brief domain framing (what concepts does this skill operate on?) and theory of mind (who is the user and what might they not know?). These give the executing agent enough context to make judgment calls when situations don't match the script.
 - **Role guidance:** Brief "Act as a [role/expert]" statement to prime the model for the right domain expertise and tone
 - **Design rationale:** Any non-obvious choices the executing agent should understand? (e.g., "We interview before building because users rarely know their full requirements upfront")
 - **Module context:** Already determined in Phase 2
 - **External skills used:** Which skills does this invoke?
 - **Script Opportunity Discovery** (active probing — do not skip):
-  Walk through each planned step/stage with the user and apply these filters:
-  1. "Does this step have clear pass/fail criteria?" → Script candidate
-  2. "Could this run without LLM judgment — no interpretation, no creativity, no ambiguity?" → Strong script candidate
-  3. "Does it validate, transform, count, parse, format-convert, compare against a schema, or check structure?" → Almost certainly a script
-
-  **Common script-worthy operations:**
-  - Schema/format validation (JSON, YAML, frontmatter, file structure)
-  - Data extraction and transformation (parsing, restructuring, field mapping)
-  - Counting, aggregation, and metric collection (token counts, file counts, summary stats)
-  - File/directory structure checks (existence, naming conventions, required files)
-  - Pattern matching against known standards (path conventions, naming rules)
-  - Comparison operations (diff, version compare, before/after, cross-reference checking)
-  - Dependency graphing (parsing imports, references, skill entries)
-  - Template artifact detection (orphaned placeholders, unresolved variables)
-  - Pre-processing for LLM steps (extract compact metrics from large files so the LLM works from structured data, not raw content)
-  - Post-processing validation (verify LLM output conforms to expected schema/structure)
-
-  **Present your script plan**: Before moving to Phase 4, explicitly tell the user which operations you plan to implement as scripts vs. prompts, with one-line reasoning for each. Ask if they agree or want to adjust.
+  Walk through each planned step with the user. Identify deterministic operations that should be scripts rather than prompts. Load `./references/script-opportunities-reference.md` for the full catalog. Confirm the script-vs-prompt plan with the user before proceeding.
 - **Creates output documents?** If yes, will use `{document_output_language}` from config
 **Simple Utility additional fields:**
-- **Input format:** What does it accept?
-- **Output format:** What does it return?
+- **Input/output format:** What does it accept and return?
 - **Standalone?** No config needed? (Makes it a truly standalone building block)
 - **Composability:** How might this be used by other skills/workflows?
-- **Script needs:** What scripts does the utility require?
 
 **Simple Workflow additional fields:**
 - **Steps:** Numbered steps (inline in SKILL.md)
-- **Tools used:** What tools/CLIs/scripts does it use?
-- **Output:** What does it produce?
 - **Config variables:** What config vars beyond core does it need?
 
 **Complex Workflow additional fields:**
@@ -94,8 +68,6 @@ Work through conversationally, adapted per skill type, so you can either glean f
 - **Stage progression conditions:** When does each stage complete?
 - **Headless mode:** If yes, what should headless execution do? Default behavior? Named tasks?
 - **Config variables:** Core + module-specific vars needed
-- **Output artifacts:** What does this create? (output-location)
-- **Dependencies:** What must run before this? What does it use? (after/before arrays)
 
 **Module capability metadata (if part of a module):**
 For each capability, confirm these with the user — they determine how the module's help system presents and sequences the skill:
@@ -106,7 +78,7 @@ For each capability, confirm these with the user — they determine how the modu
 - **description (capability):** Keep this VERY short — a single sentence describing what it produces, not how it works. This is what the LLM help system shows users. (e.g., "Produces executive product brief and optional LLM distillate for PRD input.")
 
 **Path conventions (CRITICAL):**
-- Skill-internal files use bare relative paths: `references/`, `scripts/`, and prompt files at root
+- Skill-internal files always use `./` prefix: `./references/`, `./scripts/` — this distinguishes them from `{project-root}` paths
 - Only `_bmad` paths get `{project-root}` prefix: `{project-root}/_bmad/...`
 - Config variables used directly — they already contain `{project-root}` (no double-prefix)
 
@@ -117,30 +89,24 @@ Once you have a cohesive idea, think one level deeper, clarify with the user any
 ## Phase 5: Build
 
 **Always load these before building:**
-- Load `references/standard-fields.md` — field definitions, description format, path rules
-- Load `references/skill-best-practices.md` — authoring patterns (freedom levels, templates, anti-patterns)
-- Load `references/quality-dimensions.md` — quick mental checklist for build quality
+- Load `./references/standard-fields.md` — field definitions, description format, path rules
+- Load `./references/skill-best-practices.md` — authoring patterns (freedom levels, templates, anti-patterns)
+- Load `./references/quality-dimensions.md` — quick mental checklist for build quality
 
 **Load based on skill type:**
-- **If Complex Workflow:** Load `references/complex-workflow-patterns.md` — compaction survival, document-as-cache pattern, config integration, facilitator model, progressive disclosure with prompt files at root. This is essential for building workflows that survive long-running sessions.
-- **Always load** `references/script-opportunities-reference.md` — script opportunity spotting guide, catalog, and output standards. Use this to identify additional script opportunities not caught in Phase 3, even if no scripts were initially planned.
+- **If Complex Workflow:** Load `./references/complex-workflow-patterns.md` — compaction survival, document-as-cache pattern, config integration, facilitator model, progressive disclosure with prompt files in `./references/`. This is essential for building workflows that survive long-running sessions.
+- **Always load** `./references/script-opportunities-reference.md` — script opportunity spotting guide, catalog, and output standards. Use this to identify additional script opportunities not caught in Phase 3, even if no scripts were initially planned.
 
 When confirmed:
 
-1. Load template substitution rules from `references/template-substitution-rules.md` and apply
+Load the references listed above, the template from `./assets/SKILL-template.md`, and `./references/template-substitution-rules.md`. Build the skill structure with progressive disclosure (SKILL.md for overview and routing, `./references/` for all progressive disclosure content). Output to `{bmad_builder_output_folder}`.
 
-2. Load unified template: `assets/SKILL-template.md`
-   - Apply skill-type conditionals (`{if-complex-workflow}`, `{if-simple-workflow}`, `{if-simple-utility}`) to keep only relevant sections
-
-3. **Progressive disclosure:** Keep SKILL.md focused on Overview, activation, and routing. Detailed stage instructions go in prompt files at the skill root. Reference data, schemas, and large tables go in `references/`. Multi-branch SKILL.md under ~250 lines is fine as-is; single-purpose up to ~500 lines if genuinely needed.
-
-4. Generate folder structure and include only what is needed for the specific skill:
+Generate folder structure and include only what is needed for the specific skill:
 **Skill Source Tree:**
 ```
 {skill-name}/
-├── SKILL.md           # name (same as folder name), description
-├── *.md               # Prompt files and subagent definitions at root
-├── references/        # Reference data, schemas, guides (read for context)
+├── SKILL.md           # Frontmatter (name + description only), overview, activation, capability routing
+├── references/        # ALL progressive disclosure content — capability prompts, guides, schemas
 ├── assets/            # Templates, starter files (copied/transformed into output)
 ├── scripts/           # Deterministic code — validation, transformation, testing
 │   └── tests/         # All scripts need unit tests
@@ -149,24 +115,25 @@ When confirmed:
 **What goes where:**
 | Location | Contains | LLM relationship |
 |----------|----------|-----------------|
-| **Root `.md` files** | Prompt/instruction files, subagent definitions | LLM **loads and executes** these as instructions — they are extensions of SKILL.md |
-| **`references/`** | Reference data, schemas, tables, examples, guides | LLM **reads for context** — informational, not executable |
-| **`assets/`** | Templates, starter files, boilerplate | LLM **copies/transforms** these into output — not for reasoning |
-| **`scripts/`** | Python, shell scripts with tests | LLM **invokes** these — deterministic operations that don't need judgment |
+| **SKILL.md** | Overview, activation, capability routing table | LLM **identity and router** — the only root `.md` file |
+| **`./references/`** | Capability prompts, reference data, schemas, guides | LLM **loads on demand** — progressive disclosure via routing table |
+| **`./assets/`** | Templates, starter files, boilerplate | LLM **copies/transforms** these into output — not for reasoning |
+| **`./scripts/`** | Python, shell scripts with tests | LLM **invokes** these — deterministic operations that don't need judgment |
 
-Only create subfolders that are needed — most skills won't need all four.
+Only create subfolders that are needed — most skills won't need all three.
 
-5. Output to {`bmad_builder_output_folder`}
+**Lint gate** — after building, run validation and auto-fix failures:
 
-6. **Lint gate** — run deterministic validation scripts:
+If subagents are available, delegate the lint-fix loop to a subagent. Otherwise run inline.
+
+1. Run both lint scripts in parallel:
    ```bash
-   # Run both in parallel — they are independent
-   python3 scripts/scan-path-standards.py {skill-path}
-   python3 scripts/scan-scripts.py {skill-path}
+   python3 ./scripts/scan-path-standards.py {skill-path}
+   python3 ./scripts/scan-scripts.py {skill-path}
    ```
-   - If any script returns critical issues: fix them before proceeding
-   - If only warnings/medium: note them but proceed
-   - These are structural checks — broken paths and script standards issues should be resolved before shipping
+2. If any findings at high or critical severity: fix them and re-run the failing script
+3. Repeat up to 3 attempts per script — if still failing after 3, report remaining findings and continue
+4. If scripts exist in the built skill, also run unit tests
 
 ## Phase 6: Summary
 

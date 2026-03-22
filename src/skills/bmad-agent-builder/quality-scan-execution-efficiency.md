@@ -159,23 +159,8 @@ Merge all items into the single `findings[]` array:
 
 ## Process
 
-1. Read pre-pass JSON at `{quality-report-dir}/execution-deps-prepass.json`
-2. Read SKILL.md for On Activation and operation flow patterns
-3. Read all prompt files for execution patterns
-4. Check memory loading strategy (selective vs all-at-once)
-5. Check for parent-reading-before-delegating patterns
-6. Verify subagent instructions have output specifications
-7. Identify sequential operations that could be parallel
-8. Check resource loading patterns
-9. Write JSON to `{quality-report-dir}/execution-efficiency-temp.json`
-10. Return only the filename: `execution-efficiency-temp.json`
+Read pre-pass JSON and raw files as needed. Evaluate efficiency across all dimensions above. Write JSON to `{quality-report-dir}/execution-efficiency-temp.json`. Return only the filename.
 
 ## Critical After Draft Output
 
-Before finalizing, verify:
-- Are "sequential-independent" findings truly independent?
-- Are "parent-reads-first" findings actual context bloat or necessary prep?
-- Are memory loading findings fair — does the agent actually load too much?
-- Would implementing suggestions significantly improve efficiency?
-
-Only after verification, write final JSON and return filename.
+Before finalizing, verify findings target genuine inefficiencies with measurable impact.

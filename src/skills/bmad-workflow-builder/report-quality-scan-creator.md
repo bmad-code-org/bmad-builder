@@ -16,17 +16,7 @@ Read `assets/quality-report-template.md` for the report structure. The template 
 
 ## Process
 
-### Step 1: Ingest Everything
-
-1. Read `assets/quality-report-template.md`
-2. List ALL files in `{quality-report-dir}` — both `*-temp.json` (scanner findings) and `*-prepass.json` (structural metrics)
-3. Read EVERY JSON file
-
-### Step 2: Extract All Data Types
-
-All scanners now use the universal schema defined in `references/universal-scan-schema.md`. Scanner-specific data lives in `assessments{}`, not as top-level keys.
-
-For each scanner file, extract not just `findings` arrays but ALL of these data types:
+Read `assets/quality-report-template.md` and every JSON file in `{quality-report-dir}` (both `*-temp.json` scanner findings and `*-prepass.json` structural metrics). All scanners use the universal schema defined in `references/universal-scan-schema.md`. Extract all data types from each scanner file:
 
 | Data Type | Where It Lives | Report Destination |
 |-----------|---------------|-------------------|
@@ -44,44 +34,13 @@ For each scanner file, extract not just `findings` arrays but ALL of these data 
 | Stage summary | workflow-integrity `assessments.stage_summary` | Structural section header |
 | Prepass metrics | `*-prepass.json` files | Context data points where useful |
 
-### Step 3: Populate Template
+Populate the template section by section, following the `<!-- comment -->` guidance in each. Only include `{if-...}` blocks when data exists. Omit empty severity sub-headers. Strip all `<!-- ... -->` blocks from final output.
 
-Fill the template section by section, following the `<!-- comment -->` guidance in each. Key rules:
+Deduplicate: same issue from two scanners becomes one entry citing both sources. Same pattern across multiple files becomes one entry with all file:line references. Keep both strengths and issues about the same thing. Route "note"/"strength" severity to Strengths section, "suggestion" severity to Creative subsection.
 
-- **Conditional sections:** Only include `{if-...}` blocks when the data exists. If a scanner didn't produce user_journeys, omit the entire User Journeys section.
-- **Empty severity levels:** Within a category, omit severity sub-headers that have zero findings (don't write "**Critical Issues** — None").
-- **Strip comments:** Remove all `<!-- ... -->` blocks from final output.
+Re-read all temp files and verify every finding appears in the report.
 
-### Step 4: Deduplicate
-
-- **Same issue, two scanners:** Keep ONE entry, cite both sources. Use the more detailed description.
-- **Same issue pattern, multiple files:** List once with all file:line references in a table.
-- **Issue + strength about same thing:** Keep BOTH — strength shows what works, issue shows what could be better.
-- **Overlapping creative suggestions:** Merge into the richer description.
-- **Routing:** "note"/"strength" severity → Strengths section. "suggestion" severity → Creative subsection. Do not mix these into issue lists.
-
-### Step 5: Verification Pass
-
-**This step is mandatory.** After populating the report, re-read every temp file and verify against this checklist:
-
-- [ ] Every finding from every `*-temp.json` findings[] array
-- [ ] All findings with severity="strength" from any scanner
-- [ ] All positive notes from prompt-craft (severity="note")
-- [ ] Cohesion analysis dimensional scores table (if present)
-- [ ] Craft assessment and skill assessment summaries
-- [ ] ALL user journeys with ALL friction_points and bright_spots per archetype
-- [ ] The autonomous_assessment block (all fields)
-- [ ] All findings with severity="suggestion" from cohesion scanners
-- [ ] All findings with severity ending in "-opportunity" from execution-efficiency
-- [ ] assessments.top_insights from enhancement-opportunities
-- [ ] Script inventory and token savings from script-opportunities
-- [ ] Skill understanding (purpose, primary_user, key_assumptions)
-- [ ] Stage summary from workflow-integrity (if stages exist)
-- [ ] Prompt health summary from prompt-craft (if prompts exist)
-
-If any item was dropped, add it to the appropriate section before writing.
-
-### Step 6: Write and Return
+### Write and Return
 
 Write report to: `{quality-report-dir}/quality-report.md`
 

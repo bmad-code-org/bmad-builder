@@ -10,19 +10,7 @@ Immediately persist the current session context to memory.
 
 ## Process
 
-1. **Read current index.md** — Load existing context
-
-2. **Update with current session:**
-   - What we're working on
-   - Current state/progress
-   - Any new preferences or patterns discovered
-   - Next steps to continue
-
-3. **Write updated index.md** — Replace content with condensed, current version
-
-4. **Checkpoint other files if needed:**
-   - `patterns.md` — Add new patterns discovered
-   - `chronology.md` — Add session summary if significant
+Update `index.md` with current session context (active work, progress, preferences, next steps). Checkpoint `patterns.md` and `chronology.md` if significant changes occurred.
 
 ## Output
 

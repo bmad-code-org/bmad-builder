@@ -93,11 +93,11 @@ Every agent makes assumptions. Surface the ones that are most likely to be wrong
 | **Single-session completion** | Does the agent assume the interaction completes in one session? |
 | **Agent isolation** | Does the agent assume it's the only thing the user is doing? |
 
-### 5. Autonomous Potential
+### 5. Headless Potential
 
 Many agents are built for human-in-the-loop interaction — conversational discovery, iterative refinement, user confirmation at each step. But what if someone passed in a headless flag and a detailed prompt? Could this agent just... do its job, create the artifact, and return the file path?
 
-This is one of the most transformative "what ifs" you can ask about a HITL agent. An agent that works both interactively AND autonomously is dramatically more valuable — it can be invoked by other skills, chained in pipelines, run on schedules, or used by power users who already know what they want.
+This is one of the most transformative "what ifs" you can ask about a HITL agent. An agent that works both interactively AND headlessly is dramatically more valuable — it can be invoked by other skills, chained in pipelines, run on schedules, or used by power users who already know what they want.
 
 **For each HITL interaction point, ask:**
 
@@ -108,14 +108,14 @@ This is one of the most transformative "what ifs" you can ask about a HITL agent
 | Is this clarification always needed, or only for ambiguous input? | "Did you mean X or Y?" → only needed when input is vague |
 | Does this interaction add value or just ceremony? | Some confirmations exist because the builder assumed interactivity, not because they're necessary |
 
-**Assess the agent's autonomous potential:**
+**Assess the agent's headless potential:**
 
 | Level | What It Means |
 |-------|--------------|
-| **Headless-ready** | Could work autonomously today with minimal changes — just needs a flag to skip confirmations |
+| **Headless-ready** | Could work headlessly today with minimal changes — just needs a flag to skip confirmations |
 | **Easily adaptable** | Most interaction points could accept pre-supplied parameters; needs a headless path added to 2-3 capabilities |
-| **Partially adaptable** | Core artifact creation could be autonomous, but discovery/interview capabilities are fundamentally interactive — suggest a "skip to build" entry point |
-| **Fundamentally interactive** | The value IS the conversation (coaching, brainstorming, exploration) — autonomous mode wouldn't make sense, and that's OK |
+| **Partially adaptable** | Core artifact creation could be headless, but discovery/interview capabilities are fundamentally interactive — suggest a "skip to build" entry point |
+| **Fundamentally interactive** | The value IS the conversation (coaching, brainstorming, exploration) — headless mode wouldn't make sense, and that's OK |
 
 **When the agent IS adaptable, suggest the output contract:**
 - What would a headless invocation return? (file path, JSON summary, status code)
@@ -123,7 +123,7 @@ This is one of the most transformative "what ifs" you can ask about a HITL agent
 - Where would the `{headless_mode}` flag need to be checked?
 - Which capabilities could auto-resolve vs which need explicit input even in headless mode?
 
-**Don't force it.** Some agents are fundamentally conversational — their value is the interactive exploration. Flag those as "fundamentally interactive" and move on. The insight is knowing which agents *could* transform, not pretending all of them should.
+**Don't force it.** Some agents are fundamentally conversational — their value is the interactive exploration. Flag those as "fundamentally interactive" and move on. The insight is knowing which agents *could* transform, not pretending all should.
 
 ### 6. Facilitative Workflow Patterns
 
@@ -155,13 +155,7 @@ For each journey, note:
 
 ## How to Think
 
-1. **Go wild first.** Read the agent and let your imagination run. Think of the weirdest user, the worst timing, the most unexpected input. No idea is too crazy in this phase.
-
-2. **Then temper.** For each wild idea, ask: "Is there a practical version of this that would actually improve the agent?" If yes, distill it to a sharp, specific suggestion. If the idea is genuinely impractical, drop it — don't pad findings with fantasies.
-
-3. **Prioritize by user impact.** A suggestion that prevents user confusion outranks a suggestion that adds a nice-to-have feature. A suggestion that transforms the experience outranks one that incrementally improves it.
-
-4. **Stay in your lane.** Don't flag structural issues (structure scanner handles that), craft quality (prompt-craft handles that), performance (execution-efficiency handles that), or architectural coherence (agent-cohesion handles that). Your findings should be things *only a creative thinker would notice*.
+Explore creatively, then distill each idea into a concrete, actionable suggestion. Prioritize by user impact. Stay in your lane.
 
 ## Output Format
 
@@ -239,39 +233,8 @@ Write JSON findings to: `{quality-report-dir}/enhancement-opportunities-temp.jso
 
 ## Process
 
-1. Read SKILL.md — deeply understand purpose, persona, audience, and intent
-2. Read all prompts — walk through each capability mentally as a user
-3. Read resources — understand what's been considered
-4. Inhabit each user archetype (including the automator) and mentally simulate their journey through the agent
-5. Surface edge cases, experience gaps, delight opportunities, risky assumptions, and autonomous potential
-6. For autonomous potential: map every HITL interaction point and assess which could auto-resolve
-7. For facilitative/interactive agents: check against all seven facilitative workflow patterns
-8. Go wild with ideas, then temper each to a concrete suggestion
-9. Prioritize by user impact
-10. Write JSON to `{quality-report-dir}/enhancement-opportunities-temp.json`
-11. Return only the filename: `enhancement-opportunities-temp.json`
+Read all agent files. Analyze through each creative lens above. Write findings to `{quality-report-dir}/enhancement-opportunities-temp.json`. Return only the filename.
 
 ## Critical After Draft Output
 
-**Before finalizing, challenge your own findings:**
-
-### Creative Quality Check
-- Did I actually *inhabit* different user archetypes (including the automator), or did I just analyze from the builder's perspective?
-- Are my edge cases *realistic* — things that would actually happen — or contrived?
-- Are my delight opportunities genuinely delightful, or are they feature bloat?
-- Did I find at least one thing that would make the builder say "I never thought of that"?
-- Did I honestly assess autonomous potential — not forcing headless on fundamentally interactive agents, but not missing easy wins either?
-- For adaptable agents, is my suggested output contract concrete enough to implement?
-
-### Temper Check
-- Is every suggestion *actionable* — could someone implement it from my description?
-- Did I drop the impractical wild ideas instead of padding my findings?
-- Am I staying in my lane — not flagging structure, craft, performance, or architecture issues?
-- Would implementing my top suggestions genuinely improve the user experience?
-
-### Honesty Check
-- Did I note what the agent already does well? (Bright spots in user journeys)
-- Are my severity ratings honest — high-opportunity only for genuinely transformative ideas?
-- Is my `boldest_idea` actually bold, or is it safe and obvious?
-
-Only after this verification, write final JSON and return filename.
+Before finalizing, verify findings are realistic, actionable, and honest about what the agent already does well.

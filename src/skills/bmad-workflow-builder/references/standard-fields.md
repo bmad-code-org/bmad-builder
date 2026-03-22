@@ -1,12 +1,20 @@
 # Standard Workflow/Skill Fields
 
-## Common Fields (All Types)
+## Frontmatter Fields
+
+Only these fields go in the YAML frontmatter block:
 
 | Field | Description | Example |
 |-------|-------------|---------|
-| `name` | Full skill name (kebab-case) | `bmad-workflow-builder`, `bmad-validate-json` |
-| `skillName` | Functional name (kebab-case) | `workflow-builder`, `validate-json` |
-| `description` | [5-8 word summary]. [Use when user says 'X' or 'Y'.] | "Builds workflows through conversational discovery. Use when the user requests to 'build a workflow' or 'modify a workflow'." |
+| `name` | Full skill name (kebab-case, same as folder name) | `bmad-workflow-builder`, `bmad-validate-json` |
+| `description` | [5-8 word summary]. [Use when user says 'X' or 'Y'.] | See Description Format below |
+
+## Content Fields (All Types)
+
+These are used within the SKILL.md body — never in frontmatter:
+
+| Field | Description | Example |
+|-------|-------------|---------|
 | `role-guidance` | Brief expertise primer | "Act as a senior DevOps engineer" |
 | `module-code` | Module code (if module-based) | `bmb`, `cis` |
 
@@ -98,18 +106,18 @@ This provides quick prompt priming for expertise and tone. Workflows may also us
 
 ## Path Rules
 
-Only use `{project-root}` for `_bmad` paths.
-
 ### Skill-Internal Files
-Use bare relative paths (no prefix):
-- `references/reference.md`
-- `01-discover.md`
-- `scripts/validate.py`
+
+All references to files within the skill use `./` prefix:
+- `./references/reference.md`
+- `./references/discover.md`
+- `./scripts/validate.py`
+
+This distinguishes skill-internal files from `{project-root}` paths — without the `./` prefix the LLM may confuse them.
 
 ### Project `_bmad` Paths
 Use `{project-root}/_bmad/...`:
 - `{project-root}/_bmad/planning/prd.md`
-- `{project-root}/_bmad/memory/{skillName}-sidecar/`
 
 ### Config Variables
 Use directly — they already contain `{project-root}` in their resolved values:

@@ -86,16 +86,16 @@ Include all pre-pass findings in your output, preserved as-is. These are determi
 | Check | Why It Matters |
 |-------|----------------|
 | Memory system file exists if agent declares sidecar | Sidecar without memory spec is incomplete |
-| Access boundaries defined | Critical for autonomous agents especially |
+| Access boundaries defined | Critical for headless agents especially |
 | Memory paths consistent across all files | Different paths in different files break memory |
 | Save triggers defined if memory persists | Without save triggers, memory never updates |
 
 ### Headless Mode (If Declared)
 | Check | Why It Matters |
 |-------|----------------|
-| Autonomous activation prompt exists | Agent declared autonomous but has no wake prompt |
+| Headless activation prompt exists | Agent declared headless but has no wake prompt |
 | Default wake behavior defined | Agent won't know what to do without specific task |
-| Autonomous tasks documented | Users need to know available tasks |
+| Headless tasks documented | Users need to know available tasks |
 
 ---
 
@@ -154,24 +154,8 @@ Write JSON findings to: `{quality-report-dir}/structure-temp.json`
 
 ## Process
 
-1. Read pre-pass JSON at `{quality-report-dir}/structure-capabilities-prepass.json`
-2. Include all pre-pass findings in output
-3. Read SKILL.md for judgment-based assessment
-4. Read relevant prompt files for cross-reference quality
-5. Assess description, identity, communication style, principles quality
-6. Check logical consistency across all components
-7. Check memory setup completeness if sidecar
-8. Check headless mode setup if declared
-9. Write JSON to `{quality-report-dir}/structure-temp.json`
-10. Return only the filename: `structure-temp.json`
+Read pre-pass JSON (include all findings verbatim). Read raw files for judgment-based assessment as described above. Write findings to `{quality-report-dir}/structure-temp.json`. Return only the filename.
 
 ## Critical After Draft Output
 
-Before finalizing, verify:
-- Did I include ALL pre-pass findings?
-- Did I read SKILL.md for judgment calls?
-- Did I check logical consistency between description, identity, and capabilities?
-- Are my severity ratings appropriate?
-- Would implementing my suggestions improve the agent?
-
-Only after verification, write final JSON and return filename.
+Before finalizing, verify findings cover all structural dimensions and severity ratings are honest.

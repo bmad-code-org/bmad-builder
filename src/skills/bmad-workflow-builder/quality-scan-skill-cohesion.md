@@ -130,33 +130,6 @@ Find and read:
 
 **Note:** If external skills aren't available, infer their purpose from name and usage context.
 
-## Analysis Process
-
-1. **Build mental model** of the skill:
-   - What is this skill FOR? (purpose, outcomes)
-   - What does it ACTUALLY do? (enumerate all stages)
-   - What does it PRODUCE? (output-location, final outputs)
-
-2. **Evaluate flow coherence**:
-   - Do stages flow logically?
-   - Are handoffs between stages clean?
-   - Is the dependency graph sound?
-
-3. **Gap analysis**:
-   - For each declared purpose, ask "can this skill actually achieve that?"
-   - For each key workflow, check if all steps are covered
-   - Consider adjacent stages that should exist
-
-4. **Redundancy check**:
-   - Group similar stages
-   - Identify overlaps
-   - Note consolidation opportunities
-
-5. **Creative synthesis**:
-   - What would make this skill MORE useful?
-   - What's the ONE thing missing that would have biggest impact?
-   - What's the ONE thing to remove that would clarify focus?
-
 ## Output Format
 
 You will receive `{skill-path}` and `{quality-report-dir}` as inputs.
@@ -299,40 +272,11 @@ Before writing output, verify: Is your array called `findings`? Does every item 
 
 ## Process
 
-1. **Parallel read batch:** Read SKILL.md, all prompt files, and list resources/ — in a single parallel batch
-2. Build mental model of the skill as a whole from all files read
-3. Evaluate cohesion across all dimensions (flow, purpose, complexity, completeness, redundancy, dependencies, creates alignment, external integration, journey)
-4. Generate findings with specific, actionable suggestions
-5. Identify strengths (positive feedback is valuable!)
-6. Write JSON to `{quality-report-dir}/skill-cohesion-temp.json`
-7. Return only the filename: `skill-cohesion-temp.json`
+Read all skill files. Build a mental model of the skill as a whole, then evaluate against all cohesion dimensions above. Write JSON to `{quality-report-dir}/skill-cohesion-temp.json`. Return only the filename.
 
 ## Critical After Draft Output
 
-**Before finalizing, think one level deeper and verify completeness and quality:**
-
-### Scan Completeness
-- Did I read SKILL.md and ALL prompts?
-- Did I build a complete mental model of the skill?
-- Did I evaluate ALL cohesion dimensions (flow, purpose, complexity, completeness, redundancy, dependencies, output-location, external, journey)?
-- Did I check output-location alignment with actual stage outputs?
-
-### Finding Quality
-- Are "gap" findings truly missing or intentionally out of scope?
-- Are "redundancy" findings actual overlap or complementary stages?
-- Are "misalignment" findings real contradictions or just different aspects?
-- Are severity ratings appropriate (high only for glaring omissions)?
-- Did I include strengths (positive feedback is valuable)?
-- Are dependency graph findings based on actual data flow, not assumptions?
-
-### Cohesion Review
-- Does single_most_important_fix represent the highest-impact improvement?
-- Do findings tell a coherent story about this skill's cohesion?
-- Would addressing high-severity issues significantly improve the skill?
-- Are creative_suggestions actually valuable, not just nice-to-haves?
-- Is the complexity assessment fair and well-reasoned?
-
-Only after this verification, write final JSON and return filename.
+Before finalizing, verify completeness across all dimensions and that findings tell a coherent story.
 
 ## Key Principle
 

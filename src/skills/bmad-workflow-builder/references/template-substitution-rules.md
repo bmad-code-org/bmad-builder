@@ -26,7 +26,7 @@ The builder determines the rest of the skill structure — body sections, phases
 
 ## Path References
 
-All generated skills use these paths when applicable:
-- `references/{reference}.md` — Reference documents loaded on demand
-- `01-{stage}.md` — Numbered stage prompts at skill root (complex workflows)
-- `scripts/` — Python/shell scripts for deterministic operations
+All generated skills use `./` prefix for skill-internal paths:
+- `./references/{reference}.md` — Reference documents loaded on demand
+- `./references/{stage}.md` — Stage prompts (complex workflows)
+- `./scripts/` — Python/shell scripts for deterministic operations

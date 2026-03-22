@@ -223,37 +223,8 @@ Before writing output, verify: Is your array called `findings`? Does every item 
 
 ## Process
 
-1. **Parallel read batch:** List `scripts/` directory, read SKILL.md, all prompt files, and resource files — in a single parallel batch
-2. Inventory existing scripts (avoid suggesting duplicates)
-3. Check On Activation and inline operations for deterministic work
-4. For each prompt instruction, apply the determinism test
-5. Check if any resource content could be generated/validated by scripts
-6. For each finding: estimate LLM tax, assess implementation complexity, check pre-pass potential
-7. For each finding: consider the --help pattern — if a prompt currently inlines a script's interface, note the additional savings
-8. Write JSON to `{quality-report-dir}/script-opportunities-temp.json`
-9. Return only the filename: `script-opportunities-temp.json`
+Read all skill files and the scripts/ directory. Apply the determinism test and category analysis described above. Write JSON to `{quality-report-dir}/script-opportunities-temp.json`. Return only the filename.
 
 ## Critical After Draft Output
 
-Before finalizing, verify:
-
-### Determinism Accuracy
-- For each finding: Is this TRULY deterministic, or does it require judgment I'm underestimating?
-- Am I confusing "structured output" with "deterministic"? (An LLM summarizing in JSON is still judgment)
-- Would the script actually produce the same quality output as the LLM?
-
-### Creativity Check
-- Did I look beyond obvious validation? (Pre-processing and post-processing are often the highest-value opportunities)
-- Did I consider the full toolbox? (Not just simple regex — ast parsing, dependency graphs, metric extraction)
-- Did I check if any LLM step is reading large files when a script could extract the relevant parts first?
-
-### Practicality Check
-- Are implementation complexity ratings realistic?
-- Are token savings estimates reasonable?
-- Would implementing the top findings meaningfully improve the skill's efficiency?
-- Did I check for existing scripts to avoid duplicates?
-
-### Lane Check
-- Am I staying in my lane? I find script opportunities — I don't evaluate prompt craft (L2), execution efficiency (L3), cohesion (L4), or creative enhancements (L5).
-
-Only after verification, write final JSON and return filename.
+Before finalizing, verify flagged operations are truly deterministic, existing scripts aren't duplicated, and you stayed in your lane.

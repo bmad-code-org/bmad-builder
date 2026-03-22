@@ -1,6 +1,0 @@
-module,agent-name,skill-name,display-name,menu-code,capability,args,description,phase,after,before,required,output-location,outputs,
-bmb,,bmad-builder-setup,Setup Builder,SB,configure,,"Set up BMad Builder module in a project.",anytime,,,false,,config,
-bmb,,bmad-agent-builder,Build Agent,BA,build-process,,"Create, edit, convert, or fix an agent skill.",anytime,,bmad-agent-builder:quality-optimizer,false,output_folder,agent skill,
-bmb,,bmad-agent-builder,Optimize Agent,OA,quality-optimizer,,Validate and optimize an existing agent skill. Produces a quality report.,anytime,bmad-agent-builder:build-process,,false,bmad_builder_reports,quality report,
-bmb,,bmad-workflow-builder,Build Workflow,BW,build-process,,"Create, edit, convert, or fix a workflow or utility skill.",anytime,,bmad-workflow-builder:quality-optimizer,false,output_folder,workflow skill,
-bmb,,bmad-workflow-builder,Optimize Workflow,OW,quality-optimizer,,Validate and optimize an existing workflow or utility skill. Produces a quality report.,anytime,bmad-workflow-builder:build-process,,false,bmad_builder_reports,quality report,

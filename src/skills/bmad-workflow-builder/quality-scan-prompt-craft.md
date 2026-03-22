@@ -286,43 +286,8 @@ Before writing output, verify: Is your array called `findings`? Does every item 
 
 ## Process
 
-1. **Parallel read batch:** Read SKILL.md, all prompt files at skill root, and list references/ contents — in a single parallel batch
-2. Assess skill type from SKILL.md, evaluate Overview quality and progressive disclosure
-3. Check references/ to verify progressive disclosure is working (detail is where it belongs)
-4. For SKILL.md: evaluate Overview quality (present? appropriate? excessive? disconnected? **missing?**)
-5. For SKILL.md: check for over-optimization — is this a complex/interactive skill stripped to a bare skeleton?
-6. For SKILL.md: check size and progressive disclosure — does it exceed guidelines? Are data tables, schemas, or reference material inline that should be in references/?
-7. For multi-branch SKILL.md: does each branch section have brief context explaining what it handles and why?
-8. For each stage prompt: check config header, progression conditions, self-containment
-9. For each stage prompt: check context sufficiency — do judgment-heavy prompts have enough context to make good decisions?
-10. For all files: scan for genuine token waste (repetition, defensive padding, meta-explanation)
-11. For all files: evaluate outcome vs implementation balance given the skill type
-12. For all files: check intelligence placement (judgment in prompts, determinism in scripts)
-13. Write JSON to `{quality-report-dir}/prompt-craft-temp.json`
-14. Return only the filename: `prompt-craft-temp.json`
+Read pre-pass JSON and all prompt files. Evaluate using the criteria in Parts 1-3 above. Write JSON to `{quality-report-dir}/prompt-craft-temp.json`. Return only the filename.
 
 ## Critical After Draft Output
 
-**Before finalizing, think one level deeper and verify completeness and quality:**
-
-### Scan Completeness
-- Did I read SKILL.md and EVERY prompt file?
-- Did I assess the skill type to calibrate my expectations?
-- Did I evaluate SKILL.md Overview quality separately from stage prompt efficiency?
-- Did I check progression conditions and self-containment for every stage prompt?
-
-### Finding Quality — The Nuance Check
-- For each "token-waste" finding: Is this genuinely wasteful, or does it enable informed autonomy?
-- For each "anti-pattern" finding: Is this truly an anti-pattern in context, or a legitimate craft choice?
-- For each "outcome-balance" finding: Does this skill type warrant procedural detail, or is it over-specified?
-- Did I include the `nuance` field for findings that could be intentional?
-- Am I flagging Overview content as waste? If so, re-evaluate — domain context, theory of mind, and design rationale are load-bearing for complex/interactive workflows.
-- Did I check for under-contextualization? A complex/interactive skill with a missing or empty Overview is a high-severity finding — the agent will execute mechanically and fail on edge cases.
-- Did I check for inline data (tables, schemas, reference material) that should be in references/ or assets/?
-
-### Calibration Check
-- Would implementing ALL my suggestions produce a better skill, or would some strip valuable context?
-- Is my craft_assessment fair given the skill type?
-- Does top_improvement represent the highest-impact change?
-
-Only after this verification, write final JSON and return filename.
+Before finalizing, verify all files were read, token-waste findings are genuine (not load-bearing context), and suggestions would improve the skill holistically.

@@ -53,14 +53,7 @@ Store config values in memory as `{var_name}` for use in prompts.
 
 ### Required Core Variables
 
-**Every workflow MUST load these core variables with fallbacks:**
-- `user_name` — fallback: omit
-- `communication_language` — fallback: match the user's language
-- `output_folder` — fallback: `{project-root}/_bmad-output`
-
-**Conditionally include:**
-- `document_output_language` — fallback: match the user's language — ONLY if workflow creates documents (check capability `output-location` field)
-- Output location variable from capability `output-location` — ONLY if specified in metadata
+Load core config variables (user preferences, language, output locations) with sensible defaults. If the workflow creates documents, include document output language.
 
 **Example for BMB workflow (creates documents, has output var):**
 ```
@@ -79,12 +72,7 @@ vars: user_name:BMad,communication_language:English,output_folder:{project-root}
 
 ### Using Config Values in Prompts
 
-**Every prompt file MUST start with:**
-```markdown
-Language: {communication_language}
-Output Language: {document_output_language}  ← ONLY if workflow creates documents
-Output Location: {output-variable}           ← ONLY if capability output-location is defined
-```
+Each prompt file should establish communication language and relevant output settings at the top.
 
 **Use throughout prompts:**
 ```markdown
@@ -192,14 +180,8 @@ updated: "{timestamp}"
 ```
 
 **Stage 2+: Reload context if compacted**
-```markdown
-## Stage Start: Analysis
-1. Read {output_doc_path}
-2. Parse YAML front matter for `inputs` list
-3. Re-read each input file to restore context
-4. Verify status indicates previous stage complete
-5. Proceed with analysis, updating document in place
-```
+
+Each stage after the first should begin by reading the output document to recover context. If compacted, re-read input files listed in the YAML front matter.
 
 ```markdown
 ## Stage 1: Research
@@ -294,16 +276,7 @@ Write the polished version back to the same file.
 
 ### Compaction Recovery Pattern
 
-If context is compacted mid-workflow:
-```markdown
-## Recovery Check
-1. Read {output_doc_path}
-2. Parse YAML front matter:
-   - Check `status` for current stage
-   - Read `inputs` list to restore context
-3. Re-read all input files from `inputs`
-4. Resume from next stage based on status
-```
+Each stage after the first should begin by reading the output document to recover context. If compacted, re-read input files listed in the YAML front matter.
 
 ### When NOT to Use This Pattern
 
@@ -403,7 +376,7 @@ Before finalizing a BMad module workflow, verify:
 - [ ] **Document-as-cache**: Output doc has YAML front matter with `status` and `inputs` for recovery?
 - [ ] **Input tracking**: Does front matter list relative paths to all input files used?
 - [ ] **Final polish**: Does workflow include a subagent polish step at the end?
-- [ ] **Progressive disclosure**: Are stages in prompt files at root with clear progression conditions?
+- [ ] **Progressive disclosure**: Are stages in `./references/` with clear progression conditions?
 - [ ] **Metadata complete**: All bmad-* fields present and accurate?
 - [ ] **Recovery pattern**: Can the workflow resume by reading the output doc front matter?
 

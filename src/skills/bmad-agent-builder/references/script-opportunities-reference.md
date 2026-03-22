@@ -166,16 +166,8 @@ All scripts use PEP 723 and `--help`. When a skill's prompt needs to invoke a sc
 **Why:** Validate activation order matches best practices
 
 **Checks:**
-```python
-# Look for steps in order:
-1. Activation mode detection
-2. Config loading
-3. First-run check
-4. Access boundaries load
-5. Memory load
-6. Greet
-8. Present menu
-```
+
+Validate that the activation sequence is logically ordered (e.g., config loads before config is used, memory loads before memory is referenced).
 
 **Output:** JSON with detected steps, missing steps, out-of-order warnings
 

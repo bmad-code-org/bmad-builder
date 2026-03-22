@@ -93,11 +93,11 @@ Every skill makes assumptions. Surface the ones that are most likely to be wrong
 | **Single-session completion** | Does the skill assume the workflow completes in one session? |
 | **Skill isolation** | Does the skill assume it's the only thing the user is doing? |
 
-### 5. Autonomous Potential
+### 5. Headless Potential
 
 Many workflows are built for human-in-the-loop interaction — conversational discovery, iterative refinement, user confirmation at each stage. But what if someone passed in a headless flag and a detailed prompt? Could this workflow just... do its job, create the artifact, and return the file path?
 
-This is one of the most transformative "what ifs" you can ask about a HITL workflow. A skill that works both interactively AND autonomously is dramatically more valuable — it can be invoked by other skills, chained in pipelines, run on schedules, or used by power users who already know what they want.
+This is one of the most transformative "what ifs" you can ask about a HITL workflow. A skill that works both interactively AND headlessly is dramatically more valuable — it can be invoked by other skills, chained in pipelines, run on schedules, or used by power users who already know what they want.
 
 **For each HITL interaction point, ask:**
 
@@ -108,14 +108,14 @@ This is one of the most transformative "what ifs" you can ask about a HITL workf
 | Is this clarification always needed, or only for ambiguous input? | "Did you mean X or Y?" → only needed when input is vague |
 | Does this interaction add value or just ceremony? | Some confirmations exist because the builder assumed interactivity, not because they're necessary |
 
-**Assess the skill's autonomous potential:**
+**Assess the skill's headless potential:**
 
 | Level | What It Means |
 |-------|--------------|
-| **Headless-ready** | Could work autonomously today with minimal changes — just needs a flag to skip confirmations |
+| **Headless-ready** | Could work headlessly today with minimal changes — just needs a flag to skip confirmations |
 | **Easily adaptable** | Most interaction points could accept pre-supplied parameters; needs a headless path added to 2-3 stages |
-| **Partially adaptable** | Core artifact creation could be autonomous, but discovery/interview stages are fundamentally interactive — suggest a "skip to build" entry point |
-| **Fundamentally interactive** | The value IS the conversation (coaching, brainstorming, exploration) — autonomous mode wouldn't make sense, and that's OK |
+| **Partially adaptable** | Core artifact creation could be headless, but discovery/interview stages are fundamentally interactive — suggest a "skip to build" entry point |
+| **Fundamentally interactive** | The value IS the conversation (coaching, brainstorming, exploration) — headless mode wouldn't make sense, and that's OK |
 
 **When the skill IS adaptable, suggest the output contract:**
 - What would a headless invocation return? (file path, JSON summary, status code)
@@ -213,7 +213,7 @@ Use EXACTLY these field names: `file`, `line`, `severity`, `category`, `title`, 
       "needs_input": 0,
       "suggested_output_contract": "What a headless invocation would return",
       "required_inputs": ["parameters needed upfront for headless mode"],
-      "notes": "Brief assessment of autonomous viability"
+      "notes": "Brief assessment of headless viability"
     },
     "top_insights": [
       {
@@ -235,39 +235,8 @@ Before writing output, verify: Is your array called `findings`? Does every item 
 
 ## Process
 
-1. **Parallel read batch:** Read SKILL.md, all prompt files, and resource files — in a single parallel batch
-2. Deeply understand purpose, audience, and intent from SKILL.md
-3. Walk through each stage mentally as a user
-4. Inhabit each user archetype (including the automator) and mentally simulate their journey through the skill
-5. Surface edge cases, experience gaps, delight opportunities, risky assumptions, and autonomous potential
-6. For autonomous potential: map every HITL interaction point and assess which could auto-resolve
-7. For facilitative/interactive skills: check against all seven facilitative workflow patterns
-8. Go wild with ideas, then temper each to a concrete suggestion
-9. Prioritize by user impact
-10. Write JSON to `{quality-report-dir}/enhancement-opportunities-temp.json`
-11. Return only the filename: `enhancement-opportunities-temp.json`
+Read all skill files. Analyze through each creative lens above. Write JSON to `{quality-report-dir}/enhancement-opportunities-temp.json`. Return only the filename.
 
 ## Critical After Draft Output
 
-**Before finalizing, challenge your own findings:**
-
-### Creative Quality Check
-- Did I actually *inhabit* different user archetypes (including the automator), or did I just analyze from the builder's perspective?
-- Are my edge cases *realistic* — things that would actually happen — or contrived?
-- Are my delight opportunities genuinely delightful, or are they feature bloat?
-- Did I find at least one thing that would make the builder say "I never thought of that"?
-- Did I honestly assess autonomous potential — not forcing headless on fundamentally interactive skills, but not missing easy wins either?
-- For adaptable skills, is my suggested output contract concrete enough to implement?
-
-### Temper Check
-- Is every suggestion *actionable* — could someone implement it from my description?
-- Did I drop the impractical wild ideas instead of padding my findings?
-- Am I staying in my lane — not flagging structure, craft, performance, or architecture issues?
-- Would implementing my top suggestions genuinely improve the user experience?
-
-### Honesty Check
-- Did I note what the skill already does well? (Bright spots in user journeys)
-- Are my severity ratings honest — high-opportunity only for genuinely transformative ideas?
-- Is my `boldest_idea` actually bold, or is it safe and obvious?
-
-Only after this verification, write final JSON and return filename.
+Before finalizing, verify findings are realistic, actionable, and honest about what the skill already does well.

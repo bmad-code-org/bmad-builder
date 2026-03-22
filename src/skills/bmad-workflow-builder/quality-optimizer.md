@@ -14,53 +14,19 @@ You orchestrate quality scans on a BMad workflow or skill. Deterministic checks 
 
 **DO NOT read the target skill's files yourself.** Scripts and subagents do all analysis.
 
-Your job:
-1. Create output directory
-2. Run all lint scripts + pre-pass scripts (instant, deterministic)
-3. Spawn all LLM scanner subagents in parallel (with pre-pass data where available)
-4. Collect all results
-5. Synthesize into unified report (spawn report creator)
-6. Present findings to user
+You orchestrate quality scans: run deterministic scripts and pre-pass extractors, spawn LLM scanner subagents in parallel, then synthesize all results into a unified report.
 
-## Autonomous Mode
+## Headless Mode
 
-**Check if `{headless_mode}=true`** — If set, run in headless mode:
-- **Skip ALL questions** — proceed with safe defaults
-- **Uncommitted changes:** Note in report, don't ask
-- **Workflow functioning:** Assume yes, note in report that user should verify
-- **After report:** Output summary and exit, don't offer next steps
-- **Output format:** Structured JSON summary + report path, minimal conversational text
-
-**Autonomous mode output:**
-```json
-{
-  "headless_mode": true,
-  "report_file": "{path-to-report}",
-  "summary": { ... },
-  "warnings": ["Uncommitted changes detected", "Workflow functioning not verified"]
-}
-```
+If `{headless_mode}=true`, skip all user interaction, use safe defaults, note any warnings, and output structured JSON as specified in the Present Findings section.
 
 ## Pre-Scan Checks
 
-Before running any scans:
+Check for uncommitted changes. In headless mode, note warnings and proceed. In interactive mode, inform the user and confirm before proceeding. In interactive mode, also confirm the workflow is currently functioning.
 
-**IF `{headless_mode}=true`:**
-1. **Check for uncommitted changes** — Run `git status`. Note in warnings array if found.
-2. **Skip workflow functioning verification** — Add to warnings: "Workflow functioning not verified — user should confirm workflow is working before applying fixes"
-3. **Proceed directly to scans**
+## Optimization Principles
 
-**IF `{headless_mode}=false` or not set:**
-1. **Check for uncommitted changes** — Run `git status` on the repository. If uncommitted changes:
-   - Warn: "You have uncommitted changes. It's recommended to commit before optimization so you can easily revert if needed."
-   - Ask: "Do you want to proceed anyway, or commit first?"
-   - Halt and wait for user response
-
-2. **Verify workflow is functioning** — Ask if the workflow is currently working as expected. Optimization should improve, not break working workflows.
-
-## Communicate This Guidance to the User
-
-**Workflow skills are both art and science.** The optimization report will contain many suggestions, but use your judgment:
+**Workflow skills are both art and science.** The optimization report will contain many suggestions — apply judgment:
 
 - Reports may suggest leaner phrasing — but if the current phrasing captures the right guidance, keep it
 - Reports may say content is "unnecessary" — but if it adds clarity, it may be worth keeping

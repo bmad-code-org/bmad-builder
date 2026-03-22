@@ -1,12 +1,15 @@
 #!/usr/bin/env python3
 """Deterministic path standards scanner for BMad skills.
 
-Validates all .md files against BMad path conventions:
+Validates all .md and .json files against BMad path conventions:
 1. {project-root} only valid before /_bmad
 2. Bare _bmad references must have {project-root} prefix
 3. Config variables used directly (no double-prefix)
-4. No ./ or ../ relative prefixes
-5. No absolute paths
+4. Skill-internal paths must use ./ prefix (references/, scripts/, assets/)
+5. No ../ parent directory references
+6. No absolute paths
+7. Frontmatter allows only name and description
+8. No .md files at skill root except SKILL.md
 """
 
 # /// script
@@ -32,12 +35,17 @@ BARE_BMAD_RE = re.compile(r'(?<!\{project-root\}/)_bmad[/\s]')
 # Absolute paths
 ABSOLUTE_PATH_RE = re.compile(r'(?:^|[\s"`\'(])(/(?:Users|home|opt|var|tmp|etc|usr)/\S+)', re.MULTILINE)
 HOME_PATH_RE = re.compile(r'(?:^|[\s"`\'(])(~/\S+)', re.MULTILINE)
-# Relative prefixes
+# Parent directory reference (still invalid)
 RELATIVE_DOT_RE = re.compile(r'(?:^|[\s"`\'(])(\.\./\S+)', re.MULTILINE)
-RELATIVE_DOTSLASH_RE = re.compile(r'(?:^|[\s"`\'(])(\./\S+)', re.MULTILINE)
+# Bare skill-internal paths without ./ prefix
+# Match references/, scripts/, assets/ when NOT preceded by ./
+BARE_INTERNAL_RE = re.compile(r'(?:^|[\s"`\'(])(?<!\./)((?:references|scripts|assets)/\S+)', re.MULTILINE)
 
 # Fenced code block detection (to skip examples showing wrong patterns)
 FENCE_RE = re.compile(r'^```', re.MULTILINE)
+
+# Valid frontmatter keys
+VALID_FRONTMATTER_KEYS = {'name', 'description'}
 
 
 def is_in_fenced_block(content: str, pos: int) -> bool:
@@ -50,6 +58,76 @@ def is_in_fenced_block(content: str, pos: int) -> bool:
 def get_line_number(content: str, pos: int) -> int:
     """Get 1-based line number for a position in content."""
     return content[:pos].count('\n') + 1
+
+
+def check_frontmatter(content: str, filepath: Path) -> list[dict]:
+    """Validate SKILL.md frontmatter contains only allowed keys."""
+    findings = []
+    if filepath.name != 'SKILL.md':
+        return findings
+
+    if not content.startswith('---'):
+        findings.append({
+            'file': filepath.name,
+            'line': 1,
+            'severity': 'critical',
+            'category': 'frontmatter',
+            'title': 'SKILL.md missing frontmatter block',
+            'detail': 'SKILL.md must start with --- frontmatter containing name and description',
+            'action': 'Add frontmatter with name and description fields',
+        })
+        return findings
+
+    # Find closing ---
+    end = content.find('\n---', 3)
+    if end == -1:
+        findings.append({
+            'file': filepath.name,
+            'line': 1,
+            'severity': 'critical',
+            'category': 'frontmatter',
+            'title': 'SKILL.md frontmatter block not closed',
+            'detail': 'Missing closing --- for frontmatter',
+            'action': 'Add closing --- after frontmatter fields',
+        })
+        return findings
+
+    frontmatter = content[4:end]
+    for i, line in enumerate(frontmatter.split('\n'), start=2):
+        line = line.strip()
+        if not line or line.startswith('#'):
+            continue
+        if ':' in line:
+            key = line.split(':', 1)[0].strip()
+            if key not in VALID_FRONTMATTER_KEYS:
+                findings.append({
+                    'file': filepath.name,
+                    'line': i,
+                    'severity': 'high',
+                    'category': 'frontmatter',
+                    'title': f'Invalid frontmatter key: {key}',
+                    'detail': f'Only {", ".join(sorted(VALID_FRONTMATTER_KEYS))} are allowed in frontmatter',
+                    'action': f'Remove {key} from frontmatter — use as content field in SKILL.md body instead',
+                })
+
+    return findings
+
+
+def check_root_md_files(skill_path: Path) -> list[dict]:
+    """Check that no .md files exist at skill root except SKILL.md."""
+    findings = []
+    for md_file in skill_path.glob('*.md'):
+        if md_file.name != 'SKILL.md':
+            findings.append({
+                'file': md_file.name,
+                'line': 0,
+                'severity': 'high',
+                'category': 'structure',
+                'title': f'Prompt file at skill root: {md_file.name}',
+                'detail': 'All progressive disclosure content must be in ./references/ — only SKILL.md belongs at root',
+                'action': f'Move {md_file.name} to references/{md_file.name}',
+            })
+    return findings
 
 
 def scan_file(filepath: Path, skip_fenced: bool = True) -> list[dict]:
@@ -65,10 +143,10 @@ def scan_file(filepath: Path, skip_fenced: bool = True) -> list[dict]:
          'Absolute path found — not portable across machines'),
         (HOME_PATH_RE, 'absolute-path', 'high',
          'Home directory path (~/) found — environment-specific'),
-        (RELATIVE_DOT_RE, 'relative-prefix', 'medium',
+        (RELATIVE_DOT_RE, 'relative-prefix', 'high',
          'Parent directory reference (../) found — fragile, breaks with reorganization'),
-        (RELATIVE_DOTSLASH_RE, 'relative-prefix', 'medium',
-         'Relative prefix (./) found — breaks when execution directory changes'),
+        (BARE_INTERNAL_RE, 'bare-internal-path', 'high',
+         'Bare skill-internal path without ./ prefix — use ./references/, ./scripts/, ./assets/ to distinguish from {project-root} paths'),
     ]
 
     for pattern, category, severity, message in checks:
@@ -94,9 +172,6 @@ def scan_file(filepath: Path, skip_fenced: bool = True) -> list[dict]:
         pos = match.start()
         if skip_fenced and is_in_fenced_block(content, pos):
             continue
-        # Check that this isn't part of {project-root}/_bmad
-        # The negative lookbehind handles this, but double-check
-        # the broader context
         start = max(0, pos - 30)
         before = content[start:pos]
         if '{project-root}/' in before:
@@ -117,13 +192,22 @@ def scan_file(filepath: Path, skip_fenced: bool = True) -> list[dict]:
 
 
 def scan_skill(skill_path: Path, skip_fenced: bool = True) -> dict:
-    """Scan all .md files in a skill directory."""
+    """Scan all .md and .json files in a skill directory."""
     all_findings = []
 
-    # Find all .md files
-    md_files = sorted(skill_path.rglob('*.md'))
+    # Check for .md files at root that aren't SKILL.md
+    all_findings.extend(check_root_md_files(skill_path))
+
+    # Check SKILL.md frontmatter
+    skill_md = skill_path / 'SKILL.md'
+    if skill_md.exists():
+        content = skill_md.read_text(encoding='utf-8')
+        all_findings.extend(check_frontmatter(content, skill_md))
+
+    # Find all .md and .json files
+    md_files = sorted(list(skill_path.rglob('*.md')) + list(skill_path.rglob('*.json')))
     if not md_files:
-        print(f"Warning: No .md files found in {skill_path}", file=sys.stderr)
+        print(f"Warning: No .md or .json files found in {skill_path}", file=sys.stderr)
 
     files_scanned = []
     for md_file in md_files:
@@ -142,6 +226,9 @@ def scan_skill(skill_path: Path, skip_fenced: bool = True) -> dict:
         'double_prefix': 0,
         'absolute_path': 0,
         'relative_prefix': 0,
+        'bare_internal_path': 0,
+        'frontmatter': 0,
+        'structure': 0,
     }
 
     for f in all_findings:
@@ -155,7 +242,7 @@ def scan_skill(skill_path: Path, skip_fenced: bool = True) -> dict:
     return {
         'scanner': 'path-standards',
         'script': 'scan-path-standards.py',
-        'version': '1.0.0',
+        'version': '2.0.0',
         'skill_path': str(skill_path),
         'timestamp': datetime.now(timezone.utc).isoformat(),
         'files_scanned': files_scanned,

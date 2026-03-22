@@ -14,12 +14,7 @@ You're running autonomously. No one is here. No task was specified. Execute your
 
 ## Instructions
 
-- Don't ask questions
-- Don't wait for input
-- Don't greet anyone
-- Execute your default wake behavior
-- Write results to memory
-- Exit
+Execute your default wake behavior, write results to memory, and exit.
 
 ## Default Wake Behavior
 

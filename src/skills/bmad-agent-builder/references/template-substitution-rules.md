@@ -37,8 +37,8 @@ The builder determines the rest of the agent structure — capabilities, activat
 
 ## Path References
 
-All generated agents use these paths when applicable:
-- `init.md` — First-run setup (if sidecar)
-- `{name}.md` — Individual capability prompts
-- `references/memory-system.md` — Memory discipline (if sidecar)
-- `scripts/` — Python/shell scripts for deterministic operations
+All generated agents use `./` prefix for skill-internal paths:
+- `./references/init.md` — First-run onboarding (if sidecar)
+- `./references/{capability}.md` — Individual capability prompts
+- `./references/memory-system.md` — Memory discipline (if sidecar)
+- `./scripts/` — Python/shell scripts for deterministic operations
