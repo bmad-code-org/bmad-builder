@@ -48,10 +48,12 @@ Beyond obvious validation, consider:
 - Could metric collection feed into LLM decision-making without the LLM doing the counting?
 
 ### Your Toolbox
-Scripts have access to full capabilities — think broadly:
-- **Bash**: Full shell — `jq`, `grep`, `awk`, `sed`, `find`, `diff`, `wc`, `sort`, `uniq`, `curl`, plus piping and composition
-- **Python**: Standard library (`json`, `yaml`, `pathlib`, `re`, `argparse`, `collections`, `difflib`, `ast`, `csv`, `xml`, etc.) plus PEP 723 inline-declared dependencies (`tiktoken`, `jsonschema`, `pyyaml`, etc.)
-- **System tools**: `git` commands for history/diff/blame, filesystem operations, process execution
+
+**Python is the default** for all script logic (cross-platform: macOS, Linux, Windows/WSL). See `references/script-standards.md` for full rationale and safe bash commands.
+
+- **Python:** Standard library (`json`, `pathlib`, `re`, `argparse`, `collections`, `difflib`, `ast`, `csv`, `xml`, etc.) plus PEP 723 inline-declared dependencies (`tiktoken`, `jsonschema`, `pyyaml`, etc.)
+- **Safe shell commands:** `git`, `gh`, `uv run`, `npm`/`npx`/`pnpm`, `mkdir -p`
+- **Avoid bash for logic** — no piping, `jq`, `grep`, `sed`, `awk`, `find`, `diff`, `wc` in scripts. Use Python equivalents instead.
 
 If you can express the logic as deterministic code, it's a script candidate.
 

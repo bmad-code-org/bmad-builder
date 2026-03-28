@@ -46,7 +46,7 @@ Early check: internal capabilities only, external skills, both, or unclear?
 
 **Script Opportunity Discovery** (active probing — do not skip):
 
-Identify deterministic operations that should be scripts. Load `./references/script-opportunities-reference.md` for guidance. Confirm the script-vs-prompt plan with the user before proceeding.
+Identify deterministic operations that should be scripts. Load `./references/script-opportunities-reference.md` for guidance. Confirm the script-vs-prompt plan with the user before proceeding. If any scripts require external dependencies (anything beyond Python's standard library), explicitly list each dependency and get user approval — dependencies add install-time cost and require `uv` to be available.
 
 ## Phase 3: Gather Requirements
 
@@ -124,6 +124,8 @@ Activation is a single flow regardless of mode. It should:
 - Load sidecar `index.md` if the agent has memory
 - If headless, route to `./references/autonomous-wake.md`
 - If interactive, greet the user and continue from memory context or offer capabilities
+
+**If the built agent includes scripts**, also load `./references/script-standards.md` — ensures PEP 723 metadata, correct shebangs, and `uv run` invocation from the start.
 
 **Lint gate** — after building, validate and auto-fix:
 

@@ -67,7 +67,7 @@ Work through conversationally, adapted per skill type. Glean from what the user 
 - **Role guidance:** Brief "Act as a [role/expert]" primer
 - **Design rationale:** Non-obvious choices the executing agent should understand
 - **External skills used:** Which skills does this invoke?
-- **Script Opportunity Discovery** — Walk through planned steps with the user. Identify deterministic operations that should be scripts not prompts. Load `./references/script-opportunities-reference.md` for guidance. Confirm the script-vs-prompt plan.
+- **Script Opportunity Discovery** — Walk through planned steps with the user. Identify deterministic operations that should be scripts not prompts. Load `./references/script-opportunities-reference.md` for guidance. Confirm the script-vs-prompt plan. If any scripts require external dependencies (anything beyond Python's standard library), explicitly list each dependency and get user approval before proceeding — dependencies add install-time cost and require `uv` to be available.
 - **Creates output documents?** If yes, will use `{document_output_language}`
 
 **Simple Utility additional:**
@@ -129,6 +129,8 @@ Load the template from `./assets/SKILL-template.md` and `./references/template-s
 | **`./references/`** | Capability prompts, reference data | Loaded on demand |
 | **`./assets/`** | Templates, starter files | Copied/transformed into output |
 | **`./scripts/`** | Python, shell scripts with tests | Invoked for deterministic operations |
+
+**If the built skill includes scripts**, also load `./references/script-standards.md` — ensures PEP 723 metadata, correct shebangs, and `uv run` invocation from the start.
 
 **Lint gate** — after building, validate and auto-fix:
 

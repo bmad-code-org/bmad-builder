@@ -1,5 +1,7 @@
 # Script Opportunities Reference — Workflow Builder
 
+**Reference: `references/script-standards.md` for script creation guidelines.**
+
 ## Core Principle
 
 Scripts handle deterministic operations (validate, transform, count). Prompts handle judgment (interpret, classify, decide). If a check has clear pass/fail criteria, it belongs in a script.
@@ -42,10 +44,11 @@ When you see these in a workflow's requirements, think scripts first: "validate"
 
 ### Your Toolbox
 
-Scripts have access to the full execution environment:
-- **Bash:** `jq`, `grep`, `awk`, `sed`, `find`, `diff`, `wc`, piping and composition
-- **Python:** Full standard library plus PEP 723 inline-declared dependencies (`tiktoken`, `jsonschema`, `pyyaml`, etc.)
-- **System tools:** `git` for history/diff/blame, filesystem operations
+**Python is the default** for all script logic (cross-platform: macOS, Linux, Windows/WSL). See `references/script-standards.md` for full rationale and safe bash commands.
+
+- **Python:** Full standard library (`json`, `pathlib`, `re`, `argparse`, `collections`, `difflib`, `ast`, `csv`, `xml`, etc.) plus PEP 723 inline-declared dependencies (`tiktoken`, `jsonschema`, `pyyaml`, etc.)
+- **Safe shell commands:** `git`, `gh`, `uv run`, `npm`/`npx`/`pnpm`, `mkdir -p`
+- **Avoid bash for logic** — no piping, `jq`, `grep`, `sed`, `awk`, `find`, `diff`, `wc` in scripts. Use Python equivalents instead.
 
 ### The --help Pattern
 
