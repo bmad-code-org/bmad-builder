@@ -1,15 +1,15 @@
 ---
-title: "Module Plan"
-status: "ideation"
-module_name: ""
-module_code: ""
-architecture: ""
+title: 'Module Plan'
+status: 'ideation'
+module_name: ''
+module_code: ''
+architecture: ''
 standalone: true
-expands_module: ""
+expands_module: ''
 skills_planned: []
 config_variables: []
-created: ""
-updated: ""
+created: ''
+updated: ''
 ---
 
 # Module Plan
@@ -38,8 +38,8 @@ updated: ""
 **Capabilities:**
 
 | Display Name | Menu Code | Description | Action | Args | Phase | After | Before | Required | Output Location | Outputs |
-|---|---|---|---|---|---|---|---|---|---|---|
-| | | | | | | | | | | |
+| ------------ | --------- | ----------- | ------ | ---- | ----- | ----- | ------ | -------- | --------------- | ------- |
+|              |           |             |        |      |       |       |        |          |                 |         |
 
 **Design Notes:**
 
@@ -52,8 +52,8 @@ updated: ""
 ## Configuration
 
 | Variable | Prompt | Default | Result Template | User Setting |
-|---|---|---|---|---|
-| | | | | |
+| -------- | ------ | ------- | --------------- | ------------ |
+|          |        |         |                 |              |
 
 <!-- Reminder: skills should have sensible fallbacks if config hasn't been set, or ask at runtime for values they need -->
 
@@ -90,5 +90,6 @@ updated: ""
 <!-- Recommended build order for skills -->
 
 **Next steps:**
+
 1. Build each skill using **Build an Agent (BA)** or **Build a Workflow (BW)** — share this plan document as context
 2. When all skills are built, return to **Create Module (CM)** to scaffold the module infrastructure

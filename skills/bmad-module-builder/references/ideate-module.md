@@ -35,6 +35,7 @@ Weave these into conversation naturally. Never name them or make the user feel l
 Initialize the plan document immediately using `./assets/module-plan-template.md`. Write it to `{bmad_builder_reports}` with a descriptive filename. Set `created` and `updated` timestamps. This document is your cache — update it progressively as the conversation unfolds so work survives context compaction.
 
 Start by understanding the spark. Let the user talk freely — this is where the richest context comes from:
+
 - What's the idea? What problem space or domain?
 - Who would use this and what would they get from it?
 - Is there anything that inspired this — an existing tool, a frustration, a gap they've noticed?
@@ -61,18 +62,21 @@ Energy check: if the conversation plateaus, try a perspective shift or reverse b
 When exploration feels genuinely complete (not just "we have enough"), shift to architecture.
 
 **Guide toward agent-with-capabilities when appropriate.** Many users default to thinking they need multiple specialized agents. But a well-designed single agent with rich internal capabilities and routing:
+
 - Provides a more seamless user experience
 - Benefits from accumulated memory and context
 - Is simpler to maintain and configure
 - Can still have distinct modes or capabilities that feel like separate tools
 
 However, **multiple agents make sense when:**
+
 - The module spans genuinely different expertise domains that benefit from distinct personas
 - Users may want to interact with one agent without loading the others
 - Each agent needs its own memory context — personal history, learned preferences, domain-specific notes
 - Some capabilities are optional add-ons the user might not install
 
 **Multiple workflows make sense when:**
+
 - Capabilities serve different user journeys or require different tools
 - The workflow requires sequential phases with fundamentally different processes
 - No persistent persona or memory is needed between invocations
@@ -83,11 +87,11 @@ Present the trade-offs. Let the user decide. Document the reasoning either way �
 
 **Memory architecture for multi-agent modules.** If the module has multiple agents, explore how memory should work. Every agent has its own sidecar (personal memory at `{project-root}/_bmad/memory/{skillName}-sidecar/`), but modules may also benefit from shared memory:
 
-| Pattern | When It Fits | Example |
-| ------- | ------------ | ------- |
-| **Personal sidecars only** | Agents have distinct domains with little overlap | A module with a code reviewer and a test writer — each tracks different things |
+| Pattern                              | When It Fits                                                              | Example                                                                                                                                                                            |
+| ------------------------------------ | ------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Personal sidecars only**           | Agents have distinct domains with little overlap                          | A module with a code reviewer and a test writer — each tracks different things                                                                                                     |
 | **Personal + shared module sidecar** | Agents have their own context but also learn shared things about the user | A social creative module — podcast, video, and blog experts each remember their domain specifics but share knowledge about the user's style, catchphrases, and content preferences |
-| **Shared sidecar only** | All agents serve the same domain and context | Probably a sign this should be a single agent |
+| **Shared sidecar only**              | All agents serve the same domain and context                              | Probably a sign this should be a single agent                                                                                                                                      |
 
 With shared memory, each agent writes to both its personal sidecar and a module-level sidecar (e.g., `{project-root}/_bmad/memory/{moduleCode}-shared/`) when it learns something relevant to the whole module. Shared content might include: user style preferences, project assets, recurring themes, content history, or any cross-cutting context.
 
@@ -104,6 +108,7 @@ If the memory architecture points entirely toward shared memory with no personal
 ### 5. Define Each Skill
 
 For each planned skill (whether agent or workflow), work through:
+
 - **Name** — following `bmad-{modulecode}-{skillname}` convention
 - **Purpose** — the core outcome in one sentence
 - **Capabilities** — each distinct action or mode. These become rows in the help CSV: display name, menu code, description, action name, args, phase, ordering (before/after), required flag, output location, outputs
@@ -117,6 +122,7 @@ Update the **Skills** section of the plan document with structured entries for e
 Complete all sections of the plan document. Review with the user — walk through the plan and confirm it captures their vision. Update `status` to "complete" in the frontmatter.
 
 **Close with next steps:**
+
 - "Build each skill using **Build an Agent (BA)** or **Build a Workflow (BW)** — share this plan document as context so the builder understands the bigger picture."
 - "When all skills are built, return to **Create Module (CM)** to scaffold the module infrastructure."
 - Point them to the plan document location so they can reference it.

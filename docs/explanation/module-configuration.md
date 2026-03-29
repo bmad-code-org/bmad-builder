@@ -1,5 +1,5 @@
 ---
-title: "Module Configuration and the Setup Skill"
+title: 'Module Configuration and the Setup Skill'
 description: How BMad modules handle user configuration through a setup skill, when to use configuration vs. alternatives, and how to register with the help system
 ---
 
@@ -9,11 +9,11 @@ Every BMad module can include a **setup skill** that collects user preferences a
 
 Most modules should not need configuration at all. Before adding configurable values, consider whether a simpler alternative exists.
 
-| Approach | When to Use |
-| -------- | ----------- |
+| Approach              | When to Use                                                                                                                                               |
+| --------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **Sensible defaults** | The variable has one clearly correct answer for most users that could be overridden or updated by the specific skill that needs it the first time it runs |
-| **Agent memory** | Your module follows the agent pattern and the agent can learn preferences through conversation |
-| **Configuration** | The value genuinely varies across projects and cannot be inferred at runtime |
+| **Agent memory**      | Your module follows the agent pattern and the agent can learn preferences through conversation                                                            |
+| **Configuration**     | The value genuinely varies across projects and cannot be inferred at runtime                                                                              |
 
 :::tip[Standalone Skills and Agents]
 If you are building a standalone agent or skill — not a multi-capability module — the setup skill overhead is not worth it. A concise overview section at the top of your SKILL.md body, clear comments in script headers, and `--help` flags on any CLI tools give users everything they need to discover and use the skill.
@@ -23,20 +23,20 @@ If you are building a standalone agent or skill — not a multi-capability modul
 
 A setup skill serves two purposes:
 
-| Purpose | What Happens |
-| ------- | ------------ |
-| **Configuration** | Collects user preferences and writes them to shared config files |
+| Purpose               | What Happens                                                                              |
+| --------------------- | ----------------------------------------------------------------------------------------- |
+| **Configuration**     | Collects user preferences and writes them to shared config files                          |
 | **Help registration** | Adds the module's capabilities to the project-wide help system so users can discover them |
 
 ## Configuration Files
 
 Setup skills write to three files in `{project-root}/_bmad/`:
 
-| File | Scope | Contains |
-| ---- | ----- | -------- |
-| `config.yaml` | Shared, committed to git | Core settings at root level, plus a section per module with metadata and module-specific values |
-| `config.user.yaml` | Personal, gitignored | User-only settings like `user_name` and `communication_language` |
-| `module-help.csv` | Shared, committed to git | One row per capability the module exposes |
+| File               | Scope                    | Contains                                                                                        |
+| ------------------ | ------------------------ | ----------------------------------------------------------------------------------------------- |
+| `config.yaml`      | Shared, committed to git | Core settings at root level, plus a section per module with metadata and module-specific values |
+| `config.user.yaml` | Personal, gitignored     | User-only settings like `user_name` and `communication_language`                                |
+| `module-help.csv`  | Shared, committed to git | One row per capability the module exposes                                                       |
 
 Core settings (like `output_folder` and `document_output_language`) live at the root of `config.yaml` and are shared across all modules. Each module also gets its own section keyed by its module code.
 
@@ -46,17 +46,17 @@ Each module declares its identity and configurable variables in an `assets/modul
 
 ```yaml
 code: mymod
-name: "My Module"
-description: "What this module does"
+name: 'My Module'
+description: 'What this module does'
 module_version: 1.0.0
 default_selected: false
 module_greeting: >
   Welcome message shown after setup completes.
 
 my_output_folder:
-  prompt: "Where should output be saved?"
-  default: "{project-root}/_bmad-output/my-module"
-  result: "{project-root}/{value}"
+  prompt: 'Where should output be saved?'
+  default: '{project-root}/_bmad-output/my-module'
+  result: '{project-root}/{value}'
 ```
 
 Variables with a `prompt` field are presented to the user during setup. The `default` value is used when the user accepts defaults. Adding `user_setting: true` to a variable routes it to `config.user.yaml` instead of the shared config.
@@ -76,10 +76,10 @@ You may not need any configurable values but still want to register your module 
 
 For simpler cases, these alternatives are often sufficient:
 
-| Alternative | What It Provides |
-| ----------- | ---------------- |
+| Alternative                   | What It Provides                                                                                                                         |
+| ----------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
 | **SKILL.md overview section** | A concise summary at the top of the skill body — the `--help` system scans this section to present user-facing help, so keep it succinct |
-| **Script header comments** | Describe purpose, usage, and flags at the top of each script |
+| **Script header comments**    | Describe purpose, usage, and flags at the top of each script                                                                             |
 
 If these cover your discoverability needs, you can skip the setup skill entirely.
 
@@ -108,11 +108,11 @@ Before removing any directory, the cleanup script verifies that every skill it c
 
 Configuration is for **basic, project-level settings** — output folders, language preferences, feature toggles. Keep the number of configurable values small.
 
-| Pattern | Configuration Role |
-| ------- | ------------------ |
-| **Agent pattern** | Prefer agent memory for per-user preferences. Use config only for values that must be shared across the project |
-| **Workflow pattern** | Use config for output locations and behavior switches that vary across projects |
-| **Skill-only pattern** | Use config sparingly. If the skill works with sensible defaults, skip config entirely |
+| Pattern                | Configuration Role                                                                                              |
+| ---------------------- | --------------------------------------------------------------------------------------------------------------- |
+| **Agent pattern**      | Prefer agent memory for per-user preferences. Use config only for values that must be shared across the project |
+| **Workflow pattern**   | Use config for output locations and behavior switches that vary across projects                                 |
+| **Skill-only pattern** | Use config sparingly. If the skill works with sensible defaults, skip config entirely                           |
 
 Extensive workflow customization — step overrides, conditional branching, template selection — is a separate concern and will be covered in a dedicated document.
 
@@ -120,11 +120,11 @@ Extensive workflow customization — step overrides, conditional branching, temp
 
 The **Module Builder** (`bmad-module-builder`) automates module creation. It offers three capabilities:
 
-| Capability | Menu Code | What It Does |
-| ---------- | --------- | ------------ |
-| **Ideate Module** | IM | Brainstorm and plan a module through facilitative discovery — produces a plan document |
-| **Create Module** | CM | Scaffold a setup skill into an existing folder of built skills |
-| **Validate Module** | VM | Check that a module's setup skill is complete, accurate, and properly registered |
+| Capability          | Menu Code | What It Does                                                                           |
+| ------------------- | --------- | -------------------------------------------------------------------------------------- |
+| **Ideate Module**   | IM        | Brainstorm and plan a module through facilitative discovery — produces a plan document |
+| **Create Module**   | CM        | Scaffold a setup skill into an existing folder of built skills                         |
+| **Validate Module** | VM        | Check that a module's setup skill is complete, accurate, and properly registered       |
 
 **Typical workflow:**
 

@@ -13,6 +13,7 @@ You are a module packaging specialist. The user has built their skills — your 
 Ask the user for the folder path containing their built skills. Also ask: do they have a plan document from an Ideate Module (IM) session? If so, read it — it provides valuable context for ordering, relationships, and design intent.
 
 **Read every SKILL.md in the folder thoroughly.** Understand each skill's:
+
 - Name, purpose, and capabilities
 - Arguments and interaction model
 - What it produces and where
@@ -33,21 +34,22 @@ Collect through conversation (or extract from a plan document in headless mode):
 
 Build the help CSV entries for each skill. A single skill can have multiple capabilities (rows). For each capability:
 
-| Field | Description |
-|---|---|
-| **display-name** | What the user sees in help/menus |
-| **menu-code** | 2-letter shortcut, unique across the module |
-| **description** | What this capability does (concise) |
-| **action** | The capability/action name within the skill |
-| **args** | Supported arguments (e.g., `[-H] [path]`) |
-| **phase** | When it can run — usually "anytime" |
-| **after** | Capabilities that should come before this one (format: `skill:action`) |
-| **before** | Capabilities that should come after this one (format: `skill:action`) |
-| **required** | Is this capability required before others can run? |
-| **output-location** | Where output goes (config variable name or path) |
-| **outputs** | What it produces |
+| Field               | Description                                                            |
+| ------------------- | ---------------------------------------------------------------------- |
+| **display-name**    | What the user sees in help/menus                                       |
+| **menu-code**       | 2-letter shortcut, unique across the module                            |
+| **description**     | What this capability does (concise)                                    |
+| **action**          | The capability/action name within the skill                            |
+| **args**            | Supported arguments (e.g., `[-H] [path]`)                              |
+| **phase**           | When it can run — usually "anytime"                                    |
+| **after**           | Capabilities that should come before this one (format: `skill:action`) |
+| **before**          | Capabilities that should come after this one (format: `skill:action`)  |
+| **required**        | Is this capability required before others can run?                     |
+| **output-location** | Where output goes (config variable name or path)                       |
+| **outputs**         | What it produces                                                       |
 
 Ask the user about:
+
 - How capabilities should be ordered — are there natural sequences?
 - Which capabilities are prerequisites for others?
 - If this is an expansion module, do any capabilities reference the parent module's skills in their before/after fields?
@@ -56,13 +58,13 @@ Ask the user about:
 
 Does the module need custom installation questions? For each custom variable:
 
-| Field | Description |
-|---|---|
-| **Key name** | Used in config.yaml under the module section |
-| **Prompt** | Question shown to user during setup |
-| **Default** | Default value |
+| Field               | Description                                                                  |
+| ------------------- | ---------------------------------------------------------------------------- |
+| **Key name**        | Used in config.yaml under the module section                                 |
+| **Prompt**          | Question shown to user during setup                                          |
+| **Default**         | Default value                                                                |
 | **Result template** | Transform applied to user's answer (e.g., prepend project-root to the value) |
-| **user_setting** | If true, stored in config.user.yaml instead of config.yaml |
+| **user_setting**    | If true, stored in config.user.yaml instead of config.yaml                   |
 
 Remind the user: skills should always have sensible fallbacks if config hasn't been set. If a skill needs a value at runtime and it hasn't been configured, it should ask the user directly rather than failing.
 
@@ -79,6 +81,7 @@ If any of these apply, let the user know the scaffolded setup skill will need ma
 ### 6. Generate and Confirm
 
 Present the complete module.yaml and module-help.csv content for the user to review. Show:
+
 - Module identity and metadata
 - All configuration variables with their prompts and defaults
 - Complete help CSV entries with ordering and relationships
@@ -100,6 +103,7 @@ python3 ./scripts/scaffold-setup-skill.py \
 ```
 
 This creates `bmad-{code}-setup/` in the user's skills folder containing:
+
 - `./SKILL.md` — Generic setup skill with module-specific frontmatter
 - `./scripts/` — merge-config.py, merge-help-csv.py, cleanup-legacy.py
 - `./assets/module.yaml` — Generated module definition
@@ -116,6 +120,7 @@ Show what was created — the setup skill folder structure and key file contents
 ## Headless Mode
 
 When `--headless` is set, the skill requires either:
+
 - A **plan document path** — extract all module identity, capabilities, and config from it
 - A **skills folder path** — read skills and infer sensible defaults for module identity
 

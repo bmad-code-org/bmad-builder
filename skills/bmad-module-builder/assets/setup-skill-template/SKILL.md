@@ -1,5 +1,5 @@
 ---
-name: {setup-skill-name}
+name: { setup-skill-name }
 description: Sets up {module-name} module in a project. Use when the user requests to 'install {module-code} module', 'configure {module-name}', or 'setup {module-name}'.
 ---
 
@@ -69,7 +69,7 @@ Check `directories_removed` and `files_removed_count` in the JSON output for the
 
 ## Confirm
 
-Use the script JSON output to display what was written — config values set (written to `config.yaml` at root for core, module section for module values), user settings written to `config.user.yaml` (`user_keys` in result), help entries added, fresh install vs update. If legacy files were deleted, mention the migration. If legacy directories were removed, report the count and list (e.g. "Cleaned up 106 installer package files from bmb/, core/, _config/ — skills are installed at .claude/skills/"). Then display the `module_greeting` from `./assets/module.yaml` to the user.
+Use the script JSON output to display what was written — config values set (written to `config.yaml` at root for core, module section for module values), user settings written to `config.user.yaml` (`user_keys` in result), help entries added, fresh install vs update. If legacy files were deleted, mention the migration. If legacy directories were removed, report the count and list (e.g. "Cleaned up 106 installer package files from bmb/, core/, \_config/ — skills are installed at .claude/skills/"). Then display the `module_greeting` from `./assets/module.yaml` to the user.
 
 ## Outcome
 

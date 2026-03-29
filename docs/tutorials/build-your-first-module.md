@@ -1,5 +1,5 @@
 ---
-title: "Build Your First Module"
+title: 'Build Your First Module'
 description: Create a complete BMad module from idea to installable package using the Module Builder
 ---
 
@@ -14,9 +14,10 @@ Walk through the complete module lifecycle — from brainstorming an idea to sca
 - How to validate your module with Validate Module (VM)
 
 :::note[Prerequisites]
+
 - BMad Builder module installed in your project (`bmad-builder-setup`)
 - Familiarity with what agents and workflows are — see **[What Are Agents](/explanation/what-are-bmad-agents.md)** and **[What Are Workflows](/explanation/what-are-workflows.md)**
-:::
+  :::
 
 :::tip[Quick Path]
 Already have your skills built? Skip to **Step 3: Scaffold the Module** to package them. Just need to validate an existing module? Jump to **Step 4: Validate**.
@@ -26,12 +27,12 @@ Already have your skills built? Skip to **Step 3: Scaffold the Module** to packa
 
 A BMad module is a folder of skills (agents and/or workflows) plus a setup skill that handles installation. The setup skill collects configuration, registers capabilities with the help system, and makes the module discoverable.
 
-| Component | What It Does |
-| --------- | ------------ |
-| **Your skills** | Agents and workflows that deliver the module's value |
-| **Setup skill** | Generated infrastructure — config collection, help registration |
-| **module.yaml** | Module identity and configurable variables |
-| **module-help.csv** | Capability entries for the help system |
+| Component           | What It Does                                                    |
+| ------------------- | --------------------------------------------------------------- |
+| **Your skills**     | Agents and workflows that deliver the module's value            |
+| **Setup skill**     | Generated infrastructure — config collection, help registration |
+| **module.yaml**     | Module identity and configurable variables                      |
+| **module-help.csv** | Capability entries for the help system                          |
 
 See **[What Are Modules](/explanation/what-are-modules.md)** for architecture decisions and design patterns.
 
@@ -47,15 +48,15 @@ Start with the Ideate Module capability to brainstorm and plan.
 
 The ideation session covers:
 
-| Topic | What You'll Decide |
-| ----- | ------------------ |
-| **Vision** | Problem space, target users, core value |
-| **Architecture** | Single agent, multiple workflows, or hybrid |
-| **Memory** | For multi-agent modules: personal sidecars, shared module memory, or both |
-| **Module type** | Standalone or expansion of another module |
-| **Skills** | Each planned skill's purpose, capabilities, and relationships |
-| **Configuration** | Custom install questions and variables |
-| **Dependencies** | External CLI tools, MCP servers, web services |
+| Topic             | What You'll Decide                                                        |
+| ----------------- | ------------------------------------------------------------------------- |
+| **Vision**        | Problem space, target users, core value                                   |
+| **Architecture**  | Single agent, multiple workflows, or hybrid                               |
+| **Memory**        | For multi-agent modules: personal sidecars, shared module memory, or both |
+| **Module type**   | Standalone or expansion of another module                                 |
+| **Skills**        | Each planned skill's purpose, capabilities, and relationships             |
+| **Configuration** | Custom install questions and variables                                    |
+| **Dependencies**  | External CLI tools, MCP servers, web services                             |
 
 The output is a **plan document** saved to your reports folder. This document captures everything you discussed and serves as a blueprint for building each skill.
 
@@ -63,10 +64,10 @@ The output is a **plan document** saved to your reports folder. This document ca
 
 With your plan in hand, build each skill individually.
 
-| Skill Type | Builder | Menu Code |
-| ---------- | ------- | --------- |
-| Agent | Agent Builder | BA |
-| Workflow or utility | Workflow Builder | BW |
+| Skill Type          | Builder          | Menu Code |
+| ------------------- | ---------------- | --------- |
+| Agent               | Agent Builder    | BA        |
+| Workflow or utility | Workflow Builder | BW        |
 
 Share the plan document as context when building each skill — it helps the builder understand the bigger picture and how the skill fits into the module.
 
@@ -112,10 +113,10 @@ Run Validate Module (VM) to check that everything is wired correctly.
 **Builder:** Runs structural checks and quality assessment, then reports findings.
 :::
 
-| Check Type | What It Catches |
-| ---------- | --------------- |
+| Check Type     | What It Catches                                                        |
+| -------------- | ---------------------------------------------------------------------- |
 | **Structural** | Missing files, orphan entries, duplicate menu codes, broken references |
-| **Quality** | Inaccurate descriptions, missing capabilities, poor entry quality |
+| **Quality**    | Inaccurate descriptions, missing capabilities, poor entry quality      |
 
 Fix any findings and re-validate until clean.
 
@@ -138,13 +139,13 @@ Your module is now a complete, distributable BMad module. To install it in any p
 
 ## Quick Reference
 
-| Capability | Menu Code | When to Use |
-| ---------- | --------- | ----------- |
-| Ideate Module | IM | Planning a new module from scratch |
-| Build an Agent | BA | Building an agent skill for the module |
-| Build a Workflow | BW | Building a workflow skill for the module |
-| Create Module | CM | Scaffolding the setup skill after skills are built |
-| Validate Module | VM | Checking the module is complete and accurate |
+| Capability       | Menu Code | When to Use                                        |
+| ---------------- | --------- | -------------------------------------------------- |
+| Ideate Module    | IM        | Planning a new module from scratch                 |
+| Build an Agent   | BA        | Building an agent skill for the module             |
+| Build a Workflow | BW        | Building a workflow skill for the module           |
+| Create Module    | CM        | Scaffolding the setup skill after skills are built |
+| Validate Module  | VM        | Checking the module is complete and accurate       |
 
 ## Common Questions
 

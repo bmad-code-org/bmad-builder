@@ -33,6 +33,7 @@ This is where LLM judgment matters. Read every SKILL.md in the module thoroughly
 **Accuracy** — Does each entry's description actually match what the skill does? Are the action names correct? Do the args match what the skill accepts?
 
 **Description quality** — Each description should be:
+
 - Concise but informative — enough for a user to know what it does and for an LLM to route correctly
 - Action-oriented — starts with a verb (Create, Validate, Brainstorm, Scaffold)
 - Specific — avoids vague language ("helps with things", "manages stuff")
