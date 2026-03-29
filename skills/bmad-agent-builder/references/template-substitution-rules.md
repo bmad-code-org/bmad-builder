@@ -13,12 +13,14 @@ The SKILL-template provides a minimal skeleton: frontmatter, overview, agent ide
 ## Module Conditionals
 
 ### For Module-Based Agents
+
 - `{if-module}` ... `{/if-module}` → Keep the content inside
 - `{if-standalone}` ... `{/if-standalone}` → Remove the entire block including markers
 - `{module-code}` → Module code without trailing hyphen (e.g., `cis`)
 - `{module-setup-skill}` → Name of the module's setup skill (e.g., `bmad-cis-setup`)
 
 ### For Standalone Agents
+
 - `{if-module}` ... `{/if-module}` → Remove the entire block including markers
 - `{if-standalone}` ... `{/if-standalone}` → Keep the content inside
 
@@ -38,6 +40,7 @@ The builder determines the rest of the agent structure — capabilities, activat
 ## Path References
 
 All generated agents use `./` prefix for skill-internal paths:
+
 - `./references/init.md` — First-run onboarding (if sidecar)
 - `./references/{capability}.md` — Individual capability prompts
 - `./references/memory-system.md` — Memory discipline (if sidecar)

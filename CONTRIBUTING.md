@@ -11,12 +11,14 @@ Thank you for considering contributing! We believe in **Human Amplification, Not
 BMad strengthens human-AI collaboration through specialized agents and guided workflows. Every contribution should answer: **"Does this make humans and AI better together?"**
 
 **✅ What we welcome:**
+
 - Enhanced collaboration patterns and workflows
 - Improved agent personas and prompts
 - Domain-specific modules leveraging BMad Core
 - Better planning and context continuity
 
 **❌ What doesn't fit:**
+
 - Purely automated solutions that sideline humans
 - Complexity that creates barriers to adoption
 - Features that fragment BMad Core's foundation
@@ -97,17 +99,21 @@ If your change exceeds 800 lines, break it into smaller PRs that can be reviewed
 
 ```markdown
 ## What
+
 [1-2 sentences describing WHAT changed]
 
 ## Why
+
 [1-2 sentences explaining WHY this change is needed]
 Fixes #[issue number]
 
 ## How
+
 - [2-3 bullets listing HOW you implemented it]
 -
 
 ## Testing
+
 [1-2 sentences on how you tested this]
 ```
 
@@ -130,7 +136,7 @@ Keep messages under 72 characters. Each commit = one logical change.
 
 ## What Makes a Good PR?
 
-| ✅ Do                        | ❌ Don't                      |
+| ✅ Do                       | ❌ Don't                     |
 | --------------------------- | ---------------------------- |
 | Change one thing per PR     | Mix unrelated changes        |
 | Clear title and description | Vague or missing explanation |

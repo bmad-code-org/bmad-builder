@@ -4,10 +4,10 @@
 
 We release security patches for the following versions:
 
-| Version | Supported          |
-| ------- | ------------------ |
-| Latest  | :white_check_mark: |
-| < Latest | :x:               |
+| Version  | Supported          |
+| -------- | ------------------ |
+| Latest   | :white_check_mark: |
+| < Latest | :x:                |
 
 We recommend always using the latest version of BMad Method to ensure you have the most recent security updates.
 

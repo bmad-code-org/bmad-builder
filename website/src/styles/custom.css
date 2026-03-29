@@ -21,8 +21,8 @@
 
   /* Primary accent colors - purple to match BMAD */
   --sl-color-accent-low: #e0e0ff;
-  --sl-color-accent: #8C8CFF;
-  --sl-color-accent-high: #4141FF;
+  --sl-color-accent: #8c8cff;
+  --sl-color-accent-high: #4141ff;
 
   /* Text colors */
   --sl-color-white: #1e293b;
@@ -35,8 +35,7 @@
   --sl-color-black: #f8fafc;
 
   /* Font settings */
-  --sl-font: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue',
-    Arial, sans-serif;
+  --sl-font: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
   --sl-text-base: 1rem;
   --sl-line-height: 1.7;
 
@@ -53,8 +52,8 @@
 
   /* Primary accent colors - purple to match BMAD */
   --sl-color-accent-low: #2a2a5a;
-  --sl-color-accent: #8C8CFF;
-  --sl-color-accent-high: #B9B9FF;
+  --sl-color-accent: #8c8cff;
+  --sl-color-accent-high: #b9b9ff;
 
   /* Background colors */
   --sl-color-bg: #1b1b1d;
@@ -396,7 +395,7 @@ blockquote {
 }
 
 .starlight-aside--note .starlight-aside__title {
-  color: #8C8CFF;
+  color: #8c8cff;
 }
 
 :root[data-theme='dark'] .starlight-aside--note {
@@ -404,7 +403,7 @@ blockquote {
 }
 
 :root[data-theme='dark'] .starlight-aside--note .starlight-aside__title {
-  color: #8C8CFF;
+  color: #8c8cff;
 }
 
 /* Caution aside */

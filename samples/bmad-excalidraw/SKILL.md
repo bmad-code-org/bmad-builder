@@ -50,15 +50,16 @@ Produce professional diagrams and visual aids as Excalidraw files through conver
 
 ## Stages
 
-| # | Stage | Purpose | Prompt |
-|---|-------|---------|--------|
-| 1 | Guided Design | Creative facilitation — brainstorm diagram type, content, layout | `guided-design.md` |
-| 2 | Generation | Produce the `.excalidraw` file with proper layout | `diagram-generation.md` |
+| #   | Stage         | Purpose                                                          | Prompt                  |
+| --- | ------------- | ---------------------------------------------------------------- | ----------------------- |
+| 1   | Guided Design | Creative facilitation — brainstorm diagram type, content, layout | `guided-design.md`      |
+| 2   | Generation    | Produce the `.excalidraw` file with proper layout                | `diagram-generation.md` |
 
 Headless: skip guided-design, output file path on completion.
 
 ## Scripts
 
 Available scripts in `scripts/`:
+
 - `generate_excalidraw.py` — Takes a diagram specification JSON and produces a valid `.excalidraw` file with auto-layout
 - `validate_excalidraw.py` — Validates `.excalidraw` file structure and reports issues

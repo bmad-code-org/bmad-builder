@@ -25,21 +25,21 @@ BMad Builder lets you create:
 
 ## What Makes It Different
 
-| Feature | Why It Matters |
-|---------|----------------|
-| **Persistent Memory** | Agents remember across sessions — they learn and grow |
-| **Composable** | Your creations work alongside the entire BMad ecosystem |
-| **Skill-Compliant** | Built on open standards that work with any AI tool |
-| **Shareable** | Package your modules for the BMad Marketplace (coming soon) |
+| Feature               | Why It Matters                                              |
+| --------------------- | ----------------------------------------------------------- |
+| **Persistent Memory** | Agents remember across sessions — they learn and grow       |
+| **Composable**        | Your creations work alongside the entire BMad ecosystem     |
+| **Skill-Compliant**   | Built on open standards that work with any AI tool          |
+| **Shareable**         | Package your modules for the BMad Marketplace (coming soon) |
 
 ## What You Can Build
 
-| Domain | Example |
-|--------|---------|
-| **Personal** | Journal companion, habit coach, learning tutor |
+| Domain           | Example                                                     |
+| ---------------- | ----------------------------------------------------------- |
+| **Personal**     | Journal companion, habit coach, learning tutor              |
 | **Professional** | Code reviewer, documentation specialist, workflow automator |
-| **Creative** | Story architect, character developer, campaign designer |
-| **Any Domain** | If you can describe it, you can build it |
+| **Creative**     | Story architect, character developer, campaign designer     |
+| **Any Domain**   | If you can describe it, you can build it                    |
 
 ## Learn More
 

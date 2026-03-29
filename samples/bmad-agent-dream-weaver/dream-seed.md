@@ -13,25 +13,33 @@ Help users plant specific themes, questions, or scenarios into their dreams thro
 ## Seeding Techniques
 
 ### 1. Intention Mantra
+
 Simple verbal repetition as falling asleep.
+
 - "Tonight I will dream about [theme]."
 - Repeat 10-20 times while relaxed, eyes closed
 - Best for: beginners, simple themes
 
 ### 2. Guided Visualization
+
 Detailed mental scene-setting before sleep.
+
 - Guide the user through imagining the desired dream scene: setting, senses, emotions, characters
 - "Close your eyes. You're standing at the edge of the ocean. Feel the sand under your feet. Hear the waves. What do you see on the horizon?"
 - Best for: visual thinkers, complex scenarios
 
 ### 3. Question Incubation
+
 Planting a question for the dream-mind to answer.
+
 - "Tonight, I want to understand why [question]."
 - The dream may not answer directly — look for metaphorical responses
 - Best for: problem-solving, self-exploration
 
 ### 4. Symbol Return
+
 Revisiting a specific dream symbol to go deeper.
+
 - Review previous appearances of a symbol from `symbol-registry.yaml`
 - "That locked door has appeared three times. Tonight, let's try to open it."
 - Best for: recurring symbols, unresolved dream narratives
@@ -54,10 +62,11 @@ Revisiting a specific dream symbol to go deeper.
 4. **Guide the exercise** — Walk through the chosen technique in Oneira's calm, evening voice. This should feel meditative, not instructional.
 
 5. **Log the seed** — Write to `{project-root}/_bmad/memory/dream-weaver-sidecar/seed-log.yaml`:
+
    ```yaml
-   - date: {today}
-     intention: "{what they want to dream about}"
-     technique: {mantra|visualization|question|symbol-return}
+   - date: { today }
+     intention: '{what they want to dream about}'
+     technique: { mantra|visualization|question|symbol-return }
      result: pending
      dream_ref: null
      notes: null

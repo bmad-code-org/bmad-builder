@@ -17,16 +17,20 @@ Scripts validate structure and syntax (deterministic). Prompts evaluate semantic
 During build, walk through every capability/operation and apply these tests:
 
 ### The Determinism Test
+
 For each operation the agent performs, ask:
+
 - Given identical input, will this ALWAYS produce identical output? → Script
 - Does this require interpreting meaning, tone, context, or ambiguity? → Prompt
 - Could you write a unit test with expected output for every input? → Script
 
 ### The Judgment Boundary
+
 Scripts handle: fetch, transform, validate, count, parse, compare, extract, format, check structure
 Prompts handle: interpret, classify with ambiguity, create, decide with incomplete info, evaluate quality, synthesize meaning
 
 ### Pattern Recognition Checklist
+
 Table of signal verbs/patterns mapping to script types:
 | Signal Verb/Pattern | Script Type |
 |---------------------|-------------|
@@ -41,7 +45,9 @@ Table of signal verbs/patterns mapping to script types:
 | "graph", "map dependencies" | Dependency analysis script |
 
 ### The Outside-the-Box Test
+
 Beyond obvious validation, consider:
+
 - Could any data gathering step be a script that returns structured JSON for the LLM to interpret?
 - Could pre-processing reduce what the LLM needs to read?
 - Could post-processing validate what the LLM produced?
@@ -58,6 +64,7 @@ Beyond obvious validation, consider:
 If you can express the logic as deterministic code, it's a script candidate.
 
 ### The --help Pattern
+
 All scripts use PEP 723 and `--help`. When a skill's prompt needs to invoke a script, it can say "Run `scripts/foo.py --help` to understand inputs/outputs, then invoke appropriately" instead of inlining the script's interface. This saves tokens in prompts and keeps a single source of truth for the script's API.
 
 ---
@@ -71,6 +78,7 @@ All scripts use PEP 723 and `--help`. When a skill's prompt needs to invoke a sc
 **Why:** Frontmatter is the #1 factor in skill triggering. Catch errors early.
 
 **Checks:**
+
 ```python
 # checks:
 - name exists and is kebab-case
@@ -104,6 +112,7 @@ All scripts use PEP 723 and `--help`. When a skill's prompt needs to invoke a sc
 **Why:** Security critical — must be defined before file operations
 
 **Checks:**
+
 ```python
 # Parse memory-system.md for:
 - ## Read Access section exists
@@ -129,6 +138,7 @@ All scripts use PEP 723 and `--help`. When a skill's prompt needs to invoke a sc
 **Why:** Identify verbose files that need optimization
 
 **Checks:**
+
 ```python
 # For each .md file:
 - Total tokens (approximate: chars / 4)
@@ -149,6 +159,7 @@ All scripts use PEP 723 and `--help`. When a skill's prompt needs to invoke a sc
 **Why:** Understand agent's dependency surface
 
 **Checks:**
+
 ```python
 # Parse SKILL.md for skill invocation patterns
 # Parse prompt files for external skill references
@@ -184,6 +195,7 @@ Validate that the activation sequence is logically ordered (e.g., config loads b
 **Why:** Memory files have specific requirements
 
 **Checks:**
+
 ```python
 # Required sections:
 - ## Core Principle
@@ -205,6 +217,7 @@ Validate that the activation sequence is logically ordered (e.g., config loads b
 **Why:** Agents processing 5+ sources MUST use subagents
 
 **Checks:**
+
 ```python
 # Pattern detection in SKILL.md:
 - "DO NOT read sources yourself"
@@ -242,6 +255,7 @@ Validate that the activation sequence is logically ordered (e.g., config loads b
 **Why:** Validate changes during iteration
 
 **Checks:**
+
 ```bash
 # Git diff with structure awareness:
 - Frontmatter changes
@@ -271,7 +285,7 @@ All scripts MUST output structured JSON for agent consumption:
     {
       "severity": "critical|high|medium|low|info",
       "category": "structure|security|performance|consistency",
-      "location": {"file": "SKILL.md", "line": 42},
+      "location": { "file": "SKILL.md", "line": 42 },
       "issue": "Clear description",
       "fix": "Specific action to resolve"
     }
@@ -313,6 +327,7 @@ The Quality Analysis skill should:
 3. **Finally**: Synthesize both sources into report
 
 **Example flow:**
+
 ```bash
 # Run all validation scripts
 python scripts/validate-frontmatter.py --agent-path {path}
@@ -328,18 +343,12 @@ bash scripts/scan-template-artifacts.sh --agent-path {path}
 ## Script Creation Priorities
 
 **Phase 1 (Immediate value):**
+
 1. Template Artifact Scanner (Bash + jq)
 2. Access Boundaries Extractor (Python)
 
-**Phase 2 (Enhanced validation):**
-4. Token Counter (Python)
-5. Subagent Pattern Detector (Python)
-6. Activation Flow Analyzer (Python)
+**Phase 2 (Enhanced validation):** 4. Token Counter (Python) 5. Subagent Pattern Detector (Python) 6. Activation Flow Analyzer (Python)
 
-**Phase 3 (Advanced features):**
-7. Dependency Graph Generator (Python)
-8. Memory Structure Validator (Python)
-9. Agent Health Check orchestrator (Bash)
+**Phase 3 (Advanced features):** 7. Dependency Graph Generator (Python) 8. Memory Structure Validator (Python) 9. Agent Health Check orchestrator (Bash)
 
-**Phase 4 (Comparison tools):**
-10. Comparison Validator (Bash + Python)
+**Phase 4 (Comparison tools):** 10. Comparison Validator (Bash + Python)

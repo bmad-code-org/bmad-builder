@@ -1,20 +1,20 @@
 ---
-title: "Progressive Disclosure in Skills"
+title: 'Progressive Disclosure in Skills'
 description: How to structure skills so they load only the context needed at each moment — from frontmatter through dynamic routing to step files
 ---
 
-Progressive disclosure is the technique that separates basic skills from powerful ones. The core idea: never load more context than the agent needs *right now*. This keeps token usage low, prevents context pollution, and makes skills survive long conversations.
+Progressive disclosure is the technique that separates basic skills from powerful ones. The core idea: never load more context than the agent needs _right now_. This keeps token usage low, prevents context pollution, and makes skills survive long conversations.
 
 ## The Four Layers
 
 Skills can use any combination of these layers. Most production skills use Layers 1-3. Layer 4 is reserved for strict sequential processes.
 
-| Layer | What It Does | Token Cost |
-| ----- | ------------ | ---------- |
-| **1. Frontmatter vs Body** | Frontmatter is always in context; body loads only when triggered | ~100 tokens always, body on demand |
-| **2. On-Demand Resources** | SKILL.md points to resources and scripts loaded only when relevant | Zero until needed |
-| **3. Dynamic Routing** | SKILL.md acts as a router, dispatching to entirely different prompt flows | Only the chosen path loads |
-| **4. Step Files** | Agent reads one step at a time, never sees ahead | One step's worth at a time |
+| Layer                      | What It Does                                                              | Token Cost                         |
+| -------------------------- | ------------------------------------------------------------------------- | ---------------------------------- |
+| **1. Frontmatter vs Body** | Frontmatter is always in context; body loads only when triggered          | ~100 tokens always, body on demand |
+| **2. On-Demand Resources** | SKILL.md points to resources and scripts loaded only when relevant        | Zero until needed                  |
+| **3. Dynamic Routing**     | SKILL.md acts as a router, dispatching to entirely different prompt flows | Only the chosen path loads         |
+| **4. Step Files**          | Agent reads one step at a time, never sees ahead                          | One step's worth at a time         |
 
 ## Layer 1: Frontmatter vs Body
 
@@ -29,6 +29,7 @@ description: Validates API contracts against OpenAPI specs. Use when user says '
 ---
 
 # Body loads only when triggered
+
 ...
 ```
 
@@ -38,6 +39,7 @@ SKILL.md points to resources loaded only when relevant. This includes both **ref
 
 ```markdown
 ## Which Guide to Read
+
 - Python project → Read `resources/python.md`
 - TypeScript project → Read `resources/typescript.md`
 - Need validation → Run `scripts/validate.py` (don't read the script, just run it)
@@ -53,12 +55,15 @@ The skill body acts as a **router** that dispatches to entirely different prompt
 ## What Are You Trying To Do?
 
 ### "Build a new workflow"
+
 → Read `prompts/create-flow.md` and follow its instructions
 
 ### "Review an existing workflow"
+
 → Read `prompts/review-flow.md` and follow its instructions
 
 ### "Run analysis"
+
 → Run `scripts/analyze.py --target <path>` and present results
 ```
 
@@ -88,21 +93,21 @@ Most skills only need Layers 1-2. Add Layer 3 when the skill genuinely handles m
 
 Long-running workflows risk losing context when the conversation compresses. The **document-as-cache pattern** solves this: the output document itself stores the workflow's state.
 
-| Component | Purpose |
-| --------- | ------- |
+| Component             | Purpose                                                |
+| --------------------- | ------------------------------------------------------ |
 | **YAML front matter** | Paths to input files, current stage status, timestamps |
-| **Draft sections** | Progressive content built across stages |
-| **Status marker** | Which stage is complete, for resumption |
+| **Draft sections**    | Progressive content built across stages                |
+| **Status marker**     | Which stage is complete, for resumption                |
 
 Each stage reads the output document to restore context, does its work, and writes results back to the same document. If context compacts mid-workflow, the next stage recovers by reading the document and reloading the input files listed in front matter.
 
 ```markdown
 ---
-title: "Analysis: Research Topic"
-status: "analysis"
+title: 'Analysis: Research Topic'
+status: 'analysis'
 inputs:
-  - "{project_root}/docs/brief.md"
-  - "{project_root}/data/sources.json"
+  - '{project_root}/docs/brief.md'
+  - '{project_root}/data/sources.json'
 ---
 ```
 
@@ -110,11 +115,11 @@ This avoids separate cache files, file collisions when running multiple workflow
 
 ## Choosing the Right Layer
 
-| Situation | Recommended Layer |
-| --------- | ----------------- |
-| Single-purpose utility with one path | Layer 1-2 |
-| Skill with conditional reference data | Layer 2 |
-| Skill that does multiple distinct things | Layer 3 |
-| Skill with stages that depend on each other | Layer 3 + compaction survival |
-| Strict sequential process, no skipping allowed | Layer 4 |
-| Long-running workflow producing a document | Layer 3 + document-as-cache |
+| Situation                                      | Recommended Layer             |
+| ---------------------------------------------- | ----------------------------- |
+| Single-purpose utility with one path           | Layer 1-2                     |
+| Skill with conditional reference data          | Layer 2                       |
+| Skill that does multiple distinct things       | Layer 3                       |
+| Skill with stages that depend on each other    | Layer 3 + compaction survival |
+| Strict sequential process, no skipping allowed | Layer 4                       |
+| Long-running workflow producing a document     | Layer 3 + document-as-cache   |

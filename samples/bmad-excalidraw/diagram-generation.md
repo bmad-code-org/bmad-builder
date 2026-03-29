@@ -59,6 +59,7 @@ echo '<json-spec>' | python3 scripts/generate_excalidraw.py --output '{output_fo
 ```
 
 The script handles:
+
 - Auto-layout based on diagram type and direction
 - Element sizing based on text content
 - Arrow routing between elements
@@ -91,6 +92,7 @@ Present the result:
 ## Iteration
 
 If the user wants changes:
+
 - Read the existing file
 - Apply modifications to the spec
 - Re-run generation

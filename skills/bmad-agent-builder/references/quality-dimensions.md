@@ -16,13 +16,13 @@ The executing agent needs enough context to make judgment calls when situations 
 
 - Simple agents with 1-2 capabilities need minimal context
 - Agents with memory, autonomous mode, or complex capabilities need domain understanding, user perspective, and rationale for non-obvious choices
-- When in doubt, explain *why* — an agent that understands the mission improvises better than one following blind steps
+- When in doubt, explain _why_ — an agent that understands the mission improvises better than one following blind steps
 
 ## 3. Intelligence Placement
 
 Scripts handle plumbing (fetch, transform, validate). Prompts handle judgment (interpret, classify, decide).
 
-**Test:** If a script contains an `if` that decides what content *means*, intelligence has leaked.
+**Test:** If a script contains an `if` that decides what content _means_, intelligence has leaked.
 
 **Reverse test:** If a prompt validates structure, counts items, parses known formats, compares against schemas, or checks file existence — determinism has leaked into the LLM. That work belongs in a script.
 

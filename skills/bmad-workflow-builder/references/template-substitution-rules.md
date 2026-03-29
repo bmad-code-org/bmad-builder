@@ -11,12 +11,14 @@ The SKILL-template provides a minimal skeleton: frontmatter, overview, and activ
 ## Module Conditionals
 
 ### For Module-Based Skills
+
 - `{if-module}` ... `{/if-module}` → Keep the content inside
 - `{if-standalone}` ... `{/if-standalone}` → Remove the entire block including markers
 - `{module-code}` → Module code without trailing hyphen (e.g., `bmb`)
 - `{module-setup-skill}` → Name of the module's setup skill (e.g., `bmad-builder-setup`)
 
 ### For Standalone Skills
+
 - `{if-module}` ... `{/if-module}` → Remove the entire block including markers
 - `{if-standalone}` ... `{/if-standalone}` → Keep the content inside
 
@@ -27,6 +29,7 @@ The builder determines the rest of the skill structure — body sections, phases
 ## Path References
 
 All generated skills use `./` prefix for skill-internal paths:
+
 - `./references/{reference}.md` — Reference documents loaded on demand
 - `./references/{stage}.md` — Stage prompts (complex workflows)
 - `./scripts/` — Python/shell scripts for deterministic operations

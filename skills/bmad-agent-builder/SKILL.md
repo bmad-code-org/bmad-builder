@@ -44,12 +44,12 @@ Load `quality-analysis.md` to begin.
 
 ## Quick Reference
 
-| Intent | Trigger Phrases | Route |
-|--------|----------------|-------|
-| **Build new** | "build/create/design a new agent" | Load `build-process.md` |
+| Intent                      | Trigger Phrases                                       | Route                                    |
+| --------------------------- | ----------------------------------------------------- | ---------------------------------------- |
+| **Build new**               | "build/create/design a new agent"                     | Load `build-process.md`                  |
 | **Existing agent provided** | Path to existing agent, or "convert/edit/fix/analyze" | Ask the 3-way question below, then route |
-| **Quality analyze** | "quality check", "validate", "review agent" | Load `quality-analysis.md` |
-| **Unclear** | — | Present options and ask |
+| **Quality analyze**         | "quality check", "validate", "review agent"           | Load `quality-analysis.md`               |
+| **Unclear**                 | —                                                     | Present options and ask                  |
 
 ### When given an existing agent, ask:
 

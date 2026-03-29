@@ -14,6 +14,7 @@ Your job is **synthesis, not transcription.** Don't list findings by scanner. Id
 ### Step 1: Read Everything
 
 Read all files in `{quality-report-dir}`:
+
 - `*-temp.json` — Lint script output (structured JSON with findings arrays)
 - `*-prepass.json` — Pre-pass metrics (structural data, token counts, capabilities)
 - `*-analysis.md` — LLM scanner analyses (free-form markdown)
@@ -27,6 +28,7 @@ From the agent's SKILL.md, synthesize a 2-3 sentence portrait that captures who 
 ### Step 3: Build the Capability Dashboard
 
 From the routing table in SKILL.md, list every capability. Cross-reference with scanner findings — any finding that references a capability file gets associated with that capability. Rate each:
+
 - **Good** — no findings or only low/note severity
 - **Needs attention** — medium+ findings referencing this capability
 
@@ -39,6 +41,7 @@ Look across ALL scanner output for **findings that share a root cause** — obse
 Ask: "If I fixed X, how many findings across all scanners would this resolve?"
 
 Group related findings into 3-5 themes. A theme has:
+
 - **Name** — clear description of the root cause
 - **Description** — what's happening and why it matters (2-3 sentences)
 - **Severity** — highest severity of constituent findings
@@ -60,6 +63,7 @@ Gather strengths from all scanners. These tell the user what NOT to break — es
 ### Step 7: Organize Detailed Analysis
 
 For each analysis dimension, summarize the scanner's assessment and list findings not covered by themes:
+
 - **Structure & Capabilities** — from structure scanner
 - **Persona & Voice** — from prompt-craft scanner (agent-specific framing)
 - **Identity Cohesion** — from agent-cohesion scanner
@@ -88,9 +92,9 @@ Order by impact — "how many findings does fixing this resolve?" The fix that c
 
 ## Capabilities
 
-| Capability | Status | Observations |
-|-----------|--------|-------------|
-| {name} | Good / Needs attention | {count or —} |
+| Capability | Status                 | Observations |
+| ---------- | ---------------------- | ------------ |
+| {name}     | Good / Needs attention | {count or —} |
 
 ## Assessment
 
@@ -113,10 +117,15 @@ Order by impact — "how many findings does fixing this resolve?" The fix that c
 ## Detailed Analysis
 
 ### Structure & Capabilities
+
 ### Persona & Voice
+
 ### Identity Cohesion
+
 ### Execution Efficiency
+
 ### Conversation Experience
+
 ### Script Opportunities
 
 ## Recommendations
@@ -254,6 +263,7 @@ Every `"..."` below is a placeholder for your content. Replace with actual value
 ```
 
 **Self-check before writing report-data.json:**
+
 1. Is `meta.skill_name` present (not `meta.skill` or `meta.name`)?
 2. Is `meta.scanner_count` a number (not an array)?
 3. Does `agent_profile` have all 4 fields: `icon`, `display_name`, `title`, `portrait`?

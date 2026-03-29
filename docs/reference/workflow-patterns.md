@@ -1,5 +1,5 @@
 ---
-title: "Workflow & Skill Patterns"
+title: 'Workflow & Skill Patterns'
 description: Reference for the three skill types, their structure patterns, decision criteria, and execution models
 ---
 
@@ -7,11 +7,11 @@ Reference for how the BMad Builder classifies and structures skills. Every skill
 
 ## Skill Type Taxonomy
 
-| Type | Description | Structure |
-| ---- | ----------- | --------- |
-| **Simple Utility** | Input/output building block. Headless, composable, often script-driven. May opt out of config loading for true standalone use | SKILL.md + `scripts/` |
-| **Simple Workflow** | Multi-step process contained in a single SKILL.md. Loads config directly from module config.yaml. Minimal or no `prompts/` | SKILL.md + optional `resources/` |
-| **Complex Workflow** | Multi-stage with progressive disclosure, stage prompts in `prompts/`, config integration. May support headless mode | SKILL.md (routing) + `prompts/` stages + `resources/` |
+| Type                 | Description                                                                                                                   | Structure                                             |
+| -------------------- | ----------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------- |
+| **Simple Utility**   | Input/output building block. Headless, composable, often script-driven. May opt out of config loading for true standalone use | SKILL.md + `scripts/`                                 |
+| **Simple Workflow**  | Multi-step process contained in a single SKILL.md. Loads config directly from module config.yaml. Minimal or no `prompts/`    | SKILL.md + optional `resources/`                      |
+| **Complex Workflow** | Multi-stage with progressive disclosure, stage prompts in `prompts/`, config integration. May support headless mode           | SKILL.md (routing) + `prompts/` stages + `resources/` |
 
 ## Decision Tree
 
@@ -96,19 +96,18 @@ bmad-my-complex-workflow/
 
 ## Execution Models
 
-| Model | Applicable Types | Description |
-| ----- | ---------------- | ----------- |
-| **Interactive** | All | User invokes skill and interacts conversationally |
-| **Headless / Autonomous** | Simple Utility, Complex Workflow | Runs without user interaction — takes inputs, produces outputs |
-| **YOLO** | Simple Workflow, Complex Workflow | User brain-dumps; builder drafts the full artifact, then refines |
-| **Guided** | Simple Workflow, Complex Workflow | Section-by-section discovery with soft gates at transitions |
+| Model                     | Applicable Types                  | Description                                                      |
+| ------------------------- | --------------------------------- | ---------------------------------------------------------------- |
+| **Interactive**           | All                               | User invokes skill and interacts conversationally                |
+| **Headless / Autonomous** | Simple Utility, Complex Workflow  | Runs without user interaction — takes inputs, produces outputs   |
+| **YOLO**                  | Simple Workflow, Complex Workflow | User brain-dumps; builder drafts the full artifact, then refines |
+| **Guided**                | Simple Workflow, Complex Workflow | Section-by-section discovery with soft gates at transitions      |
 
 ## Module Context
 
 Module membership is orthogonal to skill type — any type can be standalone or part of a module.
 
-| Context | Naming | Init |
-| ------- | ------ | ---- |
-| **Module-based** | `bmad-{modulecode}-{skillname}` | Loads config from module config.yaml |
-| **Standalone** | `bmad-{skillname}` | Loads config from module config.yaml; simple utilities may opt out |
-
+| Context          | Naming                          | Init                                                               |
+| ---------------- | ------------------------------- | ------------------------------------------------------------------ |
+| **Module-based** | `bmad-{modulecode}-{skillname}` | Loads config from module config.yaml                               |
+| **Standalone**   | `bmad-{skillname}`              | Loads config from module config.yaml; simple utilities may opt out |

@@ -14,6 +14,7 @@ Your job is **synthesis, not transcription.** Don't list findings by scanner. Id
 ### Step 1: Read Everything
 
 Read all files in `{quality-report-dir}`:
+
 - `*-temp.json` — Lint script output (structured JSON with findings arrays)
 - `*-prepass.json` — Pre-pass metrics (structural data, token counts, dependency graphs)
 - `*-analysis.md` — LLM scanner analyses (free-form markdown with assessments, findings, strengths)
@@ -25,6 +26,7 @@ This is the most important step. Look across ALL scanner output for **findings t
 Ask: "If I fixed X, how many findings across all scanners would this resolve?"
 
 Group related findings into 3-5 themes. A theme has:
+
 - **Name** — clear description of the root cause (e.g., "Over-specification of LLM capabilities")
 - **Description** — what's happening and why it matters (2-3 sentences)
 - **Severity** — highest severity of constituent findings
@@ -37,6 +39,7 @@ Findings that don't fit any theme become standalone items.
 ### Step 3: Assess Overall Quality
 
 Synthesize a grade and narrative:
+
 - **Grade:** Excellent (no high+ issues, few medium) / Good (some high or several medium) / Fair (multiple high) / Poor (critical issues)
 - **Narrative:** 2-3 sentences capturing the skill's primary strength and primary opportunity. This is what the user reads first — make it count.
 
@@ -81,6 +84,7 @@ A narrative markdown report. Structure:
 **Fix:** {One coherent action to address the root cause.}
 
 **Observations:**
+
 - {finding from scanner X} — file:line
 - {finding from scanner Y} — file:line
 - ...
@@ -94,21 +98,27 @@ A narrative markdown report. Structure:
 ## Detailed Analysis
 
 ### Structure & Integrity
+
 {Assessment + any findings not covered by themes}
 
 ### Craft & Writing Quality
+
 {Assessment + prompt health + any remaining findings}
 
 ### Cohesion & Design
+
 {Assessment + dimension scores + any remaining findings}
 
 ### Execution Efficiency
+
 {Assessment + any remaining findings}
 
 ### User Experience
+
 {Journeys, headless assessment, edge cases}
 
 ### Script Opportunities
+
 {Assessment + token savings estimates}
 
 ## Recommendations
@@ -226,6 +236,7 @@ Every `"..."` below is a placeholder for your content. Replace with actual value
 ```
 
 **Self-check before writing report-data.json:**
+
 1. Is `meta.skill_name` present (not `meta.skill` or `meta.name`)?
 2. Is `meta.scanner_count` a number (not an array of scanner names)?
 3. Is every strength an object `{"title": "...", "detail": "..."}` (not a plain string)?

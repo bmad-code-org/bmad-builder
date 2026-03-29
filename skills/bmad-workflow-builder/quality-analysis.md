@@ -34,33 +34,33 @@ Check for uncommitted changes. In headless mode, note warnings and proceed. In i
 
 These run instantly, cost zero tokens, and produce structured JSON:
 
-| # | Script | Focus | Output File |
-|---|--------|-------|-------------|
-| S1 | `scripts/scan-path-standards.py` | Path conventions | `path-standards-temp.json` |
-| S2 | `scripts/scan-scripts.py` | Script portability, PEP 723, unit tests | `scripts-temp.json` |
+| #   | Script                           | Focus                                   | Output File                |
+| --- | -------------------------------- | --------------------------------------- | -------------------------- |
+| S1  | `scripts/scan-path-standards.py` | Path conventions                        | `path-standards-temp.json` |
+| S2  | `scripts/scan-scripts.py`        | Script portability, PEP 723, unit tests | `scripts-temp.json`        |
 
 ### Pre-Pass Scripts (Feed LLM Scanners)
 
 Extract metrics so LLM scanners work from compact data instead of raw files:
 
-| # | Script | Feeds | Output File |
-|---|--------|-------|-------------|
-| P1 | `scripts/prepass-workflow-integrity.py` | workflow-integrity scanner | `workflow-integrity-prepass.json` |
-| P2 | `scripts/prepass-prompt-metrics.py` | prompt-craft scanner | `prompt-metrics-prepass.json` |
-| P3 | `scripts/prepass-execution-deps.py` | execution-efficiency scanner | `execution-deps-prepass.json` |
+| #   | Script                                  | Feeds                        | Output File                       |
+| --- | --------------------------------------- | ---------------------------- | --------------------------------- |
+| P1  | `scripts/prepass-workflow-integrity.py` | workflow-integrity scanner   | `workflow-integrity-prepass.json` |
+| P2  | `scripts/prepass-prompt-metrics.py`     | prompt-craft scanner         | `prompt-metrics-prepass.json`     |
+| P3  | `scripts/prepass-execution-deps.py`     | execution-efficiency scanner | `execution-deps-prepass.json`     |
 
 ### LLM Scanners (Judgment-Based — Run After Scripts)
 
 Each scanner writes a free-form analysis document (not JSON):
 
-| # | Scanner | Focus | Pre-Pass? | Output File |
-|---|---------|-------|-----------|-------------|
-| L1 | `quality-scan-workflow-integrity.md` | Structural completeness, naming, type-appropriate requirements | Yes | `workflow-integrity-analysis.md` |
-| L2 | `quality-scan-prompt-craft.md` | Token efficiency, outcome-driven balance, progressive disclosure, pruning | Yes | `prompt-craft-analysis.md` |
-| L3 | `quality-scan-execution-efficiency.md` | Parallelization, subagent delegation, context optimization | Yes | `execution-efficiency-analysis.md` |
-| L4 | `quality-scan-skill-cohesion.md` | Stage flow, purpose alignment, complexity appropriateness | No | `skill-cohesion-analysis.md` |
-| L5 | `quality-scan-enhancement-opportunities.md` | Edge cases, UX gaps, user journeys, headless potential | No | `enhancement-opportunities-analysis.md` |
-| L6 | `quality-scan-script-opportunities.md` | Deterministic operations that should be scripts | No | `script-opportunities-analysis.md` |
+| #   | Scanner                                     | Focus                                                                     | Pre-Pass? | Output File                             |
+| --- | ------------------------------------------- | ------------------------------------------------------------------------- | --------- | --------------------------------------- |
+| L1  | `quality-scan-workflow-integrity.md`        | Structural completeness, naming, type-appropriate requirements            | Yes       | `workflow-integrity-analysis.md`        |
+| L2  | `quality-scan-prompt-craft.md`              | Token efficiency, outcome-driven balance, progressive disclosure, pruning | Yes       | `prompt-craft-analysis.md`              |
+| L3  | `quality-scan-execution-efficiency.md`      | Parallelization, subagent delegation, context optimization                | Yes       | `execution-efficiency-analysis.md`      |
+| L4  | `quality-scan-skill-cohesion.md`            | Stage flow, purpose alignment, complexity appropriateness                 | No        | `skill-cohesion-analysis.md`            |
+| L5  | `quality-scan-enhancement-opportunities.md` | Edge cases, UX gaps, user journeys, headless potential                    | No        | `enhancement-opportunities-analysis.md` |
+| L6  | `quality-scan-script-opportunities.md`      | Deterministic operations that should be scripts                           | No        | `script-opportunities-analysis.md`      |
 
 ## Execution
 
@@ -87,6 +87,7 @@ After scripts complete, spawn all applicable LLM scanners as parallel subagents.
 **For scanners WITHOUT pre-pass (L4, L5, L6):** provide just the skill path and output directory.
 
 Each subagent receives:
+
 - Scanner file to load
 - Skill path: `{skill-path}`
 - Output directory: `{report-dir}`
@@ -99,10 +100,12 @@ The subagent loads the scanner file, analyzes the skill, writes its analysis to 
 After all scanners complete, spawn a subagent with `report-quality-scan-creator.md`.
 
 Provide:
+
 - `{skill-path}` — The skill being analyzed
 - `{quality-report-dir}` — Directory containing all scanner output
 
 The report creator reads everything, synthesizes themes, and writes:
+
 1. `quality-report.md` — Narrative markdown report
 2. `report-data.json` — Structured data for HTML
 
@@ -121,6 +124,7 @@ This reads `report-data.json` and produces `quality-report.html` — a self-cont
 **IF `{headless_mode}=true`:**
 
 Read `report-data.json` and output:
+
 ```json
 {
   "headless_mode": true,
@@ -138,6 +142,7 @@ Read `report-data.json` and output:
 **IF interactive:**
 
 Read `report-data.json` and present:
+
 1. Grade and narrative — the 2-3 sentence synthesis
 2. Broken items (if any) — critical/high issues prominently
 3. Top opportunities — theme names with finding counts and impact

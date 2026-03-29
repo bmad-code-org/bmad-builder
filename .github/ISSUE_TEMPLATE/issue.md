@@ -10,6 +10,7 @@ assignees: ''
 A clear and concise description of what the bug is.
 
 **Steps to reproduce**
+
 1. What were you doing when the bug occurred?
 2. What steps can recreate the issue?
 
@@ -17,6 +18,7 @@ A clear and concise description of what the bug is.
 A clear and concise description of what you expected to happen.
 
 **Environment (if relevant)**
+
 - Model(s) used:
 - Agentic IDE used:
 - BMad version:

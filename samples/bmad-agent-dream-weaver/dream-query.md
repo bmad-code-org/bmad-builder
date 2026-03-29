@@ -17,23 +17,28 @@ For symbol/emotion queries: use `symbol-registry.yaml` as index first, then load
 ## Query Types
 
 **By symbol** — "When did I dream about water?"
+
 - Search `symbol-registry.yaml` for the symbol
 - Find all journal entries containing that symbol in frontmatter
 - Present chronologically with brief excerpts
 
 **By emotion** — "Show me my anxious dreams"
+
 - Search journal entries with matching emotion in frontmatter
 - Present with dates, vividness, and key symbols
 
 **By date/range** — "What did I dream last week?"
+
 - List journal entries within the date range
 - Show date, title, key symbols, vividness
 
 **By keyword** — "Did I ever dream about my grandmother?"
+
 - Full-text search across journal narrative content
 - Present matching entries with relevant excerpts
 
 **By attribute** — "Show me my most vivid dreams" / "Which dreams were lucid?"
+
 - Filter by vividness score, lucid flag, recall quality
 - Present sorted by the relevant attribute
 

@@ -7,6 +7,7 @@ When building scripts for a skill, follow these standards to ensure portability 
 **Always favor Python for script logic.** Bash is not portable — it fails or behaves inconsistently on Windows (Git Bash is MSYS2-based, not a full Linux shell; WSL bash can conflict with Git Bash on PATH; PowerShell is a different language entirely). Python with `uv run` works identically on all platforms.
 
 **Safe bash commands** — these work reliably across all environments and are fine to use directly:
+
 - `git`, `gh` — version control and GitHub CLI
 - `uv run` — Python script execution with automatic dependency handling
 - `npm`, `npx`, `pnpm` — Node.js ecosystem
@@ -51,6 +52,7 @@ For scripts using only the standard library, use a plain Python shebang but stil
 ```
 
 **Key rules:**
+
 - The shebang MUST be line 1 — before the metadata block
 - Always include `requires-python`
 - List all external dependencies with version constraints
@@ -73,6 +75,7 @@ Skills may run in environments where Python or `uv` is unavailable (e.g., claude
 **Pattern:** When a script cannot execute, the LLM performs the equivalent work directly. The script's `--help` documents what it checks, making this fallback natural. Design scripts so their logic is understandable from their help output and the skill's context.
 
 In SKILL.md, frame script steps as outcomes, not just commands:
+
 - Good: "Validate path conventions (run `scripts/scan-paths.py --help` for details)"
 - Avoid: "Execute `python3 scripts/scan-paths.py`" with no context about what it does
 

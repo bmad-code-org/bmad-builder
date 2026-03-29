@@ -20,45 +20,45 @@ BMad Builder lets you create:
 
 ## What Makes It Different
 
-| Feature | Why It Matters |
-|---------|----------------|
-| **Persistent Memory** | Agents remember across sessions — they learn and grow |
-| **Composable** | Your creations work alongside the entire BMad ecosystem |
-| **Skill-Compliant** | Built on open standards that work with any AI tool |
-| **Shareable** | Package your modules for the BMad Marketplace (coming soon) |
+| Feature               | Why It Matters                                              |
+| --------------------- | ----------------------------------------------------------- |
+| **Persistent Memory** | Agents remember across sessions — they learn and grow       |
+| **Composable**        | Your creations work alongside the entire BMad ecosystem     |
+| **Skill-Compliant**   | Built on open standards that work with any AI tool          |
+| **Shareable**         | Package your modules for the BMad Marketplace (coming soon) |
 
 ## Quick Start
 
-*Detailed quick start guide coming soon.* In the meantime, invoke the **Agent Builder** or **Workflow Builder** skill and describe what you want to build. Both guide you through a six-phase conversational discovery and produce a ready-to-use skill folder.
+_Detailed quick start guide coming soon._ In the meantime, invoke the **Agent Builder** or **Workflow Builder** skill and describe what you want to build. Both guide you through a six-phase conversational discovery and produce a ready-to-use skill folder.
 
 See the [Builder Commands Reference](/reference/builder-commands.md) for all capabilities, modes, and phases.
 
 ## What You Can Build
 
-| Domain | Example |
-|--------|---------|
-| **Personal** | Journal companion, habit coach, learning tutor, friendly personal companions that remember |
-| **Professional** | Code reviewer, documentation specialist, workflow automator |
-| **Creative** | Story architect, character developer, campaign designer |
-| **Any Domain** | If you can describe it, you can build it |
+| Domain           | Example                                                                                    |
+| ---------------- | ------------------------------------------------------------------------------------------ |
+| **Personal**     | Journal companion, habit coach, learning tutor, friendly personal companions that remember |
+| **Professional** | Code reviewer, documentation specialist, workflow automator                                |
+| **Creative**     | Story architect, character developer, campaign designer                                    |
+| **Any Domain**   | If you can describe it, you can build it                                                   |
 
 ## Design Patterns
 
 Build better skills with these guides distilled from real-world BMad development.
 
-| Guide | What You'll Learn |
-|-------|-------------------|
-| **[Progressive Disclosure](/explanation/progressive-disclosure.md)** | Structure skills so they load only the context needed at each moment |
-| **[Subagent Patterns](/explanation/subagent-patterns.md)** | Six orchestration patterns for parallel and hierarchical work |
-| **[Skill Authoring Best Practices](/explanation/skill-authoring-best-practices.md)** | Core principles, quality dimensions, and anti-patterns |
+| Guide                                                                                | What You'll Learn                                                    |
+| ------------------------------------------------------------------------------------ | -------------------------------------------------------------------- |
+| **[Progressive Disclosure](/explanation/progressive-disclosure.md)**                 | Structure skills so they load only the context needed at each moment |
+| **[Subagent Patterns](/explanation/subagent-patterns.md)**                           | Six orchestration patterns for parallel and hierarchical work        |
+| **[Skill Authoring Best Practices](/explanation/skill-authoring-best-practices.md)** | Core principles, quality dimensions, and anti-patterns               |
 
 ## Documentation
 
-| Section | Purpose |
-| ------- | ------- |
-| **[Concepts](/explanation/)** | What agents, workflows, and skills are — and how they relate |
+| Section                                              | Purpose                                                                  |
+| ---------------------------------------------------- | ------------------------------------------------------------------------ |
+| **[Concepts](/explanation/)**                        | What agents, workflows, and skills are — and how they relate             |
 | **[Design Patterns](/explanation/#design-patterns)** | Progressive disclosure, subagent orchestration, authoring best practices |
-| **[Reference](/reference/)** | Builder commands, workflow patterns |
+| **[Reference](/reference/)**                         | Builder commands, workflow patterns                                      |
 
 ## Community
 

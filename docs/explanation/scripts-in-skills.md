@@ -1,5 +1,5 @@
 ---
-title: "Scripts in Skills"
+title: 'Scripts in Skills'
 description: Why deterministic scripts make skills faster, cheaper, and more reliable — and the technical choices behind portable script design
 ---
 
@@ -19,11 +19,11 @@ The pattern shows up everywhere: skills that try to LLM their way through struct
 
 The core design principle is **intelligence placement** — put each operation where it belongs.
 
-| Scripts Handle | LLM Handles |
-| -------------- | ----------- |
-| Validate structure, format, schema | Interpret meaning, evaluate quality |
-| Count, parse, extract, transform | Classify ambiguous input, make judgment calls |
-| Compare, diff, check consistency | Synthesize insights, generate creative output |
+| Scripts Handle                     | LLM Handles                                      |
+| ---------------------------------- | ------------------------------------------------ |
+| Validate structure, format, schema | Interpret meaning, evaluate quality              |
+| Count, parse, extract, transform   | Classify ambiguous input, make judgment calls    |
+| Compare, diff, check consistency   | Synthesize insights, generate creative output    |
 | Pre-process data into compact form | Analyze pre-processed data with domain reasoning |
 
 **The test:** Given identical input, will this operation always produce identical output? If yes, it belongs in a script. Could you write a unit test with expected output? Definitely a script. Requires interpreting meaning, tone, or context? Keep it as an LLM prompt.
@@ -36,25 +36,25 @@ One of the highest-value script uses is pre-processing. A script extracts compac
 
 Skills must work across macOS, Linux, and Windows. Bash is not portable.
 
-| Factor | Bash | Python |
-| ------ | ---- | ------ |
-| **macOS / Linux** | Works | Works |
-| **Windows (native)** | Fails or behaves inconsistently | Works identically |
-| **Windows (WSL)** | Works, but can conflict with Git Bash on PATH | Works identically |
-| **Error handling** | Limited, fragile | Rich exception handling |
-| **Testing** | Difficult | Standard unittest/pytest |
-| **Complex logic** | Quickly becomes unreadable | Clean, maintainable |
+| Factor               | Bash                                          | Python                   |
+| -------------------- | --------------------------------------------- | ------------------------ |
+| **macOS / Linux**    | Works                                         | Works                    |
+| **Windows (native)** | Fails or behaves inconsistently               | Works identically        |
+| **Windows (WSL)**    | Works, but can conflict with Git Bash on PATH | Works identically        |
+| **Error handling**   | Limited, fragile                              | Rich exception handling  |
+| **Testing**          | Difficult                                     | Standard unittest/pytest |
+| **Complex logic**    | Quickly becomes unreadable                    | Clean, maintainable      |
 
 Even basic commands like `sed -i` behave differently on macOS vs Linux. Piping, `jq`, `grep`, `awk` — all of these have cross-platform pitfalls that Python's standard library avoids entirely.
 
 **Safe bash commands** that work everywhere and remain fine to use directly:
 
-| Command | Purpose |
-| ------- | ------- |
-| `git`, `gh` | Version control and GitHub CLI |
-| `uv run` | Python script execution |
-| `npm`, `npx`, `pnpm` | Node.js ecosystem |
-| `mkdir -p` | Directory creation |
+| Command              | Purpose                        |
+| -------------------- | ------------------------------ |
+| `git`, `gh`          | Version control and GitHub CLI |
+| `uv run`             | Python script execution        |
+| `npm`, `npx`, `pnpm` | Node.js ecosystem              |
+| `mkdir -p`           | Directory creation             |
 
 Everything beyond that list should be a Python script.
 
@@ -62,16 +62,16 @@ Everything beyond that list should be a Python script.
 
 Python's standard library covers most script needs without any external dependencies. Stdlib-only scripts run with plain `python3`, need no special tooling, and have zero supply-chain risk.
 
-| Need | Standard Library |
-| ---- | ---------------- |
-| JSON parsing | `json` |
-| Path handling | `pathlib` |
-| Pattern matching | `re` |
-| CLI interface | `argparse` |
-| Text comparison | `difflib` |
-| Counting, grouping | `collections` |
-| Source analysis | `ast` |
-| Data formats | `csv`, `xml.etree` |
+| Need               | Standard Library   |
+| ------------------ | ------------------ |
+| JSON parsing       | `json`             |
+| Path handling      | `pathlib`          |
+| Pattern matching   | `re`               |
+| CLI interface      | `argparse`         |
+| Text comparison    | `difflib`          |
+| Counting, grouping | `collections`      |
+| Source analysis    | `ast`              |
+| Data formats       | `csv`, `xml.etree` |
 
 Only reach for external dependencies when the stdlib genuinely cannot do the job — `tiktoken` for accurate token counting, `pyyaml` for YAML parsing, `jsonschema` for schema validation. Each external dependency adds install-time cost, requires `uv` to be available, and expands the supply-chain surface. The BMad builders require explicit user approval for any external dependency during the build process.
 
@@ -104,10 +104,10 @@ When a script cannot run, the LLM performs the equivalent work directly. This is
 
 Frame script steps as outcomes in the SKILL.md, not just commands:
 
-| Approach | Example |
-| -------- | ------- |
-| **Good** | "Validate path conventions (run `scripts/scan-paths.py --help` for details)" |
-| **Fragile** | "Execute `python3 scripts/scan-paths.py`" with no context |
+| Approach    | Example                                                                      |
+| ----------- | ---------------------------------------------------------------------------- |
+| **Good**    | "Validate path conventions (run `scripts/scan-paths.py --help` for details)" |
+| **Fragile** | "Execute `python3 scripts/scan-paths.py`" with no context                    |
 
 The good version tells the LLM both what to accomplish and where to find the details — enabling graceful degradation without additional instructions.
 
@@ -115,13 +115,13 @@ The good version tells the LLM both what to accomplish and where to find the det
 
 Look for these signal verbs in a skill's requirements — they indicate script opportunities:
 
-| Signal | Script Type |
-| ------ | ----------- |
-| "validate", "check", "verify" | Validation |
-| "count", "tally", "aggregate" | Metrics |
-| "extract", "parse", "pull from" | Data extraction |
-| "convert", "transform", "format" | Transformation |
-| "compare", "diff", "match against" | Comparison |
+| Signal                             | Script Type      |
+| ---------------------------------- | ---------------- |
+| "validate", "check", "verify"      | Validation       |
+| "count", "tally", "aggregate"      | Metrics          |
+| "extract", "parse", "pull from"    | Data extraction  |
+| "convert", "transform", "format"   | Transformation   |
+| "compare", "diff", "match against" | Comparison       |
 | "scan for", "find all", "list all" | Pattern scanning |
 
 The builders guide you through script opportunity discovery during the build process. The key insight: if you find yourself writing detailed validation logic in a prompt, it almost certainly belongs in a script instead.

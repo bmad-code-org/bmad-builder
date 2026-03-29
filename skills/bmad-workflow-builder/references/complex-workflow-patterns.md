@@ -17,12 +17,14 @@ Workflows read config from `{project-root}/_bmad/config.yaml` and `config.user.y
 ### Config Loading Pattern
 
 **Module-based skills** — load with fallback and setup skill awareness:
+
 ```
 Load config from {project-root}/_bmad/config.yaml ({module-code} section) and config.user.yaml.
 If missing: inform user that {module-setup-skill} is available, continue with sensible defaults.
 ```
 
 **Standalone skills** — load best-effort:
+
 ```
 Load config from {project-root}/_bmad/config.yaml and config.user.yaml if available.
 If missing: continue with defaults — no mention of setup skill.
@@ -33,6 +35,7 @@ If missing: continue with defaults — no mention of setup skill.
 Load core config (user preferences, language, output locations) with sensible defaults. If the workflow creates documents, include document output language.
 
 **Example config line for a document-producing workflow:**
+
 ```
 vars: user_name:BMad,communication_language:English,document_output_language:English,output_folder:{project-root}/_bmad-output,bmad_builder_output_folder:{project-root}/bmad-builder-creations/
 ```
@@ -57,12 +60,12 @@ Each stage after the first reads the output document to recover context. If comp
 
 ```markdown
 ---
-title: "Analysis: Research Topic"
-status: "analysis"
+title: 'Analysis: Research Topic'
+status: 'analysis'
 inputs:
-  - "{project_root}/docs/brief.md"
-created: "2025-03-02T10:00:00Z"
-updated: "2025-03-02T11:30:00Z"
+  - '{project_root}/docs/brief.md'
+created: '2025-03-02T10:00:00Z'
+updated: '2025-03-02T11:30:00Z'
 ---
 ```
 
@@ -75,6 +78,7 @@ updated: "2025-03-02T11:30:00Z"
 ## Sequential Progressive Disclosure
 
 Use numbered prompt files at the skill root when:
+
 - Multi-phase workflow with ordered stages
 - Input of one phase affects the next
 - Workflow is long-running and stages shouldn't be visible upfront

@@ -17,7 +17,6 @@ Dive into the dream journal to find patterns the dreamer hasn't noticed yet. Thi
    - **Session cache:** If `symbol_stats.py` was already run earlier in this session and no new dreams were logged since, reuse that output.
 
 2. **Analyze dimensions:**
-
    - **Symbol frequency** — What appears most often? What's new? What's disappeared?
    - **Emotional arcs** — Are emotions shifting over time? More anxious? More peaceful? Correlate with life events if known.
    - **Symbol-emotion correlation** — "Water appears in 60% of your anxious dreams but 0% of your joyful ones." Use symbol registry emotion_correlation data.
@@ -33,7 +32,8 @@ Dive into the dream journal to find patterns the dreamer hasn't noticed yet. Thi
 ## Presentation
 
 Present findings as discoveries, not reports:
-- "Something interesting — you dream about doors far more than average, but they're always *closed*. Except last Tuesday. What happened that day?"
+
+- "Something interesting — you dream about doors far more than average, but they're always _closed_. Except last Tuesday. What happened that day?"
 - "Your vividness scores have been climbing steadily. Whatever you're doing before bed is working."
 - Prioritize surprising or actionable patterns over obvious ones
 

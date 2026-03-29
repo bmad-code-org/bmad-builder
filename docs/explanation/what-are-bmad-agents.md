@@ -1,5 +1,5 @@
 ---
-title: "What Are BMad Agents?"
+title: 'What Are BMad Agents?'
 description: How agents differ from workflows, what makes them stateful personas, and when to build one
 ---
 
@@ -9,11 +9,11 @@ BMad Agents are self-contained AI skills that combine a **persona**, **capabilit
 
 Every skill in the BMad ecosystem is ultimately a skill file, but agents carry three traits that set them apart.
 
-| Trait | What It Means |
-| ----- | ------------- |
-| **Persona** | A defined role and voice — architect, therapist, game master, finance advisor — that shapes how the agent communicates |
-| **Capabilities** | Actions the agent can perform, either as internal prompt commands or by calling external skills |
-| **Memory** | A sidecar directory where the agent stores what it learns about you, your preferences, and past interactions |
+| Trait            | What It Means                                                                                                          |
+| ---------------- | ---------------------------------------------------------------------------------------------------------------------- |
+| **Persona**      | A defined role and voice — architect, therapist, game master, finance advisor — that shapes how the agent communicates |
+| **Capabilities** | Actions the agent can perform, either as internal prompt commands or by calling external skills                        |
+| **Memory**       | A sidecar directory where the agent stores what it learns about you, your preferences, and past interactions           |
 
 Together these create something that feels less like running a command and more like talking to a specialist who already knows you.
 
@@ -31,10 +31,10 @@ Agent memory is stored in your project, not inside the skill folder. This preven
 
 Agent capabilities come in two flavors.
 
-| Type | Description | Example |
-| ---- | ----------- | ------- |
-| **Internal commands** | Prompt-driven actions defined inside the agent's skill file | A Dream Agent's "Dream Capture" command |
-| **External skills** | Standalone skills or workflows the agent can invoke | Calling the `create-prd` workflow via a PM agent - allowing the workflow to retain customization and memory |
+| Type                  | Description                                                 | Example                                                                                                     |
+| --------------------- | ----------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------- |
+| **Internal commands** | Prompt-driven actions defined inside the agent's skill file | A Dream Agent's "Dream Capture" command                                                                     |
+| **External skills**   | Standalone skills or workflows the agent can invoke         | Calling the `create-prd` workflow via a PM agent - allowing the workflow to retain customization and memory |
 
 You choose the mix when you design the agent. Internal commands keep everything self-contained; external skills let you compose agents from reusable building blocks.
 
@@ -44,12 +44,12 @@ Agents support a headless (autonomous) wake mode. When activated — for example
 
 ## When to Build an Agent vs. a Workflow
 
-| Choose an Agent When | Choose a Workflow When |
-| -------------------- | ---------------------- |
-| The user will return to it repeatedly | The process runs once and produces an output |
-| Remembering context across sessions adds value | Stateless execution is fine |
-| A strong persona improves the interaction | Personality is secondary to getting the job done |
-| The skill spans many loosely related capabilities | All steps serve a single, focused goal |
+| Choose an Agent When                              | Choose a Workflow When                           |
+| ------------------------------------------------- | ------------------------------------------------ |
+| The user will return to it repeatedly             | The process runs once and produces an output     |
+| Remembering context across sessions adds value    | Stateless execution is fine                      |
+| A strong persona improves the interaction         | Personality is secondary to getting the job done |
+| The skill spans many loosely related capabilities | All steps serve a single, focused goal           |
 
 If you are unsure, start with a workflow. You can always wrap it inside an agent later.
 

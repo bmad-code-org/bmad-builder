@@ -1,4 +1,5 @@
 {if-module}
+
 # First-Run Setup for {displayName}
 
 Welcome! Setting up your workspace.
@@ -10,6 +11,7 @@ Creating `_bmad/memory/{skillName}-sidecar/` for persistent memory.
 ## Initial Structure
 
 Creating:
+
 - `index.md` — essential context, active work
 - `patterns.md` — your preferences I learn
 - `chronology.md` — session timeline
@@ -24,6 +26,7 @@ Setup complete! I'm ready to help.
 {/if-module}
 
 {if-standalone}
+
 # First-Run Setup for {displayName}
 
 Welcome! Let me set up for this environment.
@@ -37,6 +40,7 @@ Creating `_bmad/memory/{skillName}-sidecar/` for persistent memory.
 ## Initial Structure
 
 Creating:
+
 - `index.md` — essential context, active work, saved paths above
 - `patterns.md` — your preferences I learn
 - `chronology.md` — session timeline

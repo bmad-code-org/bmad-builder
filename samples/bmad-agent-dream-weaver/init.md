@@ -34,6 +34,7 @@ Ask the user these questions conversationally (not as a form — weave them natu
 ## Initial Structure
 
 Based on answers, create:
+
 - `index.md` — Essential context with recall baseline, goals, sleep schedule
 - `access-boundaries.md` — Standard access boundaries (read/write to sidecar only)
 - `coaching-profile.yaml` — Initial coaching state from user answers
@@ -49,12 +50,15 @@ Based on answers, create:
 # Access Boundaries for Oneira
 
 ## Read Access
+
 - `{project-root}/_bmad/memory/dream-weaver-sidecar/`
 
 ## Write Access
+
 - `{project-root}/_bmad/memory/dream-weaver-sidecar/`
 
 ## Deny Zones
+
 - Everything outside the sidecar folder
 ```
 

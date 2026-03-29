@@ -18,10 +18,10 @@ Scripts handle deterministic operations (validate, transform, count). Prompts ha
 
 ### The Judgment Boundary
 
-| Scripts Handle | Prompts Handle |
-|----------------|----------------|
-| Fetch, Transform, Validate | Interpret, Classify (ambiguous) |
-| Count, Parse, Compare | Create, Decide (incomplete info) |
+| Scripts Handle                   | Prompts Handle                       |
+| -------------------------------- | ------------------------------------ |
+| Fetch, Transform, Validate       | Interpret, Classify (ambiguous)      |
+| Count, Parse, Compare            | Create, Decide (incomplete info)     |
 | Extract, Format, Check structure | Evaluate quality, Synthesize meaning |
 
 ### Signal Verbs in Prompts
@@ -30,17 +30,17 @@ When you see these in a workflow's requirements, think scripts first: "validate"
 
 ### Script Opportunity Categories
 
-| Category | What It Does | Example |
-|----------|-------------|---------|
-| Validation | Check structure, format, schema, naming | Validate frontmatter fields exist |
-| Data Extraction | Pull structured data without interpreting meaning | Extract all `{variable}` references from markdown |
-| Transformation | Convert between known formats | Markdown table to JSON |
-| Metrics | Count, tally, aggregate statistics | Token count per file |
-| Comparison | Diff, cross-reference, verify consistency | Cross-ref prompt names against SKILL.md references |
-| Structure Checks | Verify directory layout, file existence | Skill folder has required files |
-| Dependency Analysis | Trace references, imports, relationships | Build skill dependency graph |
-| Pre-Processing | Extract compact data from large files BEFORE LLM reads them | Pre-extract file metrics into JSON for LLM scanner |
-| Post-Processing | Verify LLM output meets structural requirements | Validate generated YAML parses correctly |
+| Category            | What It Does                                                | Example                                            |
+| ------------------- | ----------------------------------------------------------- | -------------------------------------------------- |
+| Validation          | Check structure, format, schema, naming                     | Validate frontmatter fields exist                  |
+| Data Extraction     | Pull structured data without interpreting meaning           | Extract all `{variable}` references from markdown  |
+| Transformation      | Convert between known formats                               | Markdown table to JSON                             |
+| Metrics             | Count, tally, aggregate statistics                          | Token count per file                               |
+| Comparison          | Diff, cross-reference, verify consistency                   | Cross-ref prompt names against SKILL.md references |
+| Structure Checks    | Verify directory layout, file existence                     | Skill folder has required files                    |
+| Dependency Analysis | Trace references, imports, relationships                    | Build skill dependency graph                       |
+| Pre-Processing      | Extract compact data from large files BEFORE LLM reads them | Pre-extract file metrics into JSON for LLM scanner |
+| Post-Processing     | Verify LLM output meets structural requirements             | Validate generated YAML parses correctly           |
 
 ### Your Toolbox
 
@@ -71,7 +71,7 @@ All scripts MUST output structured JSON:
     {
       "severity": "critical|high|medium|low|info",
       "category": "structure|security|performance|consistency",
-      "location": {"file": "SKILL.md", "line": 42},
+      "location": { "file": "SKILL.md", "line": 42 },
       "issue": "Clear description",
       "fix": "Specific action to resolve"
     }

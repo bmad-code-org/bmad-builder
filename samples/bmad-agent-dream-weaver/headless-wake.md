@@ -48,13 +48,13 @@ Check if a specific task was requested:
 2. Scan recent journal entries (last 7 days)
 3. **Run in parallel:** `scripts/symbol_stats.py` against journal folder AND `scripts/recall_metrics.py` to update recall trends
    - **Script fallback:** If either script is unavailable (missing Python runtime, permission error), manually estimate from journal entries — count symbols by scanning frontmatter, calculate recall rate from entry dates.
-5. Look for:
+4. Look for:
    - New recurring symbols (appeared 3+ times recently)
    - Emotion pattern shifts
    - Recall rate changes
    - Coaching milestone proximity
-6. Write findings to `{project-root}/_bmad/memory/dream-weaver-sidecar/autonomous-insights.md`
-7. Update `index.md` with latest stats
+5. Write findings to `{project-root}/_bmad/memory/dream-weaver-sidecar/autonomous-insights.md`
+6. Update `index.md` with latest stats
 
 ## Logging
 

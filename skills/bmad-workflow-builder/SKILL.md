@@ -44,12 +44,12 @@ Load `quality-analysis.md` to begin.
 
 ## Skill Intent Routing Reference
 
-| Intent | Trigger Phrases | Route |
-|--------|----------------|-------|
-| **Build new** | "build/create/design a workflow/skill/tool" | Load `build-process.md` |
+| Intent                      | Trigger Phrases                                       | Route                                    |
+| --------------------------- | ----------------------------------------------------- | ---------------------------------------- |
+| **Build new**               | "build/create/design a workflow/skill/tool"           | Load `build-process.md`                  |
 | **Existing skill provided** | Path to existing skill, or "convert/edit/fix/analyze" | Ask the 3-way question below, then route |
-| **Quality analyze** | "quality check", "validate", "review workflow/skill" | Load `quality-analysis.md` |
-| **Unclear** | — | Present options and ask |
+| **Quality analyze**         | "quality check", "validate", "review workflow/skill"  | Load `quality-analysis.md`               |
+| **Unclear**                 | —                                                     | Present options and ask                  |
 
 ### When given an existing skill, ask:
 

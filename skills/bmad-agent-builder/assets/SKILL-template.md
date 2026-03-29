@@ -1,6 +1,6 @@
 ---
 name: bmad-{module-code-or-empty}agent-{agent-name}
-description: {skill-description} # [4-6 word summary]. [trigger phrases]
+description: { skill-description } # [4-6 word summary]. [trigger phrases]
 ---
 
 # {displayName}
@@ -27,17 +27,18 @@ description: {skill-description} # [4-6 word summary]. [trigger phrases]
 
 {if-module}
 Load available config from `{project-root}/_bmad/config.yaml` and `{project-root}/_bmad/config.user.yaml` (root level and `{module-code}` section). If config is missing, let the user know `{module-setup-skill}` can configure the module at any time. Resolve and apply throughout the session (defaults in parens):
+
 - `{user_name}` ({default}) — address the user by name
 - `{communication_language}` ({default}) — use for all communications
 - `{document_output_language}` ({default}) — use for generated document content
 - plus any module-specific output paths with their defaults
-{/if-module}
-{if-standalone}
-Load available config from `{project-root}/_bmad/config.yaml` and `{project-root}/_bmad/config.user.yaml` if present. Resolve and apply throughout the session (defaults in parens):
+  {/if-module}
+  {if-standalone}
+  Load available config from `{project-root}/_bmad/config.yaml` and `{project-root}/_bmad/config.user.yaml` if present. Resolve and apply throughout the session (defaults in parens):
 - `{user_name}` ({default}) — address the user by name
 - `{communication_language}` ({default}) — use for all communications
 - `{document_output_language}` ({default}) — use for generated document content
-{/if-standalone}
+  {/if-standalone}
 
 {if-sidecar}
 Load sidecar memory from `{project-root}/_bmad/memory/{skillName}-sidecar/index.md` — this is the single entry point to the memory system and tells the agent what else to load. Load `./references/memory-system.md` for memory discipline. If sidecar doesn't exist, load `./references/init.md` for first-run onboarding.
@@ -55,7 +56,7 @@ Greet the user. If memory provides natural context (active program, recent sessi
 
 {Succinct routing table — each capability routes to a progressive disclosure file in ./references/:}
 
-| Capability | Route |
-|------------|-------|
+| Capability        | Route                               |
+| ----------------- | ----------------------------------- |
 | {Capability Name} | Load `./references/{capability}.md` |
-| Save Memory | Load `./references/save-memory.md` |
+| Save Memory       | Load `./references/save-memory.md`  |

@@ -43,14 +43,15 @@ Help users remember more dreams, more vividly. Track progress and adapt exercise
 
 1. **Load in parallel:** `{project-root}/_bmad/memory/dream-weaver-sidecar/coaching-profile.yaml` for current recall rate and baseline AND run `scripts/recall_metrics.py` against journal folder for current trends.
    - **Script fallback:** If `recall_metrics.py` is unavailable, manually calculate from journal entries — count entries per week, check dates for streaks, average vividness scores from frontmatter.
-3. **Celebrate progress** — Compare to baseline. "You started at 1 dream a week. You're at 3 now. That's real."
-4. **Assign exercise** — Based on current level, assign 1-2 exercises for the week. Don't overwhelm.
-5. **Set recall goal** — Gentle, achievable: "Let's aim for one more dream this week than last."
-6. **Update profile** — Save new recall rate, active exercises
+2. **Celebrate progress** — Compare to baseline. "You started at 1 dream a week. You're at 3 now. That's real."
+3. **Assign exercise** — Based on current level, assign 1-2 exercises for the week. Don't overwhelm.
+4. **Set recall goal** — Gentle, achievable: "Let's aim for one more dream this week than last."
+5. **Update profile** — Save new recall rate, active exercises
 
 ## Progress Tracking
 
 Use `scripts/recall_metrics.py` to calculate:
+
 - Dreams per week (rolling 7-day average)
 - Recall quality distribution (high/medium/low/fragment)
 - Vividness trend (average vividness score over time)
