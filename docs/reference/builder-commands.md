@@ -1,9 +1,9 @@
 ---
 title: "Builder Commands Reference"
-description: Complete reference for all capabilities, modes, and paths available in the Agent Builder and Workflow Builder
+description: Complete reference for all capabilities, modes, and paths available in the Agent Builder, Workflow Builder, and Module Builder
 ---
 
-Reference for the two core BMad Builder skills — the Agent Builder (`bmad-agent-builder`) and the Workflow Builder (`bmad-workflow-builder`). Both share the same two capabilities but apply them to different skill types.
+Reference for the three core BMad Builder skills — the Agent Builder (`bmad-agent-builder`), the Workflow Builder (`bmad-workflow-builder`), and the Module Builder (`bmad-module-builder`).
 
 ## Capabilities Overview
 
@@ -177,6 +177,92 @@ Not every suggestion should be applied. The optimizer communicates these decisio
 - **Prefer scripting** for deterministic operations; **prefer prompting** for creative or judgment-based tasks
 - **Reject changes** that flatten personality unless a neutral tone is explicitly wanted
 
+## Module Builder
+
+The Module Builder (`bmad-module-builder`) handles module-level planning, scaffolding, and validation. It operates at a higher level than the Agent and Workflow Builders — it orchestrates what those builders produce into a cohesive, installable module.
+
+### Capabilities Overview
+
+| Capability | Menu Code | What It Does |
+| ---------- | --------- | ------------ |
+| **Ideate Module** | IM | Brainstorm and plan a module through creative facilitation |
+| **Create Module** | CM | Scaffold a setup skill into an existing folder of built skills |
+| **Validate Module** | VM | Check structural integrity and entry quality of a module's setup skill |
+
+### Ideate Module (IM)
+
+A facilitative brainstorming session that helps you envision your module from scratch. The builder acts as a creative collaborator — drawing out ideas, exploring possibilities, and guiding you toward the right architecture.
+
+| Aspect | Detail |
+| ------ | ------ |
+| **Interaction** | Interactive only — no headless mode |
+| **Input** | An idea or rough description |
+| **Output** | Plan document saved to `{bmad_builder_reports}` |
+
+**What it covers:**
+
+- Problem space exploration and creative brainstorming
+- Architecture decision — single agent with capabilities vs. multiple skills vs. hybrid
+- Standalone module or expansion of an existing module
+- External dependencies (CLI tools, MCP servers)
+- UI and visualization opportunities
+- Setup skill extensions beyond configuration
+- Per-skill capability definitions with help CSV metadata
+- Configuration variables and sensible defaults
+
+The plan document uses a resumable template with YAML frontmatter, so long brainstorming sessions survive context compaction.
+
+**After ideation:** Build each planned skill using the Agent Builder (BA) or Workflow Builder (BW), then return to Create Module (CM) to scaffold the module.
+
+### Create Module (CM)
+
+Takes an existing folder of built skills and scaffolds a setup skill that makes it an installable BMad module. Supports `--headless` / `-H`.
+
+| Aspect | Detail |
+| ------ | ------ |
+| **Interaction** | Guided or headless |
+| **Input** | Path to a skills folder, optional plan document |
+| **Output** | Setup skill (`bmad-{code}-setup/`) added to the skills folder |
+
+**What it does:**
+
+1. Reads every SKILL.md in the folder to understand each skill
+2. Collects module identity (name, code, description, version, greeting)
+3. Defines help CSV entries — capabilities, menu codes, ordering, relationships
+4. Captures configuration variables and external dependencies
+5. Scaffolds the setup skill with generated `module.yaml` and `module-help.csv`
+
+The scaffolded setup skill includes merge scripts, cleanup scripts, and a generic SKILL.md — only the asset files are customized per module.
+
+### Validate Module (VM)
+
+Verifies that a module's setup skill is complete and accurate. Combines a deterministic validation script with LLM-based quality assessment.
+
+| Aspect | Detail |
+| ------ | ------ |
+| **Interaction** | Interactive |
+| **Input** | Path to the module's skills folder |
+| **Output** | Validation report |
+
+**Structural checks** (script-driven):
+
+| Check | What It Catches |
+| ----- | --------------- |
+| Setup skill structure | Missing SKILL.md, module.yaml, or module-help.csv |
+| Coverage | Skills without CSV entries, orphan entries for nonexistent skills |
+| Menu codes | Duplicate codes across the module |
+| References | Before/after fields pointing to nonexistent capabilities |
+| Required fields | Missing skill name, display name, menu code, or description in CSV rows |
+| module.yaml | Missing code, name, or description |
+
+**Quality assessment** (LLM-driven):
+
+- Description accuracy — does each entry match what the skill actually does?
+- Description quality — concise, action-oriented, specific, not overly verbose
+- Completeness — are all distinct capabilities registered as separate rows?
+- Ordering — do before/after relationships make sense?
+- Menu codes — are they intuitive and memorable?
+
 ## Trigger Phrases
 
 | Intent | Phrases | Builder | Route |
@@ -189,3 +275,6 @@ Not every suggestion should be applied. The optimizer communicates these decisio
 | Convert | "convert this to a BMad skill" | Workflow | `prompts/build-process.md` |
 | Optimize | "quality check/validate/optimize/review agent" | Agent | `prompts/quality-optimizer.md` |
 | Optimize | "quality check/validate/optimize/review workflow/skill" | Workflow | `prompts/quality-optimizer.md` |
+| Ideate | "ideate module/plan a module/brainstorm a module" | Module | `./references/ideate-module.md` |
+| Create | "create module/build a module/scaffold a module" | Module | `./references/create-module.md` |
+| Validate | "validate module/check module" | Module | `./references/validate-module.md` |

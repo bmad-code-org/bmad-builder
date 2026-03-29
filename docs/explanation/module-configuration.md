@@ -116,15 +116,23 @@ Configuration is for **basic, project-level settings** — output folders, langu
 
 Extensive workflow customization — step overrides, conditional branching, template selection — is a separate concern and will be covered in a dedicated document.
 
-## Upcoming Tooling
+## Creating a Module with the Module Builder
 
-A module scaffolding tool is planned that will generate the setup skill as part of module creation, along with the marketplace manifest format. Until then, use the BMad Builder module's setup skill as a reference implementation.
+The **Module Builder** (`bmad-module-builder`) automates module creation. It offers three capabilities:
 
-Once available, you will be able to generate a setup skill from your existing collection of agents, workflows, and skills with a prompt like:
+| Capability | Menu Code | What It Does |
+| ---------- | --------- | ------------ |
+| **Ideate Module** | IM | Brainstorm and plan a module through facilitative discovery — produces a plan document |
+| **Create Module** | CM | Scaffold a setup skill into an existing folder of built skills |
+| **Validate Module** | VM | Check that a module's setup skill is complete, accurate, and properly registered |
 
-:::note[Example]
-"Create a setup skill for my module in `./my-module-skills/` that mirrors `bmad-builder-setup` — with its own module name and code (my cool module, mcm), config variables for output folder locations, and help entries inferred from the existing skills in the folder."
-:::
+**Typical workflow:**
 
-A decent LLM will clone the entire `bmad-builder-setup` skill components amd structure — SKILL.md, scripts, tests — updating only the skill name, description, and the two asset files (`module.yaml` and `module-help.csv`) to reflect your module.
-Take the time to ensure the description that triggers it is correct, along with the module.yaml and module-help.csv
+1. Run **Ideate Module (IM)** to brainstorm and plan your module
+2. Build each skill using the **Agent Builder (BA)** or **Workflow Builder (BW)**
+3. Run **Create Module (CM)** to scaffold the setup skill into your skills folder
+4. Run **Validate Module (VM)** to verify everything is wired correctly
+
+The Create Module path reads every skill in your folder, walks you through defining the module identity and capability entries, then generates a complete setup skill with `module.yaml`, `module-help.csv`, and all supporting scripts.
+
+See **[What Are Modules](/explanation/what-are-modules.md)** for concepts and architecture decisions, or the **[Builder Commands Reference](/reference/builder-commands.md)** for detailed capability documentation.
