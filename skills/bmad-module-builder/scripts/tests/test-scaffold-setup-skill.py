@@ -10,6 +10,8 @@ import sys
 import tempfile
 from pathlib import Path
 
+import yaml
+
 SCRIPT = Path(__file__).resolve().parent.parent / "scaffold-setup-skill.py"
 TEMPLATE_DIR = Path(__file__).resolve().parent.parent.parent / "assets" / "setup-skill-template"
 
@@ -93,6 +95,16 @@ def test_skill_md_frontmatter_substitution():
         assert "{setup-skill-name}" not in skill_md
         assert "{module-name}" not in skill_md
         assert "{module-code}" not in skill_md
+
+        frontmatter = skill_md.split("---", 2)[1]
+        parsed = yaml.safe_load(frontmatter)
+        assert parsed["name"] == "bmad-xyz-setup"
+        assert isinstance(parsed["name"], str)
+        assert parsed["description"] == (
+            "Sets up XYZ Studio module in a project. Use when the user requests "
+            "to 'install xyz module', 'configure XYZ Studio', or 'setup XYZ Studio'."
+        )
+        assert isinstance(parsed["description"], str)
 
 
 def test_generated_files_written():
