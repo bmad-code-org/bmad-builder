@@ -31,7 +31,7 @@ VALID_VERTICAL_ALIGN = {"top", "middle"}
 VALID_ARROWHEADS = {None, "arrow", "bar", "dot", "triangle"}
 
 
-def validate(file_path):
+def validate(file_path: str):
     """Validate an .excalidraw file and return findings."""
     findings = []
 
@@ -240,7 +240,7 @@ def _build_result(file_path, findings):
     }
 
 
-def main():
+def main() -> None:
     parser = argparse.ArgumentParser(description="Validate .excalidraw files")
     parser.add_argument("file", help="Path to .excalidraw file")
     parser.add_argument("-o", "--output", help="Output report to file (JSON)")

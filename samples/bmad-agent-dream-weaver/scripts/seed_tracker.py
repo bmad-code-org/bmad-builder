@@ -108,7 +108,7 @@ def analyze_seeds(seeds: list[dict]) -> dict:
     }
 
 
-def main():
+def main() -> None:
     parser = argparse.ArgumentParser(
         description="Analyze dream seed success rates"
     )

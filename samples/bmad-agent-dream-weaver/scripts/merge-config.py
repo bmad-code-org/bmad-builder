@@ -339,7 +339,7 @@ def write_config(config: dict, config_path: str, verbose: bool = False) -> None:
         )
 
 
-def main():
+def main() -> None:
     args = parse_args()
 
     # Load inputs

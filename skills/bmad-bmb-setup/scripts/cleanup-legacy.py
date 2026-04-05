@@ -197,7 +197,7 @@ def cleanup_directories(
     return removed, not_found, total_files
 
 
-def main():
+def main() -> None:
     args = parse_args()
 
     bmad_dir = args.bmad_dir

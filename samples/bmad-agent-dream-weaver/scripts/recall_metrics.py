@@ -179,7 +179,7 @@ def calculate_metrics(entries: list[dict]) -> dict:
     }
 
 
-def main():
+def main() -> None:
     parser = argparse.ArgumentParser(
         description="Calculate dream recall metrics"
     )

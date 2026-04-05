@@ -101,7 +101,7 @@ def analyze_symbols(entries: list[dict]) -> dict:
     return results
 
 
-def main():
+def main() -> None:
     parser = argparse.ArgumentParser(
         description="Analyze dream journal symbol frequency"
     )

@@ -139,7 +139,7 @@ def cleanup_legacy_csvs(
     return deleted
 
 
-def main():
+def main() -> None:
     args = parse_args()
 
     # Read source entries

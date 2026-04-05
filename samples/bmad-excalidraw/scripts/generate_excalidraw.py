@@ -68,7 +68,7 @@ COLORS = {
 BG_CYCLE = ["bg_blue", "bg_green", "bg_yellow", "bg_purple", "bg_red", "bg_gray"]
 
 
-def generate_id(length=8):
+def generate_id(length: int=8):
     """Generate a random alphanumeric ID."""
     chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
     return "".join(random.choice(chars) for _ in range(length))
@@ -87,7 +87,7 @@ def now_ms():
 # --- Element Builders ---
 
 
-def make_base_element(elem_type, x, y, width, height, **overrides):
+def make_base_element(elem_type, x, y, width: int, height: int, **overrides):
     """Create a base element with all required properties."""
     base = {
         "id": generate_id(),
@@ -120,7 +120,7 @@ def make_base_element(elem_type, x, y, width, height, **overrides):
     return base
 
 
-def make_shape(elem_type, x, y, label, width=None, height=None, bg_color=None):
+def make_shape(elem_type, x, y, label: str, width: int=None, height: int=None, bg_color=None) -> tuple:
     """Create a shape element (rectangle, diamond, ellipse) with bound text."""
     default_w, default_h = ELEMENT_SIZES.get(elem_type, (200, 80))
     w = width or default_w
@@ -142,7 +142,7 @@ def make_shape(elem_type, x, y, label, width=None, height=None, bg_color=None):
     return shape, text_elem
 
 
-def make_text(x, y, text, container_id=None, width=200, height=80, font_size=20):
+def make_text(x, y, text: str, container_id: int=None, width: int=200, height: int=80, font_size: int=20):
     """Create a text element, optionally bound to a container."""
     text_height = 25
     text_width = len(text) * 10
@@ -171,8 +171,8 @@ def make_text(x, y, text, container_id=None, width=200, height=80, font_size=20)
     return elem
 
 
-def make_arrow(x1, y1, x2, y2, start_id=None, end_id=None, label=None,
-               style="arrow", start_shape=None, end_shape=None):
+def make_arrow(x1, y1, x2, y2, start_id: int=None, end_id: int=None, label: str=None,
+               style: str="arrow", start_shape=None, end_shape=None):
     """Create an arrow/line element connecting two points or elements."""
     dx = x2 - x1
     dy = y2 - y1
@@ -252,7 +252,7 @@ def _compute_fixed_point(dx, dy, end):
             return [0.5, 0] if end == "start" else [0.5, 1]
 
 
-def make_frame(x, y, width, height, name):
+def make_frame(x, y, width: int, height: int, name: str):
     """Create a frame element."""
     elem = make_base_element("frame", x, y, width, height)
     elem["name"] = name
@@ -263,7 +263,7 @@ def make_frame(x, y, width, height, name):
 # --- Layout Engines ---
 
 
-def layout_grid(elements, direction="LR", start_x=100, start_y=100):
+def layout_grid(elements: list, direction: str="LR", start_x: int=100, start_y: int=100):
     """
     Position elements in a grid layout based on connection topology.
     Returns dict mapping element ID to (x, y) position.
@@ -301,7 +301,7 @@ def layout_grid(elements, direction="LR", start_x=100, start_y=100):
     return positions
 
 
-def layout_linear(elements, connections, direction="LR", start_x=100, start_y=100):
+def layout_linear(elements: list, connections, direction: str="LR", start_x: int=100, start_y: int=100) -> dict:
     """
     Position elements in a linear chain following connections.
     Better for flowcharts than grid layout.
@@ -370,7 +370,7 @@ def layout_linear(elements, connections, direction="LR", start_x=100, start_y=10
     return positions
 
 
-def layout_radial(elements, connections, start_x=500, start_y=400):
+def layout_radial(elements: list, connections, start_x: int=500, start_y: int=400) -> dict:
     """Position elements in a radial layout for mind maps."""
     if not elements:
         return {}
@@ -559,7 +559,7 @@ def generate_excalidraw(spec):
     return doc
 
 
-def main():
+def main() -> None:
     parser = argparse.ArgumentParser(
         description="Generate Excalidraw diagrams from a JSON specification",
     )
