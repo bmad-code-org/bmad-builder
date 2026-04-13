@@ -33,7 +33,9 @@ const LLM_WARN_CHARS = 500_000;
 const LLM_EXCLUDE_PATTERNS = [
   'changelog',
   'archived',
+  'zh-cn',
   // Note: Files/dirs starting with _ (like _STYLE_GUIDE.md, _archive/) are excluded in shouldExcludeFromLlm()
+  // Note: Translated locale directories (zh-cn, etc.) are excluded to keep LLM context English-only
 ];
 
 // =============================================================================

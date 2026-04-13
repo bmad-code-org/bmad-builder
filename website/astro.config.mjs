@@ -5,6 +5,7 @@ import sitemap from '@astrojs/sitemap';
 import rehypeMarkdownLinks from './src/rehype-markdown-links.js';
 import rehypeBasePaths from './src/rehype-base-paths.js';
 import { getSiteUrl } from './src/lib/site-url.mjs';
+import { locales } from './src/lib/locales.mjs';
 
 const siteUrl = getSiteUrl();
 const urlParts = new URL(siteUrl);
@@ -40,6 +41,10 @@ export default defineConfig({
     starlight({
       title: 'BMad Builder',
       tagline: 'Tool for creating custom BMad agents and modules.',
+
+      // i18n: locale config from shared module (website/src/lib/locales.mjs)
+      defaultLocale: 'root',
+      locales,
 
       favicon: '/favicon.ico',
 
@@ -83,24 +88,32 @@ export default defineConfig({
 
       // Sidebar configuration (Diataxis structure)
       sidebar: [
-        { label: 'Welcome', slug: 'index' },
+        {
+          label: 'Welcome',
+          translations: { 'zh-CN': '欢迎' },
+          slug: 'index',
+        },
         {
           label: 'Tutorials',
+          translations: { 'zh-CN': '教程' },
           collapsed: false,
           autogenerate: { directory: 'tutorials' },
         },
         {
           label: 'How-To Guides',
+          translations: { 'zh-CN': '操作指南' },
           collapsed: true,
           autogenerate: { directory: 'how-to' },
         },
         {
           label: 'Explanation',
+          translations: { 'zh-CN': '概念说明' },
           collapsed: true,
           autogenerate: { directory: 'explanation' },
         },
         {
           label: 'Reference',
+          translations: { 'zh-CN': '参考' },
           collapsed: true,
           autogenerate: { directory: 'reference' },
         },

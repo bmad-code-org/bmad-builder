@@ -43,6 +43,7 @@ CLAUDE.local.md
 .claude/settings.local.json
 
 z*/
+!docs/zh-cn/
 .claude/commands
 _bmad
 _bmad-output
