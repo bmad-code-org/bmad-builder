@@ -11,7 +11,7 @@ import tempfile
 from pathlib import Path
 
 SCRIPT = Path(__file__).resolve().parent.parent / "scaffold-setup-skill.py"
-TEMPLATE_DIR = Path(__file__).resolve().parent.parent.parent / "assets" / "setup-skill-template"
+TEMPLATE_DIR = Path(__file__).resolve().parent.parent.parent / "assets" / "_setup-skill-template"
 
 
 def run_scaffold(tmp: Path, **kwargs) -> tuple[int, dict]:

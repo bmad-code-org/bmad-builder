@@ -50,7 +50,7 @@ def main() -> int:
     )
     args = parser.parse_args()
 
-    template_dir = Path(__file__).resolve().parent.parent / "assets" / "setup-skill-template"
+    template_dir = Path(__file__).resolve().parent.parent / "assets" / "_setup-skill-template"
     setup_skill_name = f"{args.module_code}-setup"
     target = Path(args.target_dir) / setup_skill_name
 
