@@ -5,7 +5,7 @@ description: How to decide whether your skill should support end-user customizat
 
 Shipping a `customize.toml` is opt-in per skill. This is the author-side counterpart to [How to Customize BMad](https://docs.bmad-method.org/how-to/customize-bmad/), which covers the end-user view. Read that first if you haven't; it shows what users experience when they override a skill. This guide is about deciding whether to give them that surface at all.
 
-Downstream users don't hand-write TOML. BMad ships a core skill called `bmad-customize` that walks them through authoring overrides conversationally — it scans which skills are customizable, picks agent vs workflow scope, writes the override file, and verifies the merge. That affects the names and defaults you pick: a user being walked through `"set prd_template to your template path"` handles that fine; `tmpl_override` or `opt_2` makes the conversation awkward. Pick field names that read well out loud.
+Downstream users typically don't hand-write TOML. BMad ships a core skill called `bmad-customize` that walks them through authoring overrides conversationally — it scans which skills are customizable, picks agent vs workflow scope, writes the override file, and verifies the merge. Users who prefer to edit TOML directly still can, but the conversational flow is the default path. That affects the names and defaults you pick: a user being walked through `"set prd_template to your template path"` handles that fine; `tmpl_override` or `opt_2` makes the conversation awkward. Pick field names that read well out loud.
 
 ## The Problem
 
