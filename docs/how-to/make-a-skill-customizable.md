@@ -5,6 +5,8 @@ description: Opt your skill into end-user customization during the build, name y
 
 This guide walks through opting a skill into end-user customization during a build. You'll hit the opt-in moment in the builder, pick names for the scalars you expose, and verify an override actually fires. Read [Customization for Authors](/explanation/customization-for-authors.md) first if you haven't decided whether to opt in.
 
+Keep in mind that your users won't typically hand-write the override files you're enabling. The `bmad-customize` skill in BMad core walks them through authoring overrides conversationally. The names and defaults you pick here are what a user is walked through in that conversation, so pick scalar names that read well out loud.
+
 ## When to Use This
 
 - You're building a workflow or stateless agent and want to let teams/org users inject overrides
@@ -136,6 +138,7 @@ Users get:
 - Team-scoped overrides via `_bmad/custom/{skill-name}.toml`
 - Personal-scoped overrides via `_bmad/custom/{skill-name}.user.toml`
 - Automatic precedence handling from the resolver (user beats team beats defaults)
+- A conversational authoring path: the `bmad-customize` core skill scans which skills are customizable, helps the user pick agent vs workflow scope, writes the override file, and verifies the merge. Users who prefer to hand-write TOML still can.
 
 ## Tips
 
