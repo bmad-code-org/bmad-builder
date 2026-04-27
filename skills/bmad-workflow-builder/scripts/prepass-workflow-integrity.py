@@ -207,24 +207,59 @@ def find_template_artifacts(filepath: Path, rel_path: str) -> list[dict]:
     return findings
 
 
+STAGE_FILE_PATTERN = re.compile(r'^(?:step-)?\d+\w*-')
+STAGE_SUBDIRS = ('steps-c', 'steps-a', 'steps-b', 'prompts')
+
+
+def discover_step_files(skill_path: Path) -> list[Path]:
+    """Return Path objects for numbered step files anywhere they live.
+
+    Walks the skill root (legacy layout), the conventional stage subdirectories
+    (`steps-c/`, `steps-a/`, `steps-b/`, `prompts/`), AND any nested
+    subdirectories underneath them (e.g. `steps-c/sub/` used by
+    skf-create-skill for sub-step files). Recognizes both the legacy
+    `NN-<slug>.md` filename pattern and the modern `step-NN<suffix>-<slug>.md`
+    pattern (e.g. `step-01b-...`) enforced by `tools/validate-skills.js`
+    STEP-04.
+    """
+    found: list[Path] = []
+    for f in skill_path.iterdir():
+        if f.is_file() and f.suffix == '.md' and f.name != 'SKILL.md' and STAGE_FILE_PATTERN.match(f.name):
+            found.append(f)
+    for subdir_name in STAGE_SUBDIRS:
+        subdir = skill_path / subdir_name
+        if not subdir.is_dir():
+            continue
+        for f in subdir.rglob('*.md'):
+            if f.is_file() and STAGE_FILE_PATTERN.match(f.name):
+                found.append(f)
+    return found
+
+
+def _rel_step_path(skill_path: Path, step_file: Path) -> str:
+    """Step file path relative to the skill root, with forward slashes for cross-platform comparison."""
+    return step_file.relative_to(skill_path).as_posix()
+
+
 def cross_reference_stages(skill_path: Path, skill_content: str) -> tuple[dict, list[dict]]:
-    """Cross-reference stage files between SKILL.md and numbered prompt files at skill root."""
+    """Cross-reference stage files between SKILL.md and numbered prompt files."""
     findings = []
 
-    # Get actual numbered prompt files at skill root (exclude SKILL.md)
-    actual_files = set()
-    for f in skill_path.iterdir():
-        if f.is_file() and f.suffix == '.md' and f.name != 'SKILL.md' and re.match(r'^\d+-', f.name):
-            actual_files.add(f.name)
+    actual_paths = discover_step_files(skill_path)
+    actual_files = {_rel_step_path(skill_path, p) for p in actual_paths}
 
-    # Find stage references in SKILL.md — look for both old prompts/ style and new root style
+    # Match references with optional stage-subdir prefix (steps-c/, steps-a/,
+    # steps-b/, prompts/) plus optional nested subdirectories (e.g.
+    # `steps-c/sub/step-02b-...`), and either the legacy `NN-...` or modern
+    # `step-NN[suffix]-...` filename pattern.
     referenced = set()
-    # Match `prompts/XX-name.md` (legacy) or bare `XX-name.md` references
-    ref_pattern = re.compile(r'(?:prompts/)?(\d+-[^\s)`]+\.md)')
+    ref_pattern = re.compile(
+        r'((?:steps-c/|steps-a/|steps-b/|prompts/)(?:[^\s)`/]+/)*(?:step-)?\d+\w*-[^\s)`/]+\.md'
+        r'|(?<![\w/])(?:step-)?\d+\w*-[^\s)`/]+\.md)'
+    )
     for m in ref_pattern.finditer(skill_content):
-        referenced.add(m.group(1))
+        referenced.add(m.group(0))
 
-    # Missing files (referenced but don't exist)
     missing = referenced - actual_files
     for f in sorted(missing):
         findings.append({
@@ -233,7 +268,6 @@ def cross_reference_stages(skill_path: Path, skill_content: str) -> tuple[dict, 
             'issue': f'Referenced stage file does not exist: {f}',
         })
 
-    # Orphaned files (exist but not referenced)
     orphaned = actual_files - referenced
     for f in sorted(orphaned):
         findings.append({
@@ -242,16 +276,19 @@ def cross_reference_stages(skill_path: Path, skill_content: str) -> tuple[dict, 
             'issue': f'Stage file exists but not referenced in SKILL.md: {f}',
         })
 
-    # Stage numbering check
+    # Stage numbering check — extract leading integer from each step file's basename.
+    # Letter suffixes (e.g. step-01b) are sub-stages of the integer base and don't
+    # break sequence; "1, 1b, 2, 3" is well-formed. Group by integer for the check.
     numbered = []
-    for f in sorted(actual_files):
-        m = re.match(r'^(\d+)-(.+)\.md$', f)
+    num_pattern = re.compile(r'^(?:step-)?(\d+)\w*-(.+)\.md$')
+    for rel in sorted(actual_files):
+        basename = rel.split('/')[-1]
+        m = num_pattern.match(basename)
         if m:
-            numbered.append((int(m.group(1)), f))
+            numbered.append((int(m.group(1)), rel))
 
     if numbered:
-        numbered.sort()
-        nums = [n[0] for n in numbered]
+        nums = sorted({n[0] for n in numbered})
         expected = list(range(nums[0], nums[0] + len(nums)))
         if nums != expected:
             gaps = set(expected) - set(nums)
@@ -278,18 +315,14 @@ def check_prompt_basics(skill_path: Path) -> tuple[list[dict], list[dict]]:
     findings = []
     prompt_details = []
 
-    # Look for numbered prompt files at skill root
-    prompt_files = sorted(
-        f for f in skill_path.iterdir()
-        if f.is_file() and f.suffix == '.md' and f.name != 'SKILL.md' and re.match(r'^\d+-', f.name)
-    )
+    prompt_files = sorted(discover_step_files(skill_path), key=lambda p: _rel_step_path(skill_path, p))
     if not prompt_files:
         return prompt_details, findings
 
     for f in prompt_files:
         content = f.read_text(encoding='utf-8')
-        rel_path = f.name
-        detail = {'file': f.name, 'has_config_header': False, 'has_progression': False}
+        rel_path = _rel_step_path(skill_path, f)
+        detail = {'file': rel_path, 'has_config_header': False, 'has_progression': False}
 
         # Config header check
         if '{communication_language}' in content or '{document_output_language}' in content:
@@ -334,7 +367,9 @@ def check_prompt_basics(skill_path: Path) -> tuple[list[dict], list[dict]]:
 
 def detect_workflow_type(skill_content: str, has_prompts: bool) -> str:
     """Detect workflow type from SKILL.md content."""
-    has_stage_refs = bool(re.search(r'(?:prompts/)?\d+-\S+\.md', skill_content))
+    has_stage_refs = bool(
+        re.search(r'(?:steps-c/|steps-a/|steps-b/|prompts/)?(?:step-)?\d+\w*-\S+\.md', skill_content)
+    )
     has_routing = bool(re.search(r'(?i)(rout|stage|branch|path)', skill_content))
 
     if has_stage_refs or (has_prompts and has_routing):
@@ -389,10 +424,7 @@ def scan_workflow_integrity(skill_path: Path) -> dict:
             })
 
     # Workflow type
-    has_prompts = any(
-        f.is_file() and f.suffix == '.md' and f.name != 'SKILL.md' and re.match(r'^\d+-', f.name)
-        for f in skill_path.iterdir()
-    )
+    has_prompts = bool(discover_step_files(skill_path))
     workflow_type = detect_workflow_type(skill_content, has_prompts)
 
     # Stage cross-reference
