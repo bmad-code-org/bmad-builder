@@ -160,7 +160,18 @@ def test_cross_reference_no_false_positive_critical_for_steps_c(tmp_skill):
 
     summary, findings = _mod.cross_reference_stages(tmp_skill, _SKILL_MD_STEPS_C)
     missing = [f for f in findings if f.get('category') == 'missing-stage']
-    orphaned = [f for f in findings if f.get('category') == 'naming' and 'orphaned' in f.get('issue', '').lower() or 'not referenced' in f.get('issue', '').lower()]
+    # Orphan findings have category 'naming' AND an `issue` text that begins
+    # with the canonical "Stage file exists but not referenced in SKILL.md"
+    # prefix that prepass-workflow-integrity.py emits at line 276. Match the
+    # exact shape — the prior `'orphaned' in issue` substring check was dead
+    # code (the script never uses that word) and the `or 'not referenced'`
+    # disjunct was un-parenthesised, so it would have matched any finding
+    # regardless of category. CodeRabbit caught both bugs on PR #82.
+    orphaned = [
+        f for f in findings
+        if f.get('category') == 'naming'
+        and f.get('issue', '').startswith('Stage file exists but not referenced in SKILL.md')
+    ]
     assert missing == [], f"unexpected missing-stage findings: {missing}"
     assert orphaned == [], f"unexpected orphaned-stage findings: {orphaned}"
     assert summary['total_stages'] == 2
@@ -213,9 +224,12 @@ def test_genuinely_orphaned_stage_is_still_caught(tmp_skill):
     _write(tmp_skill / 'steps-c' / 'step-99-orphan.md')
 
     _summary, findings = _mod.cross_reference_stages(tmp_skill, _SKILL_MD_STEPS_C)
+    # Use the same canonical-prefix match as test_cross_reference_no_false_positive_critical_for_steps_c
+    # so both tests share one definition of "what an orphan finding looks like".
     orphan_msgs = [
         f['issue'] for f in findings
-        if f.get('category') == 'naming' and 'not referenced' in f.get('issue', '').lower()
+        if f.get('category') == 'naming'
+        and f.get('issue', '').startswith('Stage file exists but not referenced in SKILL.md')
     ]
     assert any('step-99-orphan.md' in msg for msg in orphan_msgs), \
         f"orphaned file was not flagged: {findings}"
