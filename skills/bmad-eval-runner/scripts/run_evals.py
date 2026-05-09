@@ -454,7 +454,7 @@ def main() -> int:
                 run_dir,
                 skill_path,
                 project_root,
-                args.timeout,
+                int(item.get("timeout", args.timeout)),
                 discover_setup_dirs(evals_file, str(item.get("id", ""))),
             ): item
             for item in evals
