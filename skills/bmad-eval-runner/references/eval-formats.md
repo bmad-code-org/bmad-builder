@@ -66,17 +66,82 @@ The runner discovers evals in this order:
 
 If both `evals.json` and `triggers.json` are found, both run unless `--mode` narrows it.
 
+## Two patterns for single-shot evals
+
+Most multi-turn workflow skills can be evaluated single-shot if you design the eval right. Two patterns cover the bulk of what you'd otherwise need a multi-turn simulator for:
+
+### Pattern A — artifact correctness (headless + rich prompt)
+
+Force the skill into headless mode and pack the prompt with everything Discovery would have surfaced. Grade what comes out: the artifact, its structure, whether it reflects the inputs without inventing.
+
+Use when:
+- The deliverable is the artifact (brief, PRD, doc, plan)
+- You can write a complete pre-Discovery prompt
+- You want regression coverage on drafting/format/extraction
+
+### Pattern B — process discipline (headless + transcript and side-artifact inspection)
+
+Same single-shot mechanics, but the expectations look at *what the skill did internally* — not just the final output. The grader reads the stream-JSON transcript for tool calls, walks side-artifacts (decision logs, addenda, distillates), checks file mtimes, and verifies phase ordering.
+
+Use when:
+- The skill enforces a protocol (decision log, polish phase, finalize sequence)
+- The skill has read-only intents (Validate must not write)
+- You need to catch "drafting works but the discipline went soft" regressions
+
+These are deterministic checks against the transcript and filesystem — no LLM judgment needed for most of them.
+
+### What single-shot can NOT cover
+
+Facilitation arc: vague-input → sharper pushback → user clarifies → better artifact. That requires a multi-turn user simulator. Defer it to a separate eval mode for skills where conversation is the value (coaching, brainstorming, design thinking).
+
 ## Writing good expectations
 
-The grader's job is easier when expectations are *discriminating* — they are hard to pass without actually doing the work. Weak patterns to avoid:
+The grader's job is easier when expectations are *discriminating* — hard to pass without actually doing the work.
 
-- **Filename-only checks** — "brief.md exists" can pass for an empty file. Pair with a content check.
+**Weak patterns to avoid:**
+- **Filename-only checks** — "brief.md exists" passes for an empty file. Pair with a content check.
 - **Wholly subjective phrasing** — "the brief is high quality" cannot be evaluated. State the property concretely.
 - **Tautologies** — anything that follows from the prompt being understood is not a useful expectation.
 
-Strong patterns:
-
-- Specific facts that should appear in the output ("incorporates at least 2 specific findings from section X")
-- Structural claims that a wrong output would fail ("brief.md word count is between 250 and 1500")
+**Strong patterns for artifact correctness (Pattern A):**
+- Specific facts that should appear ("incorporates at least 2 specific findings from section X")
+- Structural claims a wrong output would fail ("word count between 250 and 1500")
 - Negative assertions ("does not introduce content from unrelated sections")
-- Decision-log entries that capture process choices ("decision-log indicates the report was filtered to the helmet category rather than ingested whole")
+- YAML frontmatter checks ("frontmatter contains title, status, created, updated as ISO 8601")
+- Bounded JSON output ("final assistant message contains a JSON object with intent='create'")
+
+**Strong patterns for process discipline (Pattern B):**
+- **Side-artifact existence + content** ("decision-log.md exists AND captures the pricing decision with rejected alternative and rationale")
+- **Transcript tool-call patterns** ("the transcript contains a Skill tool call invoking bmad-editorial-review-prose")
+- **Phase ordering** ("the polish-phase Skill calls occur after the brief body Write and before the final JSON status block")
+- **Read-only enforcement** ("the input brief.md is byte-identical to the staged fixture; no Write or Edit tool calls targeted the run folder")
+- **Bidirectional fidelity** ("every substantive entry in decision-log.md has a corresponding reflection in brief.md, AND no claim in brief.md is absent from the input prompt or decision-log.md")
+- **Timestamp checks** ("YAML frontmatter 'updated' field is later than 'created'; 'created' is unchanged from the input fixture")
+
+## Headless mode — getting the skill to behave non-interactively
+
+Most multi-turn skills expose a headless flag or keyword that suppresses clarifying questions and produces a structured JSON status block at the end. To use Pattern A or B, the eval prompt needs to trigger this. Common signals:
+
+- The literal phrase `Run headless.` at the start of the prompt
+- Skill-specific flags or keywords as documented in the skill's `## Headless Mode` section
+- Sufficient context such that no clarification is genuinely needed
+
+If the skill has no headless mode, single-shot evals will halt at the first clarifying question and you have two options: (1) add a headless mode to the skill, (2) defer that skill's evals to the multi-turn simulator.
+
+## Pre-staging files (Update / Validate intents)
+
+For Update and Validate evals, the workspace needs to contain an existing brief, decision log, addendum, etc. Use the `files` field — each path is staged into the workspace at the same relative location. The eval prompt then references the staged path explicitly:
+
+```json
+{
+  "id": "B5",
+  "prompt": "Run headless. Update the brief at evals/skill-x/files/some-brief/brief.md — ...",
+  "files": [
+    "evals/skill-x/files/some-brief/brief.md",
+    "evals/skill-x/files/some-brief/decision-log.md",
+    "evals/skill-x/files/some-brief/addendum.md"
+  ]
+}
+```
+
+For Validate (read-only) expectations, pair the staged files with byte-identical assertions and a no-Write/no-Edit transcript check.

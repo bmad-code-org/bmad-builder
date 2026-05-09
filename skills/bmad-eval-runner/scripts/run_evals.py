@@ -6,16 +6,18 @@
 
 For each eval, the runner:
   1. Stages a fresh workspace (Docker container or local tmp dir under ~/bmad-evals).
-  2. Copies the project (excluding heavy directories) into the workspace; mounts the
-     skill so it's discoverable by `claude -p`.
-  3. Stages any fixture files declared in the eval's `files` list.
-  4. Runs `claude -p '<prompt>' --output-format stream-json --verbose`, capturing
-     the transcript.
-  5. Rsyncs any files Claude wrote into the workspace into `<run-dir>/<eval-id>/artifacts/`.
-  6. Writes `metrics.json` (tool-call counts, timing, output sizes).
+  2. Applies the setup overlay (base then per-eval) so _bmad/ config and dependency
+     skills land in the workspace BEFORE the skill is staged — the skill's own copy
+     always wins over overlay content.
+  3. Copies the skill into .claude/skills/ so it is discoverable by claude.
+  4. Stages any fixture files declared in the eval's `files` list.
+  5. Runs `claude -p '<prompt>' --output-format stream-json --verbose`, capturing
+     the transcript. The Skill tool is available in -p mode and fires for installed
+     skills, so dependency skills provided by the setup overlay are properly invokable.
+  6. Rsyncs any files claude wrote into `<run-dir>/<eval-id>/artifacts/`.
+  7. Writes `metrics.json` (tool-call counts, timing, output sizes).
 
-Grading is performed separately by the parent skill's grader subagents — this script
-captures evidence; it does not score.
+Grading is performed separately by the parent skill's grader subagents.
 
 Usage:
   python3 run_evals.py \\
@@ -24,7 +26,7 @@ Usage:
     --project-root PATH \\
     --output-dir PATH \\
     --isolation docker|local \\
-    [--workers N] [--timeout SECS] [--eval-ids 1,3] [--quiet]
+    [--workers N] [--timeout SECS] [--eval-ids A1,B3] [--quiet]
 """
 
 from __future__ import annotations
@@ -43,6 +45,8 @@ SCRIPT_DIR = Path(__file__).resolve().parent
 sys.path.insert(0, str(SCRIPT_DIR))
 
 from utils import (  # noqa: E402
+    apply_setup_overlay,
+    discover_setup_dirs,
     new_run_id,
     parse_skill_md,
     read_json,
@@ -53,11 +57,6 @@ from utils import (  # noqa: E402
 )
 
 DOCKER_IMAGE = "bmad-eval-runner:latest"
-# Read the host's Claude Code OAuth credentials once at import. Each isolated
-# workspace then receives a copy as `.claude/.credentials.json` so the subprocess
-# can authenticate without inheriting the host's $HOME (and with it, host CLAUDE.md
-# and auto-memory). On non-macOS hosts or when no credential exists, this is None
-# and ANTHROPIC_API_KEY env-passthrough is the only auth path.
 _KEYCHAIN_CREDS: str | None = read_macos_keychain_credentials()
 RSYNC_EXCLUDES = (
     ".git", ".bare", "node_modules", ".venv", "__pycache__",
@@ -66,15 +65,20 @@ RSYNC_EXCLUDES = (
 )
 
 
-def stage_workspace_local(workspace: Path, project_root: Path, skill_path: Path,
-                          fixtures: list[tuple[Path, str]]) -> Path:
-    """Build a clean local workspace at <workspace>/. Returns workspace path."""
+def stage_workspace_local(
+    workspace: Path,
+    project_root: Path,
+    skill_path: Path,
+    fixtures: list[tuple[Path, str]],
+    setup_dirs: list[Path] | None = None,
+) -> Path:
+    """Build a clean local workspace. Returns the project root inside workspace."""
     workspace.mkdir(parents=True, exist_ok=True)
     project_dest = workspace / "project"
     home_dir = workspace / ".home"
     (home_dir / ".claude").mkdir(parents=True, exist_ok=True)
 
-    excludes = []
+    excludes: list[str] = []
     for pat in RSYNC_EXCLUDES:
         excludes.extend(["--exclude", pat])
 
@@ -86,6 +90,10 @@ def stage_workspace_local(workspace: Path, project_root: Path, skill_path: Path,
     else:
         shutil.copytree(project_root, project_dest, dirs_exist_ok=True,
                         ignore=shutil.ignore_patterns(*RSYNC_EXCLUDES))
+
+    # Apply setup overlay before staging the skill — the skill's own copy wins.
+    if setup_dirs:
+        apply_setup_overlay(setup_dirs, project_dest)
 
     skill_link_dir = project_dest / ".claude" / "skills"
     skill_link_dir.mkdir(parents=True, exist_ok=True)
@@ -104,8 +112,14 @@ def stage_workspace_local(workspace: Path, project_root: Path, skill_path: Path,
     return project_dest
 
 
-def run_eval_local(eval_item: dict, run_dir: Path, skill_path: Path,
-                   project_root: Path, timeout: int) -> dict:
+def run_eval_local(
+    eval_item: dict,
+    run_dir: Path,
+    skill_path: Path,
+    project_root: Path,
+    timeout: int,
+    setup_dirs: list[Path] | None = None,
+) -> dict:
     eval_id = str(eval_item.get("id", "unnamed"))
     eval_dir = run_dir / eval_id
     workspace_root = eval_dir / "workspace"
@@ -116,7 +130,9 @@ def run_eval_local(eval_item: dict, run_dir: Path, skill_path: Path,
     artifacts_dir.mkdir(parents=True, exist_ok=True)
 
     fixtures = resolve_fixtures(eval_item.get("files", []), project_root)
-    workspace_project = stage_workspace_local(workspace_root, project_root, skill_path, fixtures)
+    workspace_project = stage_workspace_local(
+        workspace_root, project_root, skill_path, fixtures, setup_dirs
+    )
 
     (eval_dir / "prompt.txt").write_text(eval_item["prompt"], encoding="utf-8")
     workspace_snapshot_before = snapshot_files(workspace_project)
@@ -175,8 +191,14 @@ def run_eval_local(eval_item: dict, run_dir: Path, skill_path: Path,
     }
 
 
-def run_eval_docker(eval_item: dict, run_dir: Path, skill_path: Path,
-                    project_root: Path, timeout: int) -> dict:
+def run_eval_docker(
+    eval_item: dict,
+    run_dir: Path,
+    skill_path: Path,
+    project_root: Path,
+    timeout: int,
+    setup_dirs: list[Path] | None = None,
+) -> dict:
     eval_id = str(eval_item.get("id", "unnamed"))
     eval_dir = run_dir / eval_id
     artifacts_dir = eval_dir / "artifacts"
@@ -195,17 +217,20 @@ def run_eval_docker(eval_item: dict, run_dir: Path, skill_path: Path,
 
     (eval_dir / "prompt.txt").write_text(eval_item["prompt"], encoding="utf-8")
 
-    # Stage credentials in a dedicated dir so the container mount point holds
-    # exactly one file at a known name (`.credentials.json`). Mounting the eval_dir
-    # itself would expose all the run output and require the container to know
-    # the dot-prefix filename — keeping it isolated avoids both problems.
+    # Pre-merge setup overlay dirs on the host; mount as /setup:ro in the container.
+    setup_merged: Path | None = None
+    if setup_dirs:
+        setup_merged = eval_dir / "setup_merged"
+        apply_setup_overlay(setup_dirs, setup_merged)
+        if not any(setup_merged.iterdir()):
+            setup_merged = None
+
     creds_dir: Path | None = None
     if _KEYCHAIN_CREDS:
         creds_dir = eval_dir / "creds"
         creds_dir.mkdir(parents=True, exist_ok=True)
         (creds_dir / ".credentials.json").write_text(_KEYCHAIN_CREDS, encoding="utf-8")
 
-    # Inline shell script to run inside the container
     container_script = r"""
 set -e
 mkdir -p /workspace
@@ -214,6 +239,9 @@ rsync -a \
   --exclude=__pycache__ --exclude=.pytest_cache --exclude=.next \
   --exclude=dist --exclude=build --exclude=.cache --exclude=.DS_Store \
   /project/ /workspace/
+if [ -d /setup ]; then
+  rsync -a /setup/ /workspace/
+fi
 mkdir -p /workspace/.claude/skills
 cp -R "$SKILL_SRC" "/workspace/.claude/skills/$SKILL_NAME"
 if [ -d /fixtures ]; then
@@ -249,6 +277,8 @@ rsync -a --exclude=.claude --exclude=node_modules --exclude=.git \
         cmd += ["-v", f"{creds_dir}:/creds:ro"]
     if fixtures:
         cmd += ["-v", f"{fixtures_staging}:/fixtures:ro"]
+    if setup_merged:
+        cmd += ["-v", f"{setup_merged}:/setup:ro"]
     cmd += [DOCKER_IMAGE, "bash", "-c", container_script]
 
     start = time.time()
@@ -285,12 +315,10 @@ rsync -a --exclude=.claude --exclude=node_modules --exclude=.git \
 
 
 def resolve_fixtures(files: list[str], project_root: Path) -> list[tuple[Path, str]]:
-    """Return [(source_path, dest_relpath)]. dest_relpath preserves nesting under fixtures_root."""
     out: list[tuple[Path, str]] = []
     for entry in files:
         candidate = (project_root / entry).resolve()
         if not candidate.is_file():
-            # Try relative to cwd as a fallback
             alt = Path(entry).resolve()
             if alt.is_file():
                 candidate = alt
@@ -373,7 +401,7 @@ def main() -> int:
     parser.add_argument("--project-root", required=True, type=Path)
     parser.add_argument("--output-dir", required=True, type=Path)
     parser.add_argument("--isolation", choices=("docker", "local"), required=True)
-    parser.add_argument("--workers", type=int, default=4)
+    parser.add_argument("--workers", type=int, default=8)
     parser.add_argument("--timeout", type=int, default=600)
     parser.add_argument("--eval-ids", default=None, help="Comma-separated subset of eval ids to run")
     parser.add_argument("--quiet", action="store_true")
@@ -413,11 +441,22 @@ def main() -> int:
 
     results: list[dict] = []
     if not args.quiet:
-        print(f"[run_evals] {len(evals)} evals, isolation={args.isolation}, run_dir={run_dir}", file=sys.stderr)
+        print(
+            f"[run_evals] {len(evals)} evals, isolation={args.isolation}, run_dir={run_dir}",
+            file=sys.stderr,
+        )
 
     with ThreadPoolExecutor(max_workers=args.workers) as pool:
         future_to_eval = {
-            pool.submit(runner, item, run_dir, skill_path, project_root, args.timeout): item
+            pool.submit(
+                runner,
+                item,
+                run_dir,
+                skill_path,
+                project_root,
+                args.timeout,
+                discover_setup_dirs(evals_file, str(item.get("id", ""))),
+            ): item
             for item in evals
         }
         for fut in as_completed(future_to_eval):
@@ -430,7 +469,10 @@ def main() -> int:
             if not args.quiet:
                 rc = res.get("return_code")
                 status = "ok" if rc == 0 else f"rc={rc}"
-                print(f"  [{status}] eval {res.get('eval_id')} ({res.get('elapsed_s', 0)}s)", file=sys.stderr)
+                print(
+                    f"  [{status}] eval {res.get('eval_id')} ({res.get('elapsed_s', 0):.1f}s)",
+                    file=sys.stderr,
+                )
 
     summary = {
         "run_id": run_id,

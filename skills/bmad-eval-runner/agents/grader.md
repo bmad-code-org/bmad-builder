@@ -18,19 +18,33 @@ You receive in your prompt:
 
 ## Process
 
-1. **Read the transcript.** Open `transcript_path`. Note the prompt, the tool calls Claude made, and the final assistant message. Identify any errors or warnings logged.
+1. **Read the transcript.** Open `transcript_path`. The transcript is stream-JSON: each line is a JSON event. Note:
+   - The user prompt that was sent
+   - Every tool call Claude made — `Write`, `Edit`, `Read`, `Skill`, `Bash`, etc. (the event has `type: "assistant"` and `content[].type: "tool_use"` with `name` and `input`)
+   - The order tool calls happened in (events are line-ordered)
+   - The final assistant message — often contains a JSON status block for headless runs
+   - Any errors or warnings logged
 
-2. **List and inspect artifacts.** Walk `artifacts_dir`. For each expectation, open the files it implicates and read their contents — do not rely on filenames alone.
+2. **List and inspect artifacts.** Walk `artifacts_dir`. For each expectation, open the files it implicates and read their contents — do not rely on filenames alone. Note file modification times when ordering or read-only behavior matters.
 
-3. **Grade each expectation independently.** For each entry in `expectations`:
-   - Search transcript and artifacts for evidence
-   - Decide PASS only if there is clear, specific evidence the expectation holds AND the evidence reflects substance, not surface compliance (e.g., a file exists AND contains correct content, not just the right filename)
-   - Decide FAIL when no evidence is found, evidence contradicts, or the assertion is technically satisfied but the underlying outcome is wrong
-   - Cite the evidence — quote a specific line, name a specific file, point to a specific tool call
+3. **Grade each expectation independently.** For each entry in `expectations`, identify what kind of check it is and gather the right evidence:
 
-4. **Critique the evals.** After grading, surface assertions that look weak: ones that passed but would also pass for a clearly wrong output, or important outcomes you observed (good or bad) that no assertion checks. Keep the bar high — flag what an eval author would say "good catch" about, not nits.
+   - **Side-artifact existence + content** ("decision-log.md exists AND captures decision X") → open the file, read it, check the content matches.
+   - **Transcript tool-call patterns** ("transcript contains a Skill call to bmad-editorial-review-prose") → scan the transcript for `tool_use` events with the matching `name` and `input`. Quote the matching event.
+   - **Phase ordering** ("polish call occurs after the Write to brief.md and before the final JSON block") → find the line numbers / event indices of each landmark and verify the order.
+   - **Read-only enforcement** ("input brief.md is byte-identical to the fixture; no Write/Edit calls targeted it") → compare file content if the original is available; AND scan the transcript for any Write/Edit `tool_use` whose `input.file_path` falls in the protected directory.
+   - **YAML frontmatter** ("frontmatter contains title, status, created (ISO 8601), updated") → parse the frontmatter, check fields and their formats.
+   - **JSON output blocks** ("final assistant message contains a JSON object with intent='create'") → look at the final `text` content of the last assistant message; extract the JSON object; check the field.
+   - **Bidirectional fidelity** ("every decision in decision-log.md is reflected in brief.md AND no claim in brief.md is absent from the input prompt or log") → list decisions in the log, verify each appears in the brief; list substantive claims in the brief, verify each traces to either the prompt or the log.
 
-5. **Write `grading.json`.** Save to `grading_path`.
+4. **Decide PASS or FAIL with specific evidence.**
+   - PASS only if there is clear, specific evidence the expectation holds AND the evidence reflects substance, not surface compliance (file exists AND contains correct content, not just the right filename).
+   - FAIL when no evidence is found, evidence contradicts, or the assertion is technically satisfied but the underlying outcome is wrong.
+   - Cite the evidence — quote a specific line, name a specific file with a path, point to a specific tool call with its index or input.
+
+5. **Critique the evals.** After grading, surface assertions that look weak: ones that passed but would also pass for a clearly wrong output, or important outcomes you observed (good or bad) that no assertion checks. Keep the bar high — flag what an eval author would say "good catch" about, not nits.
+
+6. **Write `grading.json`.** Save to `grading_path`.
 
 ## Output Format
 

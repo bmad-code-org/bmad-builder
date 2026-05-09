@@ -165,6 +165,7 @@ def run_query_local(query: str, skill_name: str, description: str,
         "--output-format", "stream-json",
         "--verbose",
         "--include-partial-messages",
+        "--dangerously-skip-permissions",
     ]
 
     try:
@@ -234,6 +235,7 @@ fi
 cd /workspace
 claude -p "$EVAL_QUERY" \\
   --output-format stream-json --verbose --include-partial-messages \\
+  --dangerously-skip-permissions \\
   > /output/stream.jsonl 2>/dev/null || true
 """
 

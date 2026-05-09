@@ -187,6 +187,61 @@ def read_json(path: Path) -> object:
     return json.loads(path.read_text(encoding="utf-8"))
 
 
+def parse_skill_dependencies(skill_path: Path) -> list[str]:
+    """Return skill names declared under 'dependencies:' in SKILL.md frontmatter."""
+    try:
+        text = (skill_path / "SKILL.md").read_text(encoding="utf-8")
+    except (FileNotFoundError, OSError):
+        return []
+    fm = re.match(r"^---\s*\n(.*?)\n---", text, re.DOTALL)
+    if not fm:
+        return []
+    deps: list[str] = []
+    in_deps = False
+    for line in fm.group(1).splitlines():
+        if re.match(r"^dependencies\s*:", line):
+            in_deps = True
+        elif in_deps:
+            m = re.match(r"^\s+-\s+(\S+)", line)
+            if m:
+                deps.append(m.group(1))
+            elif not line.startswith((" ", "\t")):
+                break
+    return deps
+
+
+def discover_setup_dirs(evals_file: Path, eval_id: str | None = None) -> list[Path]:
+    """Return ordered list of setup overlay dirs that exist.
+
+    base:     <evals_dir>/setup/
+    per-eval: <evals_dir>/<eval_id>/setup/
+
+    Applied base-first so per-eval overlays win on conflict.
+    """
+    evals_dir = evals_file.parent
+    dirs: list[Path] = []
+    base = evals_dir / "setup"
+    if base.is_dir():
+        dirs.append(base)
+    if eval_id:
+        per_eval = evals_dir / eval_id / "setup"
+        if per_eval.is_dir():
+            dirs.append(per_eval)
+    return dirs
+
+
+def apply_setup_overlay(setup_dirs: list[Path], dest: Path) -> None:
+    """Rsync each setup dir onto dest in order (base first, per-eval last)."""
+    dest.mkdir(parents=True, exist_ok=True)
+    for src in setup_dirs:
+        if not src.is_dir():
+            continue
+        subprocess.run(
+            ["rsync", "-a", f"{src}/", f"{dest}/"],
+            check=False,
+        )
+
+
 __all__ = [
     "parse_skill_md",
     "discover_project_root",
@@ -199,4 +254,7 @@ __all__ = [
     "stage_credentials",
     "write_json",
     "read_json",
+    "parse_skill_dependencies",
+    "discover_setup_dirs",
+    "apply_setup_overlay",
 ]
