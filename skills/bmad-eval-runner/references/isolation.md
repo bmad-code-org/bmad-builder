@@ -10,6 +10,16 @@ The eval runner offers two strategies. The intent is identical in both: every ev
 - Cached settings, MCP configurations, IDE integrations
 - Prior conversation context bleeding via the shell
 
+## Authentication
+
+The isolated `claude -p` subprocess needs to authenticate, but cannot read the host's `~/.claude/` (HOME is overridden) or the macOS Keychain (Keychain ACLs are scoped to the process that wrote the entry). The runner solves this in the parent process:
+
+1. On macOS, read the OAuth credential JSON from the Keychain entry `Claude Code-credentials` via `security find-generic-password -s "Claude Code-credentials" -w`. This succeeds because the parent runs as the same user that wrote the entry.
+2. Stage that JSON as `<workspace>/.home/.claude/.credentials.json` (local mode) or copy it into `/home/evaluator/.claude/.credentials.json` inside the container (Docker mode).
+3. The subprocess reads `.credentials.json` exactly the way Claude Code normally does, with no other host config bleed.
+
+If the parent has `ANTHROPIC_API_KEY` set, that env var is also forwarded — and it takes precedence over the Keychain credential. On non-macOS hosts, the Keychain step is skipped and `ANTHROPIC_API_KEY` is the only auth path.
+
 ## Docker (preferred)
 
 A single image, `bmad-eval-runner:latest`, is built once per machine. It contains Node 20, Claude Code (via `npm install -g @anthropic-ai/claude-code`), Python 3, and standard tools. The image is intentionally minimal — every eval starts from this baseline.
@@ -81,11 +91,15 @@ ANTHROPIC_API_KEY="$ANTHROPIC_API_KEY" \
 
 ### Limitations of local mode
 
-- `HOME` override prevents global `CLAUDE.md` and memory loading, but a stray ancestor `CLAUDE.md` above the project copy will still be discovered if `<project-root>` is itself nested. The runner detects this and either (a) walks up and copies just the project subtree, or (b) warns the user that ancestor discovery may still occur.
+- `HOME` override prevents global `CLAUDE.md` and memory loading, but ancestor discovery still happens from the workspace's cwd. If the workspace is created inside a directory tree that contains a `.claude/skills/` further up, the subprocess may discover those skills regardless of `HOME`. This matters most for trigger evals, where stray host skills can fire instead of the synthetic skill we're testing — **prefer Docker for trigger evals**, where filesystem isolation is real.
 - Filesystem isolation is by convention only — the skill could write outside its workspace if it tries. We don't sandbox syscalls.
 - Network is unrestricted.
 
 Tell the user clearly when local mode is in use and that it is best-effort.
+
+## Why a real skill, not a slash command, for trigger evals
+
+The trigger runner stages a synthetic skill at `<workspace>/.claude/skills/<unique-name>/SKILL.md` — not at `.claude/commands/<name>.md`. Slash commands are user-invoked (`/<name>`); they do not surface as `Skill` tool calls and so a description placed there can never be observed firing the way a real skill would. Anthropic's reference `run_eval.py` uses the commands path and is known to report 0% trigger rates as a result. Placing the synthetic at `.claude/skills/` matches how real skills load and lets the detector observe genuine `Skill` (or `Read` of the synthetic SKILL.md) tool calls.
 
 ## Why not `--add-dir` only?
 

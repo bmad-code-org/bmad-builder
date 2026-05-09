@@ -45,21 +45,34 @@ from utils import (  # noqa: E402
     new_run_id,
     parse_skill_md,
     read_json,
+    read_macos_keychain_credentials,
+    stage_credentials,
     utc_now_iso,
     write_json,
 )
 
 DOCKER_IMAGE = "bmad-eval-runner:latest"
+_KEYCHAIN_CREDS: str | None = read_macos_keychain_credentials()
 
 
-def write_command_file(commands_dir: Path, skill_name: str, description: str, unique_id: str) -> tuple[Path, str]:
-    """Create a synthetic command file so the description appears in claude -p's available skills."""
-    commands_dir.mkdir(parents=True, exist_ok=True)
+def write_synthetic_skill(skills_dir: Path, skill_name: str, description: str, unique_id: str) -> tuple[Path, str]:
+    """Place a synthetic skill at <skills_dir>/<clean_name>/SKILL.md.
+
+    The Skill tool only fires for entries discovered as actual skills (frontmatter
+    `name` + `description` under a `.claude/skills/<name>/SKILL.md`). Slash-commands
+    under `.claude/commands/` do not auto-invoke the Skill tool, so the previous
+    implementation could never observe a positive trigger. This places the synthetic
+    skill where Claude Code looks for skills, with a unique name so the detector
+    can disambiguate it from any pre-existing skill of the same display name.
+    """
     clean_name = f"{skill_name}-skill-{unique_id}"
-    path = commands_dir / f"{clean_name}.md"
+    skill_root = skills_dir / clean_name
+    skill_root.mkdir(parents=True, exist_ok=True)
+    path = skill_root / "SKILL.md"
     indented_desc = "\n  ".join(description.split("\n"))
     path.write_text(
         f"---\n"
+        f"name: {clean_name}\n"
         f"description: |\n"
         f"  {indented_desc}\n"
         f"---\n\n"
@@ -132,12 +145,13 @@ def run_query_local(query: str, skill_name: str, description: str,
     workspace_root.mkdir(parents=True, exist_ok=True)
     home_dir = workspace_root / ".home"
     (home_dir / ".claude").mkdir(parents=True, exist_ok=True)
+    stage_credentials(home_dir / ".claude", _KEYCHAIN_CREDS)
     project_dir = workspace_root / "project"
-    commands_dir = project_dir / ".claude" / "commands"
+    skills_dir = project_dir / ".claude" / "skills"
     project_dir.mkdir(parents=True, exist_ok=True)
 
     unique = uuid.uuid4().hex[:8]
-    cmd_file, clean_name = write_command_file(commands_dir, skill_name, description, unique)
+    cmd_file, clean_name = write_synthetic_skill(skills_dir, skill_name, description, unique)
 
     env = {
         "HOME": str(home_dir),
@@ -190,7 +204,7 @@ def run_query_local(query: str, skill_name: str, description: str,
         return bool(triggered)
     finally:
         try:
-            cmd_file.unlink()
+            shutil.rmtree(cmd_file.parent, ignore_errors=True)
         except OSError:
             pass
 
@@ -199,14 +213,24 @@ def run_query_docker(query: str, skill_name: str, description: str,
                      workspace_root: Path, timeout: int) -> bool:
     workspace_root.mkdir(parents=True, exist_ok=True)
     unique = uuid.uuid4().hex[:8]
-    cmd_dir = workspace_root / "commands_in"
-    cmd_dir.mkdir(parents=True, exist_ok=True)
-    cmd_file, clean_name = write_command_file(cmd_dir, skill_name, description, unique)
+    skills_in = workspace_root / "skills_in"
+    skills_in.mkdir(parents=True, exist_ok=True)
+    _, clean_name = write_synthetic_skill(skills_in, skill_name, description, unique)
+
+    creds_dir: Path | None = None
+    if _KEYCHAIN_CREDS:
+        creds_dir = workspace_root / "creds_in"
+        creds_dir.mkdir(parents=True, exist_ok=True)
+        (creds_dir / ".credentials.json").write_text(_KEYCHAIN_CREDS, encoding="utf-8")
 
     container_script = f"""
 set -e
-mkdir -p /workspace/.claude/commands
-cp /commands/*.md /workspace/.claude/commands/ 2>/dev/null || true
+mkdir -p /workspace/.claude/skills
+cp -R /skills/. /workspace/.claude/skills/ 2>/dev/null || true
+if [ -f /creds/.credentials.json ]; then
+  mkdir -p /home/evaluator/.claude
+  cp /creds/.credentials.json /home/evaluator/.claude/.credentials.json
+fi
 cd /workspace
 claude -p "$EVAL_QUERY" \\
   --output-format stream-json --verbose --include-partial-messages \\
@@ -218,12 +242,14 @@ claude -p "$EVAL_QUERY" \\
 
     cmd = [
         "docker", "run", "--rm",
-        "-v", f"{cmd_dir}:/commands:ro",
+        "-v", f"{skills_in}:/skills:ro",
         "-v", f"{output_dir}:/output",
         "-e", "ANTHROPIC_API_KEY",
         "-e", f"EVAL_QUERY={query}",
-        DOCKER_IMAGE, "bash", "-c", container_script,
     ]
+    if creds_dir:
+        cmd += ["-v", f"{creds_dir}:/creds:ro"]
+    cmd += [DOCKER_IMAGE, "bash", "-c", container_script]
 
     try:
         subprocess.run(cmd, capture_output=True, timeout=timeout + 30)

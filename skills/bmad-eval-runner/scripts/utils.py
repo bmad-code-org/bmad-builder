@@ -10,6 +10,7 @@ import json
 import re
 import shutil
 import subprocess
+import sys
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -142,6 +143,41 @@ def docker_image_present(image: str = "bmad-eval-runner:latest") -> bool:
         return False
 
 
+def read_macos_keychain_credentials() -> str | None:
+    """Read the Claude Code OAuth credentials JSON from the macOS Keychain.
+
+    Returns the raw JSON string stored under service "Claude Code-credentials",
+    or None if unavailable (non-macOS, entry missing, or access denied).
+
+    Called in the parent process — which owns the Keychain ACL — so the credential
+    can be staged into each isolated workspace's `.claude/.credentials.json` before
+    `claude -p` is launched. Without this, an isolated subprocess with HOME pointed
+    at an empty dir has no auth and every eval fails with "Not logged in."
+    """
+    if sys.platform != "darwin":
+        return None
+    try:
+        result = subprocess.run(
+            ["security", "find-generic-password", "-s", "Claude Code-credentials", "-w"],
+            capture_output=True,
+            timeout=5,
+        )
+        if result.returncode != 0:
+            return None
+        val = result.stdout.decode("utf-8", errors="replace").strip()
+        return val if val else None
+    except Exception:
+        return None
+
+
+def stage_credentials(claude_dir: Path, credentials_json: str | None) -> None:
+    """Write credentials_json to <claude_dir>/.credentials.json. No-op if None."""
+    if not credentials_json:
+        return
+    claude_dir.mkdir(parents=True, exist_ok=True)
+    (claude_dir / ".credentials.json").write_text(credentials_json, encoding="utf-8")
+
+
 def write_json(path: Path, data: object) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(json.dumps(data, indent=2) + "\n", encoding="utf-8")
@@ -159,6 +195,8 @@ __all__ = [
     "new_run_id",
     "have_docker",
     "docker_image_present",
+    "read_macos_keychain_credentials",
+    "stage_credentials",
     "write_json",
     "read_json",
 ]

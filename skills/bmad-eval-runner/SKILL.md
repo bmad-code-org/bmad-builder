@@ -69,7 +69,7 @@ Details and the exact mount layout live in `references/isolation.md`. Read that 
 
 For artifact evals, invoke `python3 {skill-root}/scripts/run_evals.py` with the resolved arguments. The script handles isolation per eval, runs `claude -p` in the sandbox with the eval's prompt and any staged fixture files, and writes a per-eval folder with `prompt.txt`, `transcript.jsonl`, `artifacts/`, and `metrics.json`.
 
-For trigger evals, invoke `python3 {skill-root}/scripts/run_triggers.py`. The script measures whether the skill's description causes the skill to fire for each query, with `runs-per-query` repeats for stability, and writes `triggers-result.json`.
+For trigger evals, invoke `python3 {skill-root}/scripts/run_triggers.py`. The script measures whether the skill's description causes the skill to fire for each query, with `runs-per-query` repeats for stability, and writes `triggers-result.json`. Trigger evals should run under Docker isolation when available — local mode can have the host's installed skills bleed in via cwd-based skill discovery, biasing the trigger signal. If Docker is unavailable, run trigger evals locally but say so explicitly.
 
 After artifact runs complete, grade each eval. Spawn a grader subagent per eval in parallel (Agent tool, prompt loaded from `{skill-root}/agents/grader.md` plus the eval's `expectations` and the path to its outputs). Each grader writes `grading.json` next to the artifacts. The grader has license to flag weak assertions — relay that feedback to the user.
 
@@ -85,7 +85,7 @@ After all grading is done, generate the aggregate report — `python3 {skill-roo
 ## Constraints
 
 - **Artifacts are forever.** Never delete, overwrite, or rotate run folders. Disk usage is the user's call.
-- **API key passthrough only.** The only secret that crosses the isolation boundary is `ANTHROPIC_API_KEY`. Do not invent reasons to pass other env vars.
+- **Auth boundary is narrow.** On macOS, the host's Claude Code OAuth credential is staged into each isolated `.claude/.credentials.json` so the subprocess can authenticate without inheriting host config. `ANTHROPIC_API_KEY`, if set, is also forwarded. Nothing else crosses.
 - **Trigger evals do not need real artifacts.** They use a stub command file and only measure description firing — keep them cheap and parallel.
 - **No silent fallbacks on grading.** If a grader subagent errors, mark that eval `grading_error` rather than substituting a default verdict.
 - **Stop when evals are missing.** If discovery returns nothing, halt with diagnostics — the runner does not invent test cases.

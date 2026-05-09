@@ -46,11 +46,19 @@ from utils import (  # noqa: E402
     new_run_id,
     parse_skill_md,
     read_json,
+    read_macos_keychain_credentials,
+    stage_credentials,
     utc_now_iso,
     write_json,
 )
 
 DOCKER_IMAGE = "bmad-eval-runner:latest"
+# Read the host's Claude Code OAuth credentials once at import. Each isolated
+# workspace then receives a copy as `.claude/.credentials.json` so the subprocess
+# can authenticate without inheriting the host's $HOME (and with it, host CLAUDE.md
+# and auto-memory). On non-macOS hosts or when no credential exists, this is None
+# and ANTHROPIC_API_KEY env-passthrough is the only auth path.
+_KEYCHAIN_CREDS: str | None = read_macos_keychain_credentials()
 RSYNC_EXCLUDES = (
     ".git", ".bare", "node_modules", ".venv", "__pycache__",
     ".pytest_cache", ".next", "dist", "build", ".cache",
@@ -114,6 +122,7 @@ def run_eval_local(eval_item: dict, run_dir: Path, skill_path: Path,
     workspace_snapshot_before = snapshot_files(workspace_project)
 
     home_dir = workspace_root / ".home"
+    stage_credentials(home_dir / ".claude", _KEYCHAIN_CREDS)
     env = {
         "HOME": str(home_dir),
         "CLAUDE_CONFIG_DIR": str(home_dir / ".claude"),
@@ -186,6 +195,16 @@ def run_eval_docker(eval_item: dict, run_dir: Path, skill_path: Path,
 
     (eval_dir / "prompt.txt").write_text(eval_item["prompt"], encoding="utf-8")
 
+    # Stage credentials in a dedicated dir so the container mount point holds
+    # exactly one file at a known name (`.credentials.json`). Mounting the eval_dir
+    # itself would expose all the run output and require the container to know
+    # the dot-prefix filename — keeping it isolated avoids both problems.
+    creds_dir: Path | None = None
+    if _KEYCHAIN_CREDS:
+        creds_dir = eval_dir / "creds"
+        creds_dir.mkdir(parents=True, exist_ok=True)
+        (creds_dir / ".credentials.json").write_text(_KEYCHAIN_CREDS, encoding="utf-8")
+
     # Inline shell script to run inside the container
     container_script = r"""
 set -e
@@ -199,6 +218,10 @@ mkdir -p /workspace/.claude/skills
 cp -R "$SKILL_SRC" "/workspace/.claude/skills/$SKILL_NAME"
 if [ -d /fixtures ]; then
   cp -R /fixtures/. /workspace/
+fi
+if [ -f /creds/.credentials.json ]; then
+  mkdir -p /home/evaluator/.claude
+  cp /creds/.credentials.json /home/evaluator/.claude/.credentials.json
 fi
 cd /workspace
 claude -p "$EVAL_PROMPT" \
@@ -222,6 +245,8 @@ rsync -a --exclude=.claude --exclude=node_modules --exclude=.git \
         "-e", f"SKILL_SRC=/skill_src",
         "-e", f"SKILL_NAME={skill_name}",
     ]
+    if creds_dir:
+        cmd += ["-v", f"{creds_dir}:/creds:ro"]
     if fixtures:
         cmd += ["-v", f"{fixtures_staging}:/fixtures:ro"]
     cmd += [DOCKER_IMAGE, "bash", "-c", container_script]
