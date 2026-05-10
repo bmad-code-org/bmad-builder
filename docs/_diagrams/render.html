@@ -1,0 +1,48 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8" />
+<title>Excalidraw → PNG</title>
+<style>html,body{margin:0;padding:0;background:#fff;}</style>
+</head>
+<body>
+<div id="status">loading...</div>
+<canvas id="out"></canvas>
+<script type="module">
+const status = document.getElementById("status");
+
+async function waitForScene() {
+  while (!window.__scene) await new Promise(r => setTimeout(r, 25));
+  return window.__scene;
+}
+
+(async () => {
+  try {
+    status.textContent = "waiting for scene...";
+    const scene = await waitForScene();
+    const scale = window.__scale || 2;
+
+    status.textContent = "loading excalidraw library...";
+    const ex = await import("https://esm.sh/@excalidraw/utils");
+
+    status.textContent = "rendering...";
+    const canvas = await ex.exportToCanvas({
+      elements: scene.elements,
+      appState: { ...(scene.appState || {}), exportBackground: true, viewBackgroundColor: "#ffffff" },
+      files: scene.files || {},
+      getDimensions: (w, h) => ({ width: w * scale, height: h * scale, scale }),
+    });
+
+    document.getElementById("out").replaceWith(canvas);
+    window.__pngDataUrl = canvas.toDataURL("image/png");
+    status.textContent = "done: " + canvas.width + "x" + canvas.height;
+    window.__done = true;
+  } catch (e) {
+    status.textContent = "error: " + (e && e.message);
+    window.__error = String((e && e.stack) || (e && e.message) || e);
+    window.__done = true;
+  }
+})();
+</script>
+</body>
+</html>

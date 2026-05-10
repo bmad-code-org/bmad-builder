@@ -25,6 +25,13 @@ Create world-class AI agents and workflows with the BMad Builder.
 | **[Skill Authoring Best Practices](/explanation/skill-authoring-best-practices.md)** | Core principles, common patterns, quality dimensions, and anti-patterns  |
 | **[Scripts in Skills](/explanation/scripts-in-skills.md)**                           | Why deterministic scripts make skills faster, cheaper, and more reliable |
 
+## Evaluating Skills
+
+| Topic                                                                  | Description                                                                       |
+| ---------------------------------------------------------------------- | --------------------------------------------------------------------------------- |
+| **[What Are Evals](/explanation/what-are-evals.md)**                   | Artifact and trigger evals; the two single-shot patterns that cover most skills   |
+| **[Why BMad Eval Runner](/explanation/why-bmad-eval-runner.md)**       | What the reference runner misses: isolation, dependency staging, real triggers    |
+
 ## Reference
 
 | Resource                                                 | Description                                           |
