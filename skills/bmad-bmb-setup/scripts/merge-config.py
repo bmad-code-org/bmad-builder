@@ -339,8 +339,40 @@ def write_config(config: dict, config_path: str, verbose: bool = False) -> None:
         )
 
 
+def reject_unresolved_paths(named_paths: list[tuple[str, str]]) -> None:
+    """Exit with a clear error if any path argument still contains the literal
+    ``{project-root}`` token. That token is meaningful only inside config
+    values; filesystem path arguments must be resolved by the caller. Failing
+    loudly here prevents silently creating a junk ``{project-root}/`` directory.
+    """
+    for name, value in named_paths:
+        if value and "{project-root}" in value:
+            print(
+                json.dumps(
+                    {
+                        "status": "error",
+                        "error": (
+                            f"Unresolved '{{project-root}}' token in {name} path: {value!r}. "
+                            "Resolve '{project-root}' to the actual project root before running "
+                            "this script — it is a filesystem path, not a config value."
+                        ),
+                    },
+                    indent=2,
+                )
+            )
+            sys.exit(1)
+
+
 def main():
     args = parse_args()
+
+    reject_unresolved_paths(
+        [
+            ("--config-path", args.config_path),
+            ("--user-config-path", args.user_config_path),
+            ("--legacy-dir", args.legacy_dir),
+        ]
+    )
 
     # Load inputs
     module_yaml = load_yaml_file(args.module_yaml)

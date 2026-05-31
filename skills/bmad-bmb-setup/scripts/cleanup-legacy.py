@@ -197,8 +197,36 @@ def cleanup_directories(
     return removed, not_found, total_files
 
 
+def reject_unresolved_paths(named_paths: list[tuple[str, str]]) -> None:
+    """Exit with a clear error if any path argument still contains the literal
+    ``{project-root}`` token. That token is meaningful only inside config
+    values; filesystem path arguments must be resolved by the caller. Failing
+    loudly here prevents silently operating on a junk ``{project-root}/`` directory.
+    """
+    for name, value in named_paths:
+        if value and "{project-root}" in value:
+            print(
+                json.dumps(
+                    {
+                        "status": "error",
+                        "error": (
+                            f"Unresolved '{{project-root}}' token in {name} path: {value!r}. "
+                            "Resolve '{project-root}' to the actual project root before running "
+                            "this script — it is a filesystem path, not a config value."
+                        ),
+                    },
+                    indent=2,
+                )
+            )
+            sys.exit(1)
+
+
 def main():
     args = parse_args()
+
+    reject_unresolved_paths(
+        [("--bmad-dir", args.bmad_dir), ("--skills-dir", args.skills_dir)]
+    )
 
     bmad_dir = args.bmad_dir
     module_code = args.module_code
