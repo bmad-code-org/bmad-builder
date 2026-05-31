@@ -358,7 +358,8 @@ def reject_unresolved_paths(named_paths: list[tuple[str, str]]) -> None:
                         ),
                     },
                     indent=2,
-                )
+                ),
+                file=sys.stderr,
             )
             sys.exit(1)
 
