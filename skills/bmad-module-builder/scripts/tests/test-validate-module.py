@@ -387,6 +387,7 @@ def test_standalone_skill_dir_orphan_not_masked_by_sibling():
 
         skill_dir = module_dir / "my-skill"
         code, data = run_validate(skill_dir)
+        assert code == 1, f"Orphan entry should fail validation: {data}"
         orphans = [f for f in data["findings"] if f["category"] == "orphan-entry"]
         assert any("other-skill" in f["message"] for f in orphans), \
             f"Sibling skill must not mask the orphan: {data['findings']}"
