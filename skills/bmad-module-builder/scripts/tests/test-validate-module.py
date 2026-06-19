@@ -235,8 +235,14 @@ def test_short_row_does_not_crash():
 def create_standalone_module(tmp: Path, skill_name: str = "my-skill",
                              csv_rows: str = "", yaml_content: str = "",
                              include_setup_md: bool = True,
-                             include_merge_scripts: bool = True) -> Path:
-    """Create a minimal standalone module structure for testing."""
+                             include_merge_scripts: bool = True,
+                             merge_script_style: str = "dash") -> Path:
+    """Create a minimal standalone module structure for testing.
+
+    ``merge_script_style`` selects the merge-script naming form: "dash" for the
+    scaffolder default (merge-config.py) or "underscore" for the importable form
+    (merge_config.py). Both are valid.
+    """
     module_dir = tmp / "module"
     module_dir.mkdir()
 
@@ -259,8 +265,12 @@ def create_standalone_module(tmp: Path, skill_name: str = "my-skill",
     if include_merge_scripts:
         scripts = skill / "scripts"
         scripts.mkdir()
-        (scripts / "merge-config.py").write_text("# merge-config\n")
-        (scripts / "merge-help-csv.py").write_text("# merge-help-csv\n")
+        if merge_script_style == "underscore":
+            (scripts / "merge_config.py").write_text("# merge_config\n")
+            (scripts / "merge_help_csv.py").write_text("# merge_help_csv\n")
+        else:
+            (scripts / "merge-config.py").write_text("# merge-config\n")
+            (scripts / "merge-help-csv.py").write_text("# merge-help-csv\n")
 
     return module_dir
 
@@ -319,6 +329,47 @@ def test_standalone_csv_validation():
         assert "DT" in dupes[0]["message"]
 
 
+def test_standalone_underscore_merge_scripts():
+    """Importable underscore-named merge scripts (merge_config.py) should pass."""
+    with tempfile.TemporaryDirectory() as tmp:
+        tmp = Path(tmp)
+        module_dir = create_standalone_module(tmp, merge_script_style="underscore")
+
+        code, data = run_validate(module_dir)
+        assert code == 0, f"Expected pass: {data}"
+        assert data["status"] == "pass"
+        assert data["info"].get("standalone") is True
+        assert data["summary"]["total_findings"] == 0
+
+
+def test_standalone_cross_module_before_after_ref():
+    """Bare (colon-less) preceded-by/followed-by refs are cross-module positional, not flagged."""
+    with tempfile.TemporaryDirectory() as tmp:
+        tmp = Path(tmp)
+        csv_rows = ('Test Module,my-skill,Do Thing,DT,Does thing,,,anytime,'
+                    'bmad-sprint-planning,bmad-retrospective,false,output_folder,artifact\n')
+        module_dir = create_standalone_module(tmp, csv_rows=csv_rows)
+
+        code, data = run_validate(module_dir)
+        assert code == 0, f"Expected pass: {data}"
+        refs = [f for f in data["findings"] if f["category"] == "invalid-ref"]
+        assert refs == [], f"Cross-module bare refs should not be flagged: {refs}"
+
+
+def test_standalone_given_skill_dir_directly():
+    """Passing the standalone skill directory itself (not its parent) should work."""
+    with tempfile.TemporaryDirectory() as tmp:
+        tmp = Path(tmp)
+        module_dir = create_standalone_module(tmp, skill_name="my-skill")
+        skill_dir = module_dir / "my-skill"
+
+        code, data = run_validate(skill_dir)
+        assert code == 0, f"Expected pass: {data}"
+        assert data["status"] == "pass"
+        assert data["info"].get("standalone") is True
+        assert data["info"].get("skill_dir") == "my-skill"
+
+
 def test_multi_skill_not_detected_as_standalone():
     """A folder with two skills and no setup skill should fail (not detected as standalone)."""
     with tempfile.TemporaryDirectory() as tmp:
@@ -367,6 +418,9 @@ if __name__ == "__main__":
         test_standalone_missing_module_setup_md,
         test_standalone_missing_merge_scripts,
         test_standalone_csv_validation,
+        test_standalone_underscore_merge_scripts,
+        test_standalone_cross_module_before_after_ref,
+        test_standalone_given_skill_dir_directly,
         test_multi_skill_not_detected_as_standalone,
         test_nonexistent_directory,
     ]
