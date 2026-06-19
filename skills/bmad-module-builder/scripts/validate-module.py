@@ -230,13 +230,11 @@ def validate(module_dir: Path, verbose: bool = False) -> dict:
     # 6. Collect skills from CSV and filesystem
     csv_skills = {row.get("skill", "") for row in rows}
     if standalone_dir:
-        # The only skill folder is the standalone skill itself, whether we were
+        # The only valid skill is the standalone skill itself, whether we were
         # handed the module's parent folder or the skill directory directly.
         skill_folders = [standalone_dir.name]
-        skill_parent = standalone_dir.parent
     else:
         skill_folders = find_skill_folders(module_dir, setup_dir.name)
-        skill_parent = module_dir
     info["skill_folders"] = skill_folders
     info["csv_skills"] = sorted(csv_skills)
 
@@ -248,10 +246,15 @@ def validate(module_dir: Path, verbose: bool = False) -> dict:
     # 8. Orphan CSV entries
     setup_name = setup_dir.name if setup_dir else ""
     for skill in csv_skills:
-        if skill not in skill_folders and skill != setup_name:
-            # Check if it's the setup skill itself (valid)
-            if not (skill_parent / skill / "SKILL.md").is_file():
-                finding("high", "orphan-entry", f"CSV references skill '{skill}' which does not exist in the module folder")
+        if skill in skill_folders or skill == setup_name:
+            continue
+        # For a standalone module, skill_folders already enumerates every valid
+        # skill, so any other CSV skill is an orphan — never look at the parent
+        # folder (which may hold unrelated sibling skills when validating a skill
+        # dir directly). For a multi-skill module, re-check the filesystem: the
+        # setup skill lives alongside the others and is excluded from skill_folders.
+        if standalone_dir or not (module_dir / skill / "SKILL.md").is_file():
+            finding("high", "orphan-entry", f"CSV references skill '{skill}' which does not exist in the module folder")
 
     # 9. Unique menu codes
     menu_codes: dict[str, list[str]] = {}

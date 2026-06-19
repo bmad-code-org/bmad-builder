@@ -370,6 +370,28 @@ def test_standalone_given_skill_dir_directly():
         assert data["info"].get("skill_dir") == "my-skill"
 
 
+def test_standalone_skill_dir_orphan_not_masked_by_sibling():
+    """Validating a skill dir directly must still flag a CSV skill that only
+    exists as an unrelated sibling directory (not part of this standalone module)."""
+    with tempfile.TemporaryDirectory() as tmp:
+        tmp = Path(tmp)
+        csv_rows = (
+            'Test Module,my-skill,Do Thing,DT,Does thing,run,,anytime,,,false,output_folder,artifact\n'
+            'Test Module,other-skill,Other,OT,Other thing,run,,anytime,,,false,output_folder,report\n'
+        )
+        module_dir = create_standalone_module(tmp, skill_name="my-skill", csv_rows=csv_rows)
+        # A sibling skill dir next to the standalone skill (a different module).
+        sibling = module_dir / "other-skill"
+        sibling.mkdir()
+        (sibling / "SKILL.md").write_text("---\nname: other-skill\n---\n# other-skill\n")
+
+        skill_dir = module_dir / "my-skill"
+        code, data = run_validate(skill_dir)
+        orphans = [f for f in data["findings"] if f["category"] == "orphan-entry"]
+        assert any("other-skill" in f["message"] for f in orphans), \
+            f"Sibling skill must not mask the orphan: {data['findings']}"
+
+
 def test_multi_skill_not_detected_as_standalone():
     """A folder with two skills and no setup skill should fail (not detected as standalone)."""
     with tempfile.TemporaryDirectory() as tmp:
@@ -421,6 +443,7 @@ if __name__ == "__main__":
         test_standalone_underscore_merge_scripts,
         test_standalone_cross_module_before_after_ref,
         test_standalone_given_skill_dir_directly,
+        test_standalone_skill_dir_orphan_not_masked_by_sibling,
         test_multi_skill_not_detected_as_standalone,
         test_nonexistent_directory,
     ]
