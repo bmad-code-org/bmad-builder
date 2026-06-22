@@ -1,5 +1,17 @@
 # Changelog
 
+## [2.1.0] - 2026-06-22
+
+### 🐛 Fixes
+
+* **Standalone module validation hardening** — `validate-module.py` no longer emits false-positive findings for correctly-structured standalone single-skill modules. It now accepts either `merge-config.py`/`merge_config.py` naming (dash or importable underscore form), skips colon-less `preceded-by`/`followed-by` cross-module refs that are unresolvable in isolation while still validating intra-module `skill:action` refs, and recognizes a module when handed its own skill directory directly (#97).
+
+### 🔧 Maintenance
+
+* **Builders use runtime-installed memlog** — Workflow Builder and Agent Builder now point at the shared runtime memlog CLI at `{project-root}/_bmad/scripts/memlog.py` instead of each bundling its own copy. Removes drift between copies; `{project-root}` resolves at runtime so the call works from any skill root. Bundled `scripts/memlog.py` copies (and the workflow-builder memlog test) were deleted, and the obsolete "copy the CLI into each built skill" guidance was rewritten (#98).
+
+* **`uv run` standardized across builder scripts** — Prompt-facing script invocations, usage strings, and emitted init-sanctum/wake templates now call `uv run <script>` instead of `python3 <script>`; `script-standards.md` mandates it. Shebangs (`#!/usr/bin/env python3`), capability notes, and `python3 -m pytest` docstrings are intentionally left as-is (#98).
+
 ## [2.0.0] - 2026-06-13
 
 This is a near-total rebuild of the BMad builders around one conviction: **the prompt is the product, and its quality has to be testable, not asserted.** Three efforts land together and reinforce each other.
