@@ -12,7 +12,7 @@
       "name": "bmad-builder",
       "source": "./",
       "description": "Build AI agents, workflows, and modules from a conversation. Four skills — Agent Builder, Workflow Builder, Module Builder, and Setup — guide you from idea to production-ready skill structure with built-in quality optimization. Part of the BMad Method ecosystem.",
-      "version": "2.0.0",
+      "version": "2.1.0",
       "author": {
         "name": "Brian (BMad) Madison"
       },
@@ -22,7 +22,7 @@
       "name": "sample-plugins",
       "source": "./",
       "description": "Sample plugins demonstrating how to build BMad agents and skills. Includes a code coach, creative muse, diagram reviewer, dream weaver, sentinel, and excalidraw generator.",
-      "version": "2.0.0",
+      "version": "2.1.0",
       "author": {
         "name": "Brian (BMad) Madison"
       },
@@ -40,7 +40,7 @@
       "name": "bmad-dream-weaver-agent",
       "source": "./",
       "description": "Dream journaling and interpretation agent with lucid dreaming coaching, pattern discovery, symbol analysis, and recall training.",
-      "version": "2.0.0",
+      "version": "2.1.0",
       "author": {
         "name": "Brian (BMad) Madison"
       },
