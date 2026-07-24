@@ -78,7 +78,7 @@ python3 {skill-root}/scripts/run_triggers.py \
 
 It stages a synthetic skill where the runtime discovers skills, sends each query through the adapter, and detects the skill-load tool call. Each query runs several times for stability. When the user wants to optimize the description rather than just measure it, follow `references/description-optimization.md`.
 
-For quality mode, spawn the grader described in `references/grader.md` per case, passing the case's rubric, transcript path, artifacts dir (the case's `cwd/`), and a `grading_path` of `<case-folder>/grading.json`. The grader writes that file, gives no partial credit, and flags weak or non-discriminating assertions; relay that feedback. If a grader subagent errors, mark that case `grading_error` — never substitute a default verdict.
+For quality mode, spawn the grader described in `references/grader.md` per case, passing the case's rubric, transcript path, artifacts dir (the case's `cwd/`), trusted fixture evidence at `<case-folder>/fixture-evidence/`, and a `grading_path` of `<case-folder>/grading.json`. Fixture-grounded claims must use the immutable snapshot and manifest, never the adapter-writable copies in `cwd/`. The grader writes that file, gives no partial credit, and flags weak or non-discriminating assertions; relay that feedback. If a grader subagent errors, mark that case `grading_error` — never substitute a default verdict.
 
 When `--runs` is greater than one, call `python3 {skill-root}/scripts/aggregate_benchmark.py --baseline <run-dir>/<config-a> --variant <run-dir>/<config-b>` to produce the mean, sample standard deviation, min, max, and the delta between configs (`--runs <run-dir>/<config>` for a single config's spread).
 
@@ -86,7 +86,7 @@ When a run fails or comes back weak and the user wants the skill improved from t
 
 ## Artifacts
 
-Every run writes a dated run folder under the output dir, and those artifacts are permanent. Each case folder holds its prompt, transcript, the `cwd/` with any files the skill wrote, `timing.json`, and `grading.json` when quality mode ran. Never delete, overwrite, or rotate a run folder; disk usage is the user's call. The run's `.memlog.md` records the decisions and deltas so a resumed or audited run reads back cleanly.
+Every run writes a dated run folder under the output dir, and those artifacts are permanent. Each case folder holds its prompt, transcript, the `cwd/` with any files the skill wrote, immutable `fixture-evidence/` written only after the adapter exits, `timing.json`, and `grading.json` when quality mode ran. Unsafe absolute or parent-traversal fixture paths, source/destination symlink escapes, pre-run hash changes, post-run mutation, and attempts to pre-create the evidence path fail closed. Never delete, overwrite, or rotate a run folder; disk usage is the user's call. The run's `.memlog.md` records the decisions and deltas so a resumed or audited run reads back cleanly.
 
 Tell the user where the run folder is when you finish.
 

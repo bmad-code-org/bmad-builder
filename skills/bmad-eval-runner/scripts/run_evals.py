@@ -34,8 +34,10 @@ skill_dir comes from the adapter (default ".claude/skills"). Without this
 every config would measure the bare model.
 
 Fixtures: each path in a case's `files` list is staged into the case cwd at
-its own relative path. Sources resolve against --project-root, then the cases
-file's directory, then as absolute paths.
+its own relative path. Sources resolve only inside --project-root or the cases
+file's directory. Absolute paths, parent traversal, and symlink escapes fail
+closed. Trusted bytes and hashes stay in parent-process memory while the
+adapter runs, then land in `fixture-evidence/` for grading.
 
 Isolation: the subprocess env is built from scratch, never inherited. It
 holds PATH, a fresh empty HOME at <case>/.home, CLAUDE_CONFIG_DIR inside
@@ -84,14 +86,17 @@ CASES.json is either a list of cases or {"cases": [...]}. Each case:
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import os
 import shutil
+import stat
 import subprocess
 import sys
 import time
 from collections.abc import Mapping
 from concurrent.futures import ThreadPoolExecutor, as_completed
+from dataclasses import dataclass
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -201,35 +206,181 @@ def stage_skill(skill_path: Path, cwd: Path, skills_subdir: str) -> Path:
     return dest
 
 
+@dataclass(frozen=True, slots=True)
+class Fixture:
+    source: Path
+    dest_rel: Path
+    content: bytes
+    sha256: str
+    mode: int
+
+
+@dataclass(frozen=True, slots=True)
+class FixtureError(ValueError):
+    message: str
+
+    def __str__(self) -> str:
+        return self.message
+
+
+def sha256_bytes(data: bytes) -> str:
+    return hashlib.sha256(data).hexdigest()
+
+
+def sha256_file(path: Path) -> str:
+    return sha256_bytes(path.read_bytes())
+
+
+def _fixture_relative_path(entry: str | Path) -> Path:
+    rel = Path(str(entry))
+    if rel.is_absolute() or ".." in rel.parts:
+        raise FixtureError(
+            f"fixture path must be relative without '..': {entry}"
+        )
+    if not rel.parts or rel == Path("."):
+        raise FixtureError(f"fixture path must name a file: {entry}")
+    return rel
+
+
+def _contained(path: Path, root: Path, label: str) -> Path:
+    root = root.resolve()
+    resolved = path.resolve(strict=True)
+    try:
+        resolved.relative_to(root)
+    except ValueError as exc:
+        raise FixtureError(f"{label} escapes trusted root: {path}") from exc
+    return resolved
+
+
 def resolve_fixtures(files: list, project_root: Path,
-                     cases_dir: Path) -> list[tuple[Path, str]]:
+                     cases_dir: Path) -> list[Fixture]:
     """Map each `files` entry to (source, dest-relative-path).
 
     The entry's own relative path is preserved inside the cwd, so a bare
     filename lands at the workspace root and a nested path keeps its
     directory structure — matching the path the case input references.
     """
-    out: list[tuple[Path, str]] = []
+    roots = tuple(dict.fromkeys((project_root.resolve(), cases_dir.resolve())))
+    out: list[Fixture] = []
+    destinations: set[Path] = set()
     for entry in files or []:
-        entry = str(entry)
-        for candidate in (
-            (project_root / entry).resolve(),
-            (cases_dir / entry).resolve(),
-            Path(entry).resolve(),
-        ):
-            if candidate.is_file():
-                out.append((candidate, entry))
+        rel = _fixture_relative_path(entry)
+        if rel in destinations:
+            raise FixtureError(f"duplicate fixture destination: {rel}")
+        for root in roots:
+            candidate = root / rel
+            if candidate.exists() or candidate.is_symlink():
+                source = _contained(candidate, root, "fixture source")
+                if not source.is_file():
+                    raise FixtureError(
+                        f"fixture source is not a file: {candidate}"
+                    )
+                content = source.read_bytes()
+                out.append(Fixture(
+                    source=source,
+                    dest_rel=rel,
+                    content=content,
+                    sha256=sha256_bytes(content),
+                    mode=stat.S_IMODE(source.stat().st_mode),
+                ))
+                destinations.add(rel)
                 break
         else:
-            print(f"Warning: fixture not found: {entry}", file=sys.stderr)
+            raise FixtureError(f"fixture not found in trusted roots: {entry}")
     return out
 
 
-def stage_fixtures(fixtures: list[tuple[Path, str]], cwd: Path) -> None:
-    for src, dest_rel in fixtures:
-        dest = cwd / dest_rel
+def _fixture_destination(cwd: Path, dest_rel: Path) -> Path:
+    cwd = cwd.resolve()
+    dest = cwd / dest_rel
+    try:
+        dest.resolve(strict=False).relative_to(cwd)
+    except ValueError as exc:
+        raise FixtureError(
+            f"fixture destination escapes case cwd: {dest_rel}"
+        ) from exc
+    current = cwd
+    for part in dest_rel.parts[:-1]:
+        current /= part
+        if current.is_symlink():
+            raise FixtureError(
+                f"fixture destination traverses symlink: {dest_rel}"
+            )
+    if dest.is_symlink():
+        raise FixtureError(f"fixture destination is a symlink: {dest_rel}")
+    return dest
+
+
+def stage_fixtures(fixtures: list[Fixture], cwd: Path) -> None:
+    for fixture in fixtures:
+        if sha256_file(fixture.source) != fixture.sha256:
+            raise FixtureError(
+                f"fixture source changed before staging: {fixture.dest_rel}"
+            )
+        dest = _fixture_destination(cwd, fixture.dest_rel)
         dest.parent.mkdir(parents=True, exist_ok=True)
-        shutil.copy2(src, dest)
+        dest.write_bytes(fixture.content)
+        dest.chmod(fixture.mode)
+        if sha256_file(dest) != fixture.sha256:
+            raise FixtureError(
+                f"staged fixture hash mismatch: {fixture.dest_rel}"
+            )
+
+
+def verify_staged_fixtures(fixtures: list[Fixture], cwd: Path) -> list[str]:
+    errors: list[str] = []
+    for fixture in fixtures:
+        try:
+            dest = _fixture_destination(cwd, fixture.dest_rel)
+            actual = sha256_file(dest)
+        except (FileNotFoundError, OSError, RuntimeError, ValueError) as exc:
+            errors.append(f"{fixture.dest_rel}: {exc}")
+            continue
+        if actual != fixture.sha256:
+            errors.append(
+                f"{fixture.dest_rel}: expected {fixture.sha256}, got {actual}"
+            )
+    return errors
+
+
+def persist_fixture_evidence(fixtures: list[Fixture], case_dir: Path) -> Path:
+    """Persist the trusted snapshot only after the adapter has exited.
+
+    Until this point the immutable bytes and hashes exist only in the parent
+    process, outside the adapter's cwd and argv. Pre-existing evidence paths
+    indicate an adapter write attempt and fail closed.
+    """
+    evidence_dir = case_dir / "fixture-evidence"
+    if evidence_dir.exists() or evidence_dir.is_symlink():
+        rejected = case_dir / f"fixture-evidence-rejected-{time.time_ns()}"
+        evidence_dir.rename(rejected)
+        raise FixtureError("fixture evidence path existed before persistence")
+    snapshot_dir = evidence_dir / "snapshot"
+    snapshot_dir.mkdir(parents=True)
+    manifest_fixtures = []
+    for fixture in fixtures:
+        dest = _fixture_destination(snapshot_dir, fixture.dest_rel)
+        dest.parent.mkdir(parents=True, exist_ok=True)
+        dest.write_bytes(fixture.content)
+        dest.chmod(0o400)
+        manifest_fixtures.append({
+            "path": fixture.dest_rel.as_posix(),
+            "sha256": fixture.sha256,
+            "size": len(fixture.content),
+        })
+    manifest_path = evidence_dir / "manifest.json"
+    write_json(manifest_path, {
+        "schema": "bmad-fixture-evidence/v1",
+        "captured_at": utc_now_iso(),
+        "fixtures": manifest_fixtures,
+    })
+    manifest_path.chmod(0o400)
+    for directory in sorted(
+            (p for p in snapshot_dir.rglob("*") if p.is_dir()), reverse=True):
+        directory.chmod(0o500)
+    snapshot_dir.chmod(0o500)
+    evidence_dir.chmod(0o500)
+    return evidence_dir
 
 
 # --- case composition -------------------------------------------------------
@@ -323,7 +474,7 @@ def account_transcript(transcript_text: str) -> dict:
 def run_case(case: dict, case_dir: Path, run_dir: Path,
              adapter: dict | None, timeout: int, config: str,
              skill_path: Path | None,
-             fixtures: list[tuple[Path, str]]) -> dict:
+             fixtures: list[Fixture]) -> dict:
     case_id = str(case.get("id", "unnamed"))
     cwd = case_dir / "cwd"
     cwd.mkdir(parents=True, exist_ok=True)
@@ -338,6 +489,7 @@ def run_case(case: dict, case_dir: Path, run_dir: Path,
     write_json(case_dir / "case.json", case)
 
     if adapter is None:
+        persist_fixture_evidence(fixtures, case_dir)
         result = {
             "case_id": case_id,
             "config": config,
@@ -381,6 +533,7 @@ def run_case(case: dict, case_dir: Path, run_dir: Path,
     except FileNotFoundError as e:
         # Adapter invocation command is not on PATH: degrade, do not crash.
         elapsed = time.time() - start
+        persist_fixture_evidence(fixtures, case_dir)
         write_json(case_dir / "timing.json", {
             "case_id": case_id, "config": config, "status": "adapter-missing",
             "elapsed_s": round(elapsed, 3), "captured_at": utc_now_iso(),
@@ -398,6 +551,15 @@ def run_case(case: dict, case_dir: Path, run_dir: Path,
         status = "timeout"
         error_tail = f"TIMEOUT after {timeout}s"
     elapsed = time.time() - start
+
+    fixture_errors = verify_staged_fixtures(fixtures, cwd)
+    try:
+        persist_fixture_evidence(fixtures, case_dir)
+    except (OSError, RuntimeError, ValueError) as exc:
+        fixture_errors.append(str(exc))
+    if fixture_errors:
+        status = "fixture-integrity-error"
+        error_tail = "fixture integrity failure: " + "; ".join(fixture_errors)
 
     transcript_text, source = read_transcript(
         adapter.get("transcript", {}), captured, cwd
@@ -602,13 +764,17 @@ def main(argv: list[str] | None = None) -> int:
         "skipped": sum(1 for r in results if r.get("status") == "skipped"),
         "failures": sum(1 for r in results
                         if r.get("status") in ("error", "timeout", "exception",
-                                               "adapter-missing")),
+                                               "adapter-missing",
+                                               "fixture-integrity-error")),
         "run_dir": str(run_dir),
         "results": results,
     }
     write_json(run_dir / "execution-summary.json", summary)
     print(json.dumps(summary, indent=2))
-    return 0
+    return 1 if any(
+        result.get("status") == "fixture-integrity-error"
+        for result in results
+    ) else 0
 
 
 if __name__ == "__main__":
