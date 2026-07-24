@@ -34,8 +34,10 @@ skill_dir comes from the adapter (default ".claude/skills"). Without this
 every config would measure the bare model.
 
 Fixtures: each path in a case's `files` list is staged into the case cwd at
-its own relative path. Sources resolve against --project-root, then the cases
-file's directory, then as absolute paths.
+its own relative path. Sources resolve only inside --project-root or the cases
+file's directory. Absolute paths, parent traversal, and symlink escapes fail
+closed. Trusted bytes and hashes stay in parent-process memory while the
+adapter runs, then land in `fixture-evidence/` for grading.
 
 Isolation: the subprocess env is built from scratch, never inherited. It
 holds PATH, a fresh empty HOME at <case>/.home, CLAUDE_CONFIG_DIR inside
@@ -86,6 +88,7 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import secrets
 import shutil
 import subprocess
 import sys
@@ -95,6 +98,17 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime, timezone
 from pathlib import Path
 
+from fixture_integrity import (
+    Fixture,
+    FixtureError,
+    fixture_evidence_digest,
+    persist_fixture_evidence,
+    resolve_fixtures,
+    stage_fixtures,
+    validate_fixture_evidence,
+    verify_staged_fixtures,
+)
+
 
 # --- small self-contained helpers (no Docker/keychain imports) -------------
 
@@ -103,7 +117,8 @@ def utc_now_iso() -> str:
 
 
 def new_run_id(label: str) -> str:
-    return f"{datetime.now().strftime('%Y%m%d-%H%M%S')}-{label}"
+    timestamp = datetime.now().strftime("%Y%m%d-%H%M%S-%f")
+    return f"{timestamp}-{secrets.token_hex(4)}-{label}"
 
 
 def write_json(path: Path, data: object) -> None:
@@ -201,36 +216,8 @@ def stage_skill(skill_path: Path, cwd: Path, skills_subdir: str) -> Path:
     return dest
 
 
-def resolve_fixtures(files: list, project_root: Path,
-                     cases_dir: Path) -> list[tuple[Path, str]]:
-    """Map each `files` entry to (source, dest-relative-path).
 
-    The entry's own relative path is preserved inside the cwd, so a bare
-    filename lands at the workspace root and a nested path keeps its
-    directory structure — matching the path the case input references.
-    """
-    out: list[tuple[Path, str]] = []
-    for entry in files or []:
-        entry = str(entry)
-        for candidate in (
-            (project_root / entry).resolve(),
-            (cases_dir / entry).resolve(),
-            Path(entry).resolve(),
-        ):
-            if candidate.is_file():
-                out.append((candidate, entry))
-                break
-        else:
-            print(f"Warning: fixture not found: {entry}", file=sys.stderr)
-    return out
-
-
-def stage_fixtures(fixtures: list[tuple[Path, str]], cwd: Path) -> None:
-    for src, dest_rel in fixtures:
-        dest = cwd / dest_rel
-        dest.parent.mkdir(parents=True, exist_ok=True)
-        shutil.copy2(src, dest)
-
+# Fixture containment/attestation lives in fixture_integrity.py
 
 # --- case composition -------------------------------------------------------
 
@@ -323,7 +310,7 @@ def account_transcript(transcript_text: str) -> dict:
 def run_case(case: dict, case_dir: Path, run_dir: Path,
              adapter: dict | None, timeout: int, config: str,
              skill_path: Path | None,
-             fixtures: list[tuple[Path, str]]) -> dict:
+             fixtures: list[Fixture]) -> dict:
     case_id = str(case.get("id", "unnamed"))
     cwd = case_dir / "cwd"
     cwd.mkdir(parents=True, exist_ok=True)
@@ -337,7 +324,11 @@ def run_case(case: dict, case_dir: Path, run_dir: Path,
     (case_dir / "prompt.txt").write_text(prompt, encoding="utf-8")
     write_json(case_dir / "case.json", case)
 
+    trusted_digest = fixture_evidence_digest(fixtures)
+
     if adapter is None:
+        evidence_dir, digest = persist_fixture_evidence(fixtures, case_dir)
+        validate_fixture_evidence(evidence_dir, trusted_digest)
         result = {
             "case_id": case_id,
             "config": config,
@@ -345,10 +336,12 @@ def run_case(case: dict, case_dir: Path, run_dir: Path,
             "reason": "no runtime adapter configured",
             "prompt_chars": len(prompt),
             "cwd": str(cwd.relative_to(run_dir)),
+            "fixture_evidence_digest": digest,
         }
         write_json(case_dir / "timing.json", {
             "case_id": case_id, "config": config, "status": "skipped",
             "captured_at": utc_now_iso(),
+            "fixture_evidence_digest": digest,
         })
         return result
 
@@ -381,9 +374,12 @@ def run_case(case: dict, case_dir: Path, run_dir: Path,
     except FileNotFoundError as e:
         # Adapter invocation command is not on PATH: degrade, do not crash.
         elapsed = time.time() - start
+        evidence_dir, digest = persist_fixture_evidence(fixtures, case_dir)
+        validate_fixture_evidence(evidence_dir, trusted_digest)
         write_json(case_dir / "timing.json", {
             "case_id": case_id, "config": config, "status": "adapter-missing",
             "elapsed_s": round(elapsed, 3), "captured_at": utc_now_iso(),
+            "fixture_evidence_digest": digest,
         })
         return {
             "case_id": case_id,
@@ -391,6 +387,7 @@ def run_case(case: dict, case_dir: Path, run_dir: Path,
             "status": "adapter-missing",
             "reason": f"invocation command not found: {e}",
             "cwd": str(cwd.relative_to(run_dir)),
+            "fixture_evidence_digest": digest,
         }
     except subprocess.TimeoutExpired as e:
         captured = e.stdout or b""
@@ -398,6 +395,18 @@ def run_case(case: dict, case_dir: Path, run_dir: Path,
         status = "timeout"
         error_tail = f"TIMEOUT after {timeout}s"
     elapsed = time.time() - start
+
+    fixture_errors = verify_staged_fixtures(fixtures, cwd)
+    evidence_digest = trusted_digest
+    try:
+        evidence_dir, evidence_digest = persist_fixture_evidence(fixtures, case_dir)
+        # Trust anchor is the parent-held digest (not chmod bits on disk).
+        validate_fixture_evidence(evidence_dir, trusted_digest)
+    except (OSError, RuntimeError, ValueError) as exc:
+        fixture_errors.append(str(exc))
+    if fixture_errors:
+        status = "fixture-integrity-error"
+        error_tail = "fixture integrity failure: " + "; ".join(fixture_errors)
 
     transcript_text, source = read_transcript(
         adapter.get("transcript", {}), captured, cwd
@@ -421,6 +430,7 @@ def run_case(case: dict, case_dir: Path, run_dir: Path,
         "total_steps": accounting["total_steps"],
         "total_tool_calls": accounting["total_tool_calls"],
         "captured_at": utc_now_iso(),
+        "fixture_evidence_digest": evidence_digest,
     }
     write_json(case_dir / "timing.json", timing)
 
@@ -435,6 +445,7 @@ def run_case(case: dict, case_dir: Path, run_dir: Path,
         "tokens": accounting["total_tokens"],
         "tool_calls": accounting["tool_calls"],
         "error_tail": error_tail,
+        "fixture_evidence_digest": evidence_digest,
     }
 
 
@@ -537,8 +548,10 @@ def main(argv: list[str] | None = None) -> int:
             adapter_note = f"invalid: {e}"
 
     run_id = new_run_id(args.label)
+    args.output_dir.mkdir(parents=True, exist_ok=True)
     run_dir = (args.output_dir / run_id).resolve()
-    run_dir.mkdir(parents=True, exist_ok=True)
+    # Exclusive create: concurrent workers must not share/clobber a run dir.
+    run_dir.mkdir(parents=False, exist_ok=False)
 
     write_json(run_dir / "run.json", {
         "run_id": run_id,
@@ -584,6 +597,10 @@ def main(argv: list[str] | None = None) -> int:
             c = fut_to_case[fut]
             try:
                 res = fut.result()
+            except FixtureError as e:
+                res = {"case_id": str(c.get("id")),
+                       "status": "fixture-integrity-error",
+                       "reason": str(e)}
             except Exception as e:
                 res = {"case_id": str(c.get("id")), "status": "exception",
                        "reason": str(e)}
@@ -602,13 +619,19 @@ def main(argv: list[str] | None = None) -> int:
         "skipped": sum(1 for r in results if r.get("status") == "skipped"),
         "failures": sum(1 for r in results
                         if r.get("status") in ("error", "timeout", "exception",
-                                               "adapter-missing")),
+                                               "adapter-missing",
+                                               "fixture-integrity-error")),
         "run_dir": str(run_dir),
         "results": results,
     }
     write_json(run_dir / "execution-summary.json", summary)
     print(json.dumps(summary, indent=2))
-    return 0
+    # Fail closed on integrity errors and unexpected exceptions (e.g. staging).
+    fail_statuses = {
+        "fixture-integrity-error",
+        "exception",
+    }
+    return 1 if any(result.get("status") in fail_statuses for result in results) else 0
 
 
 if __name__ == "__main__":
