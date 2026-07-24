@@ -145,3 +145,43 @@ def test_cli_fails_when_adapter_mutates_fixture(tmp_path):
     summary_path = next(output.glob("*/execution-summary.json"))
     summary = json.loads(summary_path.read_text(encoding="utf-8"))
     assert summary["results"][0]["status"] == "fixture-integrity-error"
+
+
+def test_cli_fails_when_source_changes_before_staging(tmp_path, monkeypatch):
+    project = tmp_path / "project"
+    project.mkdir()
+    source = project / "fixture.txt"
+    source.write_text("trusted", encoding="utf-8")
+    cases = project / "cases.json"
+    cases.write_text(json.dumps({"cases": [{
+        "id": "source-race",
+        "input": "test",
+        "rubric": [],
+        "files": ["fixture.txt"],
+    }]}), encoding="utf-8")
+    skill = tmp_path / "skill"
+    skill.mkdir()
+    (skill / "SKILL.md").write_text("# test", encoding="utf-8")
+    original_resolve = run_evals.resolve_fixtures
+
+    def resolve_then_mutate(files, project_root, cases_dir):
+        fixtures = original_resolve(files, project_root, cases_dir)
+        source.write_text("changed", encoding="utf-8")
+        return fixtures
+
+    monkeypatch.setattr(run_evals, "resolve_fixtures", resolve_then_mutate)
+    output = tmp_path / "output"
+
+    exit_code = run_evals.main([
+        "--cases", str(cases),
+        "--skill-path", str(skill),
+        "--project-root", str(project),
+        "--output-dir", str(output),
+        "--workers", "1",
+        "--quiet",
+    ])
+
+    assert exit_code == 1
+    summary_path = next(output.glob("*/execution-summary.json"))
+    summary = json.loads(summary_path.read_text(encoding="utf-8"))
+    assert summary["results"][0]["status"] == "fixture-integrity-error"

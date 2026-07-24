@@ -206,8 +206,10 @@ def stage_skill(skill_path: Path, cwd: Path, skills_subdir: str) -> Path:
     return dest
 
 
-@dataclass(frozen=True, slots=True)
+@dataclass(frozen=True)
 class Fixture:
+    __slots__ = ("source", "dest_rel", "content", "sha256", "mode")
+
     source: Path
     dest_rel: Path
     content: bytes
@@ -215,12 +217,8 @@ class Fixture:
     mode: int
 
 
-@dataclass(frozen=True, slots=True)
 class FixtureError(ValueError):
-    message: str
-
-    def __str__(self) -> str:
-        return self.message
+    pass
 
 
 def sha256_bytes(data: bytes) -> str:
@@ -746,6 +744,10 @@ def main(argv: list[str] | None = None) -> int:
             c = fut_to_case[fut]
             try:
                 res = fut.result()
+            except FixtureError as e:
+                res = {"case_id": str(c.get("id")),
+                       "status": "fixture-integrity-error",
+                       "reason": str(e)}
             except Exception as e:
                 res = {"case_id": str(c.get("id")), "status": "exception",
                        "reason": str(e)}
