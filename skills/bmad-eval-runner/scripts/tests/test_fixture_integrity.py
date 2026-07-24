@@ -185,3 +185,72 @@ def test_cli_fails_when_source_changes_before_staging(tmp_path, monkeypatch):
     summary_path = next(output.glob("*/execution-summary.json"))
     summary = json.loads(summary_path.read_text(encoding="utf-8"))
     assert summary["results"][0]["status"] == "fixture-integrity-error"
+
+
+def test_parent_held_digest_detects_evidence_tamper(tmp_path):
+    """chmod 0400 is not the trust boundary; parent-held digest is."""
+    import fixture_integrity as fi
+
+    source = tmp_path / "source"
+    fixtures = fixture(source)
+    case_dir = tmp_path / "case"
+    case_dir.mkdir()
+    trusted = fi.fixture_evidence_digest(fixtures)
+    evidence_dir, digest = fi.persist_fixture_evidence(fixtures, case_dir)
+    assert digest == trusted
+    fi.validate_fixture_evidence(evidence_dir, trusted)
+
+    # Same-UID process can still rewrite after chmod; digest must catch it.
+    snap = evidence_dir / "snapshot" / "fixture.txt"
+    snap.chmod(0o600)
+    snap.write_bytes(b"forged")
+    snap.chmod(0o400)
+
+    with pytest.raises(ValueError, match="digest mismatch|hash mismatch"):
+        fi.validate_fixture_evidence(evidence_dir, trusted)
+
+
+def test_run_dir_is_exclusive(tmp_path):
+    project = tmp_path / "project"
+    project.mkdir()
+    cases = project / "cases.json"
+    cases.write_text(json.dumps({"cases": [{
+        "id": "empty",
+        "input": "test",
+        "rubric": [],
+        "files": [],
+    }]}), encoding="utf-8")
+    skill = tmp_path / "skill"
+    skill.mkdir()
+    (skill / "SKILL.md").write_text("# test", encoding="utf-8")
+    output = tmp_path / "output"
+
+    # Force collision on run id
+    fixed = "fixed-run-id"
+    monkey_ids = iter([fixed, fixed])
+
+    def fixed_id(label):
+        return next(monkey_ids)
+
+    original = run_evals.new_run_id
+    run_evals.new_run_id = fixed_id
+    try:
+        assert run_evals.main([
+            "--cases", str(cases),
+            "--skill-path", str(skill),
+            "--project-root", str(project),
+            "--output-dir", str(output),
+            "--workers", "1",
+            "--quiet",
+        ]) == 0
+        with pytest.raises(FileExistsError):
+            run_evals.main([
+                "--cases", str(cases),
+                "--skill-path", str(skill),
+                "--project-root", str(project),
+                "--output-dir", str(output),
+                "--workers", "1",
+                "--quiet",
+            ])
+    finally:
+        run_evals.new_run_id = original
