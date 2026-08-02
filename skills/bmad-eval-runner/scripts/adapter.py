@@ -23,7 +23,8 @@ def find_adapter(explicit: Path | None, _data_file: Path) -> Path | None:
     would otherwise control command execution.
     """
     if explicit is not None:
-        return explicit if explicit.is_file() else None
+        candidate = explicit.expanduser()
+        return candidate if candidate.is_file() else None
 
     env_path = os.environ.get("BMAD_EVAL_ADAPTER")
     if env_path:
@@ -38,7 +39,9 @@ def load_adapter(path: Path) -> dict:
     cfg = json.loads(path.read_text(encoding="utf-8"))
     if not isinstance(cfg, dict):
         raise ValueError(f"adapter config must be a JSON object: {path}")
-    if "invocation" not in cfg or not isinstance(cfg["invocation"], list):
+    if ("invocation" not in cfg
+            or not isinstance(cfg["invocation"], list)
+            or not cfg["invocation"]):
         raise ValueError("adapter config missing 'invocation' argv list")
     return cfg
 

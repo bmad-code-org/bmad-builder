@@ -94,7 +94,8 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime, timezone
 from pathlib import Path
 
-from adapter import build_argv, build_case_env, find_adapter, load_adapter
+import adapter
+from adapter import build_argv, build_case_env, load_adapter
 
 
 # --- small self-contained helpers (no Docker/keychain imports) -------------
@@ -114,6 +115,11 @@ def write_json(path: Path, data: object) -> None:
 
 def read_json(path: Path) -> object:
     return json.loads(path.read_text(encoding="utf-8"))
+
+
+def find_adapter(explicit: Path | None, cases_file: Path) -> Path | None:
+    """Resolve adapter configuration through this runner's public seam."""
+    return adapter.find_adapter(explicit, cases_file)
 
 
 # --- staging: skill under test + fixtures ------------------------------------
