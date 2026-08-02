@@ -90,10 +90,11 @@ import shutil
 import subprocess
 import sys
 import time
-from collections.abc import Mapping
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime, timezone
 from pathlib import Path
+
+from adapter import build_argv, build_case_env, find_adapter, load_adapter
 
 
 # --- small self-contained helpers (no Docker/keychain imports) -------------
@@ -113,73 +114,6 @@ def write_json(path: Path, data: object) -> None:
 
 def read_json(path: Path) -> object:
     return json.loads(path.read_text(encoding="utf-8"))
-
-
-# --- adapter ----------------------------------------------------------------
-
-def find_adapter(explicit: Path | None, cases_file: Path) -> Path | None:
-    """Locate the adapter config. Returns None when none is configured."""
-    if explicit is not None:
-        return explicit if explicit.is_file() else None
-    env_path = os.environ.get("BMAD_EVAL_ADAPTER")
-    if env_path and Path(env_path).is_file():
-        return Path(env_path)
-    for candidate in (
-        cases_file.parent / "adapter.json",
-        cases_file.parent / ".bmad-eval-adapter.json",
-    ):
-        if candidate.is_file():
-            return candidate
-    return None
-
-
-def load_adapter(path: Path) -> dict:
-    cfg = read_json(path)
-    if not isinstance(cfg, dict):
-        raise ValueError(f"adapter config must be a JSON object: {path}")
-    if "invocation" not in cfg or not isinstance(cfg["invocation"], list):
-        raise ValueError("adapter config missing 'invocation' argv list")
-    return cfg
-
-
-def build_argv(invocation: list, prompt: str, cwd: str) -> list[str]:
-    argv: list[str] = []
-    for tok in invocation:
-        tok = str(tok)
-        tok = (tok.replace("{prompt}", prompt)
-               .replace("{query}", prompt)
-               .replace("{cwd}", cwd))
-        argv.append(tok)
-    return argv
-
-
-def build_case_env(adapter: Mapping | None, home_dir: Path,
-                   host_env: Mapping[str, str]) -> dict[str, str]:
-    """Build the subprocess environment from scratch — never from os.environ.
-
-    Inheriting the host env would leak shell config, tokens, and runtime
-    state into the clean room. The env holds exactly: PATH, a fresh HOME,
-    CLAUDE_CONFIG_DIR inside it, the adapter's auth var ONLY when set
-    non-empty in the host (an empty-string auth var breaks the runtime's own
-    credential fallback), and any adapter env_passthrough keys present in
-    the host env.
-    """
-    adapter = adapter or {}
-    env = {
-        "PATH": host_env.get("PATH", ""),
-        "HOME": str(home_dir),
-        "CLAUDE_CONFIG_DIR": str(home_dir / ".claude"),
-    }
-    auth_env = adapter.get("auth_env")
-    if auth_env:
-        val = host_env.get(str(auth_env))
-        if val:
-            env[str(auth_env)] = val
-    for key in adapter.get("env_passthrough") or []:
-        val = host_env.get(str(key))
-        if val is not None:
-            env[str(key)] = val
-    return env
 
 
 # --- staging: skill under test + fixtures ------------------------------------
@@ -470,8 +404,8 @@ def main(argv: list[str] | None = None) -> int:
                    help="base for resolving fixture paths; defaults to the "
                         "cases file's directory")
     p.add_argument("--adapter", type=Path, default=None,
-                   help="adapter config JSON; defaults to BMAD_EVAL_ADAPTER env "
-                        "or adapter.json beside the cases file")
+                   help="trusted adapter config JSON; defaults to the "
+                        "BMAD_EVAL_ADAPTER environment variable")
     p.add_argument("--case-ids", default=None,
                    help="comma-separated subset of case ids to run")
     p.add_argument("--runs", type=int, default=1,

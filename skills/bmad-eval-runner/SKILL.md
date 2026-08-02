@@ -47,7 +47,7 @@ These map directly onto the script CLIs below; anything not listed there (case s
 
 4. Locate the skill and verify `<skill-path>/SKILL.md` exists. Halt with a clear error if it does not.
 
-5. Resolve the adapter config per the discovery rules in `references/platform-adapter.md` (explicit `--adapter`, `BMAD_EVAL_ADAPTER`, `adapter.json` beside the cases file). When nothing is configured and the current runtime is Claude Code, use `{skill-root}/assets/adapter-claude-code.json`.
+5. Resolve the adapter config per the trusted configuration rules in `references/platform-adapter.md` (explicit `--adapter` or `BMAD_EVAL_ADAPTER`). Never load an adapter from beside an untrusted cases or queries file. When nothing is configured and the current runtime is Claude Code, use `{skill-root}/assets/adapter-claude-code.json`.
 
 6. Discover the cases file. Look at `--evals` first, then `<skill-path>/evals/`, then `<skill-path>/../../evals/<skill-name>/`, then `<project-root>/evals/<skill-name>/`, then anywhere under `<project-root>/evals/`. Take the first match. If nothing is found, halt and say so; the runner does not invent cases.
 

@@ -34,9 +34,13 @@ An adapter is a JSON file the scripts read. A working Claude Code adapter ships 
 
 1. `--adapter <path>` on the command line.
 2. `BMAD_EVAL_ADAPTER` env var pointing at a config file.
-3. `adapter.json` or `.bmad-eval-adapter.json` beside the cases/queries file.
 
-Nothing found means the run degrades to staging-only (cases prepared, results recorded as skipped). When the current runtime is Claude Code and no project adapter exists, pass `--adapter {skill-root}/assets/adapter-claude-code.json`.
+The runner never searches beside the cases/queries file. Those directories may
+come from an untrusted bundle, and the adapter controls executable argv and
+optional host-environment forwarding. Nothing found means the run degrades to
+staging-only (cases prepared, results recorded as skipped). When the current
+runtime is Claude Code and no project adapter exists, pass
+`--adapter {skill-root}/assets/adapter-claude-code.json`.
 
 ## Invocation and isolation
 
