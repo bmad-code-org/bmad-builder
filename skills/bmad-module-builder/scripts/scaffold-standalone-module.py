@@ -142,6 +142,7 @@ def main() -> int:
             elif stripped.startswith("module_version:"):
                 module_version = stripped.split(":", 1)[1].strip().strip('"').strip("'")
     except Exception:
+        # Optional metadata — keep marketplace defaults when module.yaml is missing/unreadable.
         pass
 
     skill_dir_name = skill_dir.name

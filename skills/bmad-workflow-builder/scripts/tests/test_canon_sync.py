@@ -9,7 +9,6 @@ sync mechanism instead: all three copies must be byte-identical.
 Run with: python3 -m pytest test_canon_sync.py
 (or plain `python3 test_canon_sync.py` for a lightweight self-check).
 """
-import sys
 from pathlib import Path
 
 SKILLS_DIR = Path(__file__).resolve().parents[3]

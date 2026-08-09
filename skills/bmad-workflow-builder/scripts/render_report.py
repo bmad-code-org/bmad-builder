@@ -127,6 +127,7 @@ def atomic_write(path: Path, text: str) -> None:
         try:
             os.unlink(tmp)
         except OSError:
+            # Best-effort temp cleanup; original error must still propagate.
             pass
         raise
 
