@@ -11,13 +11,13 @@ After this script runs, the sanctum is fully self-contained — the agent does
 not depend on the skill bundle location for normal operation.
 
 Usage:
-    python3 init-sanctum.py <project-root> <skill-path>
+    uv run init-sanctum.py <project-root> <skill-path>
 
     project-root: The root of the project (where _bmad/ lives)
     skill-path:   Path to the skill directory (where SKILL.md, references/, assets/ live)
 
 Example:
-    python3 scripts/init-sanctum.py /Users/me/myproject /path/to/bmad-agent-creative-muse
+    uv run scripts/init-sanctum.py /Users/me/myproject /path/to/bmad-agent-creative-muse
 """
 
 import sys
@@ -178,7 +178,7 @@ def substitute_vars(content: str, variables: dict) -> str:
 
 def main():
     if len(sys.argv) < 3:
-        print("Usage: python3 init-sanctum.py <project-root> <skill-path>")
+        print("Usage: uv run init-sanctum.py <project-root> <skill-path>")
         sys.exit(1)
 
     project_root = Path(sys.argv[1]).resolve()

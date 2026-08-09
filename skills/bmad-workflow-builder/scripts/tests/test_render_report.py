@@ -4,8 +4,8 @@
 Covers: valid island injection, refusal on malformed JSON, refusal on the
 placeholder subject, the --md archival rendering, and that both shipped
 shells carry a parseable placeholder island.
-Run with: python3 -m pytest test_render_report.py
-(or plain `python3 test_render_report.py` for a lightweight self-check).
+Run with: uv run --with pytest -m pytest test_render_report.py
+(or plain `uv run test_render_report.py` for a lightweight self-check).
 """
 import json
 import re

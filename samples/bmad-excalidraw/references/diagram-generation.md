@@ -49,13 +49,13 @@ The specification format:
 Run the generation script:
 
 ```bash
-python3 ../scripts/generate_excalidraw.py --spec '<json-spec>' --output '{output_folder}/diagrams/{filename}.excalidraw'
+uv run ../scripts/generate_excalidraw.py --spec '<json-spec>' --output '{output_folder}/diagrams/{filename}.excalidraw'
 ```
 
 Or pipe the spec via stdin:
 
 ```bash
-echo '<json-spec>' | python3 ../scripts/generate_excalidraw.py --output '{output_folder}/diagrams/{filename}.excalidraw'
+echo '<json-spec>' | uv run ../scripts/generate_excalidraw.py --output '{output_folder}/diagrams/{filename}.excalidraw'
 ```
 
 The script handles:
@@ -72,7 +72,7 @@ The script handles:
 Run validation:
 
 ```bash
-python3 ../scripts/validate_excalidraw.py '{output_folder}/diagrams/{filename}.excalidraw'
+uv run ../scripts/validate_excalidraw.py '{output_folder}/diagrams/{filename}.excalidraw'
 ```
 
 Fix any critical issues before delivering.

@@ -60,7 +60,7 @@ Each case runs in a clean working directory with the skill under test staged int
 For baseline, variant, and quality modes:
 
 ```
-python3 {skill-root}/scripts/run_evals.py \
+uv run {skill-root}/scripts/run_evals.py \
   --cases <cases-file> --skill-path <skill> --output-dir <dir> \
   --mode quality|baseline|variant [--variant-path <skill>] \
   [--adapter <adapter.json>] [--runs N]
@@ -71,7 +71,7 @@ The script stages the skill and any case fixtures, applies any `state_prefix` to
 For trigger mode:
 
 ```
-python3 {skill-root}/scripts/run_triggers.py \
+uv run {skill-root}/scripts/run_triggers.py \
   --skill-path <skill> --queries <queries-file> --output-dir <dir> \
   [--adapter <adapter.json>] [--runs-per-query N]
 ```
@@ -80,7 +80,7 @@ It stages a synthetic skill where the runtime discovers skills, sends each query
 
 For quality mode, spawn the grader described in `references/grader.md` per case, passing the case's rubric, transcript path, artifacts dir (the case's `cwd/`), and a `grading_path` of `<case-folder>/grading.json`. The grader writes that file, gives no partial credit, and flags weak or non-discriminating assertions; relay that feedback. If a grader subagent errors, mark that case `grading_error` — never substitute a default verdict.
 
-When `--runs` is greater than one, call `python3 {skill-root}/scripts/aggregate_benchmark.py --baseline <run-dir>/<config-a> --variant <run-dir>/<config-b>` to produce the mean, sample standard deviation, min, max, and the delta between configs (`--runs <run-dir>/<config>` for a single config's spread).
+When `--runs` is greater than one, call `uv run {skill-root}/scripts/aggregate_benchmark.py --baseline <run-dir>/<config-a> --variant <run-dir>/<config-b>` to produce the mean, sample standard deviation, min, max, and the delta between configs (`--runs <run-dir>/<config>` for a single config's spread).
 
 When a run fails or comes back weak and the user wants the skill improved from the results, follow `references/self-improvement.md`.
 

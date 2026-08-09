@@ -8,9 +8,9 @@ Takes a diagram specification JSON and produces a valid .excalidraw file
 with auto-layout positioning.
 
 Usage:
-    python generate_excalidraw.py --spec '{"title":"My Diagram",...}' --output diagram.excalidraw
-    echo '{"title":"My Diagram",...}' | python generate_excalidraw.py --output diagram.excalidraw
-    python generate_excalidraw.py --spec-file spec.json --output diagram.excalidraw
+    uv run generate_excalidraw.py --spec '{"title":"My Diagram",...}' --output diagram.excalidraw
+    echo '{"title":"My Diagram",...}' | uv run generate_excalidraw.py --output diagram.excalidraw
+    uv run generate_excalidraw.py --spec-file spec.json --output diagram.excalidraw
 
 Spec format:
 {

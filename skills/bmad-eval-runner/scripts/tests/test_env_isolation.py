@@ -6,8 +6,8 @@ subprocess. Both scripts carry their own build_case_env (they are
 deliberately self-contained); this test pins the contract on both copies:
 exactly PATH + fresh HOME + CLAUDE_CONFIG_DIR + auth-var-only-when-set +
 declared passthrough keys, nothing else.
-Run with: python3 -m pytest test_env_isolation.py
-(or plain `python3 test_env_isolation.py` for a lightweight self-check).
+Run with: uv run --with pytest -m pytest test_env_isolation.py
+(or plain `uv run test_env_isolation.py` for a lightweight self-check).
 """
 import sys
 from pathlib import Path

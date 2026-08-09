@@ -6,8 +6,8 @@ agent-builder references, and the agent-builder asset emitted into built
 agents — with no in-file sync note, because the loaded files are LLM-facing
 and a maintenance comment there is paid on every load. This test is the
 sync mechanism instead: all three copies must be byte-identical.
-Run with: python3 -m pytest test_canon_sync.py
-(or plain `python3 test_canon_sync.py` for a lightweight self-check).
+Run with: uv run --with pytest -m pytest test_canon_sync.py
+(or plain `uv run test_canon_sync.py` for a lightweight self-check).
 """
 import sys
 from pathlib import Path

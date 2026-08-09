@@ -45,8 +45,8 @@ Write a temp JSON file with the collected answers structured as `{"core": {...},
 In the commands below, replace `{project-root}` in every path argument with the actual project root (e.g. `/home/me/myapp`) before running — these are filesystem paths, not config values. Leave `{temp-file}` and `bmb` as-is.
 
 ```bash
-python3 ./scripts/merge-config.py --config-path "{project-root}/_bmad/config.yaml" --user-config-path "{project-root}/_bmad/config.user.yaml" --module-yaml ./assets/module.yaml --answers {temp-file} --legacy-dir "{project-root}/_bmad"
-python3 ./scripts/merge-help-csv.py --target "{project-root}/_bmad/module-help.csv" --source ./assets/module-help.csv --legacy-dir "{project-root}/_bmad" --module-code bmb
+uv run ./scripts/merge-config.py --config-path "{project-root}/_bmad/config.yaml" --user-config-path "{project-root}/_bmad/config.user.yaml" --module-yaml ./assets/module.yaml --answers {temp-file} --legacy-dir "{project-root}/_bmad"
+uv run ./scripts/merge-help-csv.py --target "{project-root}/_bmad/module-help.csv" --source ./assets/module-help.csv --legacy-dir "{project-root}/_bmad" --module-code bmb
 ```
 
 Both scripts output JSON to stdout with results. If either exits non-zero, surface the error and stop. The scripts automatically read legacy config values as fallback defaults, then delete the legacy files after a successful merge. Check `legacy_configs_deleted` and `legacy_csvs_deleted` in the output to confirm cleanup.
@@ -64,7 +64,7 @@ After both merge scripts complete successfully, remove the installer's package d
 As with the merge scripts, replace `{project-root}` in the `--bmad-dir` and `--skills-dir` path arguments with the actual project root before running.
 
 ```bash
-python3 ./scripts/cleanup-legacy.py --bmad-dir "{project-root}/_bmad" --module-code bmb --also-remove _config --skills-dir "{project-root}/.claude/skills"
+uv run ./scripts/cleanup-legacy.py --bmad-dir "{project-root}/_bmad" --module-code bmb --also-remove _config --skills-dir "{project-root}/.claude/skills"
 ```
 
 The script verifies that every skill in the legacy directories exists at `.claude/skills/` before removing anything. Directories without skills (like `_config/`) are removed directly. If the script exits non-zero, surface the error and stop. Missing directories (already cleaned by a prior run) are not errors — the script is idempotent.

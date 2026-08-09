@@ -78,7 +78,7 @@ The Dockerfile contains no tokens, API keys, or credentials. Your authentication
 
 ## Tips
 
-- Rebuild the image with `python3 scripts/docker_setup.py --rebuild` if you ever need to reset it
+- Rebuild the image with `uv run scripts/docker_setup.py --rebuild` if you ever need to reset it
 - Per-eval container resource use is small (a few hundred MB). Parallel workers each spin up their own container.
 - If `docker info` works in one terminal but not in your editor's integrated terminal, your shell PATH probably differs. Open a fresh terminal session.
 

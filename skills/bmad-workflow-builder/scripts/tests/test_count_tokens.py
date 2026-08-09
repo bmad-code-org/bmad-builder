@@ -3,8 +3,8 @@
 
 Covers the output schema, the tiktoken path and the forced-fallback path
 agreeing within tolerance, the CLI over a file and over stdin, and argument
-guards. Run with: python3 -m pytest test_count_tokens.py
-(or plain `python3 test_count_tokens.py` to run a lightweight self-check).
+guards. Run with: uv run --with pytest -m pytest test_count_tokens.py
+(or plain `uv run test_count_tokens.py` to run a lightweight self-check).
 """
 import builtins
 import importlib.util

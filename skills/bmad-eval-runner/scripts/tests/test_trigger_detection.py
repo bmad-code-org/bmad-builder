@@ -6,8 +6,8 @@ detection that substring-matches the whole transcript reports a 100% trigger
 rate. These tests pin the rule: only tool_use events (a Skill call naming the
 synthetic skill, or a Read inside its directory) count as a load, and
 substring-style load signals are rejected outright.
-Run with: python3 -m pytest test_trigger_detection.py
-(or plain `python3 test_trigger_detection.py` for a lightweight self-check).
+Run with: uv run --with pytest -m pytest test_trigger_detection.py
+(or plain `uv run test_trigger_detection.py` for a lightweight self-check).
 """
 import json
 import sys

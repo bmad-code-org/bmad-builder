@@ -14,7 +14,7 @@ sanctum exists, it prints a directive to run First Breath.
 This loads runtime memory only. It never reads or writes config or customize.toml.
 
 Usage:
-    python3 wake.py <project-root> [--pulse]
+    uv run wake.py <project-root> [--pulse]
 
     project-root: The root of the project (where _bmad/ lives)
 """

@@ -38,7 +38,7 @@ If no adapter is configured the runner degrades gracefully: it stages each query
 and records "skipped: no runtime adapter configured" rather than crashing.
 
 Usage:
-  python3 run_triggers.py \\
+  uv run run_triggers.py \\
     --skill-path SKILL_DIR \\
     --queries QUERIES.json \\
     --output-dir DIR \\

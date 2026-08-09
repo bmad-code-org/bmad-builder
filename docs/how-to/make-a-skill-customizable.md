@@ -110,7 +110,7 @@ EOF
 Run the resolver directly to confirm your override takes effect:
 
 ```bash
-python3 _bmad/scripts/resolve_customization.py \
+uv run _bmad/scripts/resolve_customization.py \
   --skill /path/to/built/skill \
   --key workflow.on_complete
 ```

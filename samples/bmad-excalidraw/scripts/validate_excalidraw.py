@@ -7,8 +7,8 @@ Excalidraw File Validator
 Validates .excalidraw files for structural correctness.
 
 Usage:
-    python validate_excalidraw.py path/to/diagram.excalidraw
-    python validate_excalidraw.py path/to/diagram.excalidraw -o report.json
+    uv run validate_excalidraw.py path/to/diagram.excalidraw
+    uv run validate_excalidraw.py path/to/diagram.excalidraw -o report.json
 
 Exit codes: 0=pass, 1=fail, 2=error
 """

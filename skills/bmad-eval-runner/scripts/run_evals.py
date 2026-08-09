@@ -66,7 +66,7 @@ the input to place the skill mid-workflow in one shot. The composed prompt is
 recorded so the grader sees exactly what ran.
 
 Usage:
-  python3 run_evals.py \\
+  uv run run_evals.py \\
     --cases CASES.json \\
     --skill-path SKILL_DIR \\
     --output-dir DIR \\
