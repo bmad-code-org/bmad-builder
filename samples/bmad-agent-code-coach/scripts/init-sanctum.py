@@ -163,17 +163,14 @@ def generate_capabilities_md(capabilities: list[dict], evolvable: bool = False) 
     if evolvable:
         lines.extend([
             "",
-            "This agent is **evolvable** — you can teach it new skills, modify existing "
-            "ones, and retire capabilities that aren't useful. The built-in capabilities "
-            "above are starting points, not limits.",
+            "This agent is **evolvable** — you can teach it new skills, modify existing ones, and retire capabilities that aren't useful. The built-in capabilities above are starting points, not limits.",
         ])
 
     lines.extend([
         "",
         "## Tools",
         "",
-        "Prefer crafting your own tools over depending on external ones. A script you wrote "
-        "and saved is more reliable than an external API. Use the file system creatively.",
+        "Prefer crafting your own tools over depending on external ones. A script you wrote and saved is more reliable than an external API. Use the file system creatively.",
         "",
         "### User-Provided Tools",
         "",

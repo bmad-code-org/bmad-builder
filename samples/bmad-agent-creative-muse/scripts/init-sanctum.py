@@ -158,8 +158,7 @@ def generate_capabilities_md(capabilities: list[dict]) -> str:
         "",
         "## Tools",
         "",
-        "Prefer crafting your own tools over depending on external ones. A script you wrote "
-        "and saved is more reliable than an external API. Use the file system creatively.",
+        "Prefer crafting your own tools over depending on external ones. A script you wrote and saved is more reliable than an external API. Use the file system creatively.",
         "",
         "### User-Provided Tools",
         "",
