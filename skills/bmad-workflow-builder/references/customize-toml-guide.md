@@ -36,10 +36,10 @@ When customization is accepted, these four points appear in nearly every produci
 |---|---|---|---|
 | `activation_steps_prepend` | array | `[]` | Steps to run before standard activation (pre-flight loads, compliance checks). Overrides append. |
 | `activation_steps_append` | array | `[]` | Steps to run after greet, before the workflow begins. Overrides append. |
-| `persistent_facts` | array | `["file:{project-root}/**/project-context.md"]` | Static facts loaded on activation and kept in mind for the whole run. Overrides append. |
+| `persistent_facts` | array | `[]` | Static facts loaded on activation and kept in mind for the whole run. Overrides append. |
 | `on_complete` | scalar | `""` | Instruction executed when the workflow reaches its terminal stage. Override wins. |
 
-`persistent_facts` entries are each a literal sentence, a `skill:`-prefixed reference, or a `file:`-prefixed path or glob whose contents load as facts. The default glob picks up a project-context.md anywhere under the project root if one exists, and resolves to nothing when it does not.
+`persistent_facts` entries are each a literal sentence, a `skill:`-prefixed reference, or a `file:`-prefixed path or glob whose contents load as facts. Ship it empty. Context that belongs to the whole repository belongs in `AGENTS.md`, which every skill already sees; `persistent_facts` is for context only this skill needs, so the user pays for it when the skill runs instead of carrying it as constant memory. Leave it to the user to opt in — a `file:` glob that matches nothing resolves to nothing, so an unused entry is harmless but still misrepresents what the skill needs.
 
 ## Offered-When-Relevant Points
 
@@ -101,7 +101,7 @@ A complete customize.toml for an artifact-producing skill with a finalize stage:
 # --- Universal defaults. Merge: scalars override, arrays append. ---
 activation_steps_prepend = []
 activation_steps_append = []
-persistent_facts = ["file:{project-root}/**/project-context.md"]
+persistent_facts = []
 on_complete = ""
 
 # --- Skill-specific points (stages present: template, output, finalize) ---

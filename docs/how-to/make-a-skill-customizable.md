@@ -45,7 +45,7 @@ The builder proposes candidates auto-detected from your skill design and asks wh
 - **Templates** the skill loads (strongest case)
 - **Output destination paths** if the skill writes artifacts
 - **`on_<event>` hooks** (prompts or commands executed at lifecycle points)
-- **Additional persistent facts** beyond the default `project-context.md` glob
+- **Persistent facts** the skill should hold for a whole run (ships empty — see below)
 
 For each candidate you accept, the builder asks for a name and a default value.
 
@@ -69,9 +69,16 @@ Every scalar you expose needs a default that works on first run. Bare paths reso
 [workflow]
 brief_template = "resources/brief-template.md"   # ships inside the skill
 on_complete = ""                                  # no default post-hook
-persistent_facts = [
-  "file:{project-root}/**/project-context.md",    # glob into the user's project
-]
+persistent_facts = []                             # ships empty — the user opts in
+```
+
+`persistent_facts` is the exception to "set a good default": ship it empty. Context that belongs to the whole repository belongs in `AGENTS.md`, which every skill already sees. `persistent_facts` is for context only *your* skill needs, loaded when it runs rather than carried as constant memory — so what goes in it is the user's call. Document the opt-in in a comment instead:
+
+```toml
+# Empty by default. Common opt-ins (set in team/user override TOML):
+#   "file:{project-root}/**/project-context.md"   # if you keep a project-context.md
+#   "Investor briefs must include a market sizing section."
+persistent_facts = []
 ```
 
 For arrays of tables (menus, capability rosters), give every item a `code` or `id` field so the resolver can merge by key:
