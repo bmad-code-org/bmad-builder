@@ -1,5 +1,17 @@
 # Changelog
 
+## [2.2.1] - 2026-08-16
+
+### 🐛 Fixes
+
+- **`persistent_facts` ships empty, and the builder stops re-seeding it** (#109). Both builder skills shipped `persistent_facts = ["file:{project-root}/**/project-context.md"]`, as did `bmad-agent-builder`'s `customize-template.toml` and `sample-customize-analyst.toml` — so every agent scaffolded by the builder inherited the same pre-seeded default. All four now ship an empty array.
+
+  The more consequential half is the guidance, because the builder teaches the default forward. Both `scan-customization.md` lens files told the scan that an empty `persistent_facts` "is a medium opportunity to add the default", which would have put the glob back into every newly built skill and agent regardless of what the templates say. They now treat an empty array as correct, not as a finding.
+
+- **Author docs describe the current default** (#109). `references/customize-toml-guide.md` was wrong in three places — the Universal Baked Defaults table row, the prose asserting a "default glob", and the complete worked example at the bottom. `docs/how-to/make-a-skill-customizable.md` had it in the candidate list and again in its "Set Good Defaults" example, presented as the pattern to copy.
+
+  The guidance now states the rule directly: `persistent_facts` is the exception to "set a good default" — ship it empty. Repository-wide context belongs in `AGENTS.md`, which every skill already sees; `persistent_facts` is for context only one skill needs, loaded when it runs rather than carried as constant memory. What goes in it is the user's call, not the builder's.
+
 ## [2.2.0] - 2026-08-09
 
 ### 🐛 Fixes
