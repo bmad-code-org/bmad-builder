@@ -20,12 +20,11 @@ Use the `bmad-eval-runner` skill to run a skill's evals in a clean workspace and
 :::note[Prerequisites]
 
 - The skill you want to evaluate, with `evals.json` and/or `triggers.json` defined
-- Either Docker Desktop installed (preferred) or willingness to run in best-effort local isolation. See [Install Docker for Evals](/how-to/install-docker-for-evals.md).
 - An Anthropic account authenticated through Claude Code (the runner reuses your existing credential)
 :::
 
 :::tip[Quick Path]
-Invoke the eval runner with the path to your skill: `bmad-eval-runner ./skills/my-skill`. The runner discovers your evals, picks isolation, runs everything in parallel, and tells you where the report lives.
+Invoke the eval runner with the path to your skill: `bmad-eval-runner ./skills/my-skill`. The runner discovers your evals, runs each case in its own clean working directory, and tells you where the run folder lives.
 :::
 
 ## Step 1: Confirm Eval Discovery
@@ -40,17 +39,9 @@ The runner looks for evals in this order, taking the first match:
 
 If discovery fails, the runner halts. It does not invent evals.
 
-## Step 2: Choose Isolation
+## Step 2: Know What Isolation You Get
 
-Pass `--isolation docker|local|auto`. Default is `auto`, which picks Docker when available and local when not.
-
-| Mode   | When to Use                                                              |
-| ------ | ------------------------------------------------------------------------ |
-| docker | Trigger evals (host skills can leak in local mode); reproducible runs    |
-| local  | Quick iteration when you have not installed Docker                       |
-| auto   | Default; lets the runner pick the best available option                  |
-
-The first time Docker is selected, the runner builds the `bmad-eval-runner:latest` image. This takes a few minutes once. Subsequent runs reuse the cached image.
+There is nothing to choose here. Every case runs in its own clean working directory with the skill under test staged into it, and the subprocess environment is built from scratch instead of inherited: `PATH`, a fresh empty `HOME` inside the case folder, `CLAUDE_CONFIG_DIR` inside that `HOME`, and the adapter's auth variable. Your global `CLAUDE.md`, your auto-memory, and your host-installed skills are all out of reach, including for trigger evals.
 
 ## Step 3: Pick Mode
 
@@ -67,7 +58,7 @@ Pass `--mode artifact|trigger|both`. Default is `both` if both eval files are fo
 Invoke the eval runner from your project. A typical invocation:
 
 ```bash
-bmad-eval-runner ./src/skills/my-skill --isolation docker --workers 8
+bmad-eval-runner ./src/skills/my-skill --workers 8
 ```
 
 The runner stages each eval's workspace, executes `claude -p` against the prompt, captures the stream-JSON transcript, and rsyncs any files the skill wrote. After all evals complete, it spawns a grader subagent per eval (in parallel) and aggregates the verdicts.
@@ -105,14 +96,13 @@ Run folders are never deleted automatically. Disk management is your call.
 - Pass `--eval-ids A1,B3` to run only specific evals while iterating
 - Pass `--workers 8` to parallelize aggressively (default is 4)
 - A specific eval can override the default timeout by setting `"timeout": 900` in its `evals.json` entry
-- For trigger evals, prefer Docker. Local mode can let host-installed skills bleed in via cwd-based discovery and bias the fire rate.
 
 ## A Worked Example
 
 The `bmad-product-brief` skill in the BMad Method repository (`bmad-code-org/BMAD-METHOD`) ships a complete eval suite at `evals/bmm-skills/bmad-product-brief/`. To run it end-to-end:
 
 ```bash
-bmad-eval-runner ./src/bmm-skills/1-analysis/bmad-product-brief --isolation docker --workers 8
+bmad-eval-runner ./src/bmm-skills/1-analysis/bmad-product-brief --workers 8
 ```
 
 The run produces 17 graded artifact evals (A1-A8 output grading, B1-B8 transcript grading, C1 configuration compliance), 15 trigger eval verdicts, and an aggregated HTML report. Use it as the model when writing evals for your own skills.

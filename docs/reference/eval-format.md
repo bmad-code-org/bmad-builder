@@ -114,8 +114,8 @@ A query passes when:
 - `should_trigger=true` and `trigger_rate >= --trigger-threshold` (default 0.5)
 - `should_trigger=false` and `trigger_rate < --trigger-threshold`
 
-:::caution[Trigger Evals Need Docker]
-Local-mode trigger evals can be biased by host-installed skills that are discoverable via cwd-based skill discovery. The detector may see a real skill fire instead of the synthetic. Use Docker isolation for trigger evals whenever it is available.
+:::note[Only the Synthetic Skill Is Discoverable]
+Each query runs in a clean working directory under a fresh empty `HOME`, so host-installed skills cannot be discovered and fire in place of the synthetic one. The detector also counts only `tool_use` events naming the synthetic skill; whole-transcript substring matching is rejected, because the runtime's init event lists every discovered skill by name and would report a 100% trigger rate regardless of the description.
 :::
 
 ## Setup Overlays

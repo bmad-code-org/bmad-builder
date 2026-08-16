@@ -19,7 +19,7 @@ statSync(inPath);
 
 const sceneJson = JSON.parse(readFileSync(inPath, 'utf-8'));
 
-const htmlPath = resolve(fileURLToPath(import.meta.url), '..', 'excalidraw_render.html');
+const htmlPath = resolve(fileURLToPath(import.meta.url), '..', 'render.html');
 const htmlUrl = pathToFileURL(htmlPath).href;
 
 const browser = await chromium.launch({ headless: true });

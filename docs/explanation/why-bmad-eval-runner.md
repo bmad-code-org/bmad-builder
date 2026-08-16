@@ -7,7 +7,7 @@ The eval runner is built around a simple goal: produce results that reflect the 
 
 ## Isolation
 
-Every eval starts in a clean room. With Docker, the run executes inside a fresh container off `bmad-eval-runner:latest`. Without Docker, the runner falls back to a per-eval temp directory with `HOME` overridden so global memory and global `CLAUDE.md` cannot influence the result. Either way, two developers running the same eval get the same workspace state.
+Every eval starts in a clean room. Each case runs from its own working directory with the skill under test staged into it, and the subprocess environment is built from scratch rather than inherited: `PATH`, a fresh empty `HOME` inside the case folder, `CLAUDE_CONFIG_DIR` pointing inside that `HOME`, the adapter's auth variable, and nothing else. No container, no terminal emulation, no credential file staging. Two developers running the same eval get the same workspace state.
 
 Why this matters: skills are sensitive to context. Your global `~/.claude/CLAUDE.md`, your auto-memory, an ancestor `CLAUDE.md` in the project tree, cached MCP settings. All of these reach a default `claude -p` invocation. The eval should measure the skill, not the bench it was tested on.
 
@@ -35,4 +35,4 @@ After artifact runs complete, the runner spawns a grader subagent per eval (in p
 
 ## Next Steps
 
-For a step-by-step run, see [Run Evals Against a Skill](/how-to/run-evals-against-a-skill.md). For the complete eval file schema, see [Eval Format](/reference/eval-format.md). For why Docker matters, see [Install Docker for Evals](/how-to/install-docker-for-evals.md).
+For a step-by-step run, see [Run Evals Against a Skill](/how-to/run-evals-against-a-skill.md). For the complete eval file schema, see [Eval Format](/reference/eval-format.md).
