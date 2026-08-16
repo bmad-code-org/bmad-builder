@@ -27,7 +27,7 @@ activation_steps_append = []
 # conventions you want present but not hard-gated (for gates, see build_standards).
 #   "Every agent persona names its owner relationship explicitly."
 #   "file:{project-root}/_bmad/standards/agent-house-style.md"
-persistent_facts = ["file:{project-root}/**/project-context.md"]
+persistent_facts = []
 
 # Executed when a build or analyze run completes, after the user has been told
 # the artifact is ready. String scalar (one instruction) or array (in order).
