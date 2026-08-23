@@ -49,7 +49,7 @@ from pathlib import Path
 SCRIPT_DIR = Path(__file__).resolve().parent
 
 # Directories we never descend into while counting agent files.
-SKIP_DIRS = {".git", "__pycache__", ".pytest_cache", "node_modules", ".venv", "venv"}
+SKIP_DIRS = {".analysis", ".git", "__pycache__", ".pytest_cache", "node_modules", ".venv", "venv"}
 
 # Extensions we treat as countable text. Binary or opaque assets are skipped.
 TEXT_SUFFIXES = {

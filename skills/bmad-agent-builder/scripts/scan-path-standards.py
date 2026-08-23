@@ -26,7 +26,6 @@ import sys
 from datetime import datetime, timezone
 from pathlib import Path
 
-
 # Patterns to detect
 # Double-prefix: {project-root}/{config-variable} — config vars already contain project-root
 DOUBLE_PREFIX_RE = re.compile(r'\{project-root\}/\{[^}]+\}')
@@ -121,7 +120,9 @@ def check_root_md_files(skill_path: Path) -> list[dict]:
     """Check that no .md files exist at skill root except SKILL.md."""
     findings = []
     for md_file in skill_path.glob('*.md'):
-        if md_file.name != 'SKILL.md':
+        # Agent Builder keeps its append-only process log at this exact root path
+        # for resume detection. It is operational metadata, not a prompt file.
+        if md_file.name not in {'SKILL.md', '.memlog.md'}:
             findings.append({
                 'file': md_file.name,
                 'line': 0,
@@ -229,7 +230,11 @@ def scan_skill(skill_path: Path, skip_fenced: bool = True) -> dict:
         all_findings.extend(check_frontmatter(content, skill_md))
 
     # Find all .md and .json files
-    md_files = sorted(list(skill_path.rglob('*.md')) + list(skill_path.rglob('*.json')))
+    md_files = sorted(
+        path
+        for path in list(skill_path.rglob('*.md')) + list(skill_path.rglob('*.json'))
+        if '.analysis' not in path.parts
+    )
     if not md_files:
         print(f"Warning: No .md or .json files found in {skill_path}", file=sys.stderr)
 
