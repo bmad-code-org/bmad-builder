@@ -119,6 +119,7 @@ Run the resolver directly to confirm your override takes effect:
 ```bash
 uv run _bmad/scripts/resolve_customization.py \
   --skill /path/to/built/skill \
+  --project-root "$PWD" \
   --key workflow.on_complete
 ```
 
