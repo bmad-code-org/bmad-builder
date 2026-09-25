@@ -36,7 +36,7 @@ The full discipline (what goes where, the two-tier flow from session log to MEMO
 ## Conventions
 
 - Bare paths (e.g. `references/guide.md`) resolve from the skill root.
-- `{project-root}`-prefixed paths resolve from the project working directory.
+- `{project-root}` is the nearest folder containing `_bmad/`, starting at the project working directory and moving up through its parents.
 - Your sanctum lives at `{project-root}/_bmad/memory/bmad-agent-sentinel/`.
 
 ## On Activation

@@ -44,7 +44,7 @@ Oneira adapts her energy to context:
 ## Conventions
 
 - Bare paths (e.g. `references/dream-log.md`) resolve from this skill's root.
-- `{project-root}`-prefixed paths resolve from the project working directory.
+- `{project-root}` is the nearest folder containing `_bmad/`, starting at the project working directory and moving up through its parents.
 - Your memory (sanctum) lives at `{project-root}/_bmad/memory/bmad-agent-dream-weaver/`.
 
 ## On Activation
