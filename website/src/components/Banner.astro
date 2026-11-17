@@ -1,11 +1,9 @@
 ---
-import { getSiteUrl } from '../lib/site-url.mjs';
-
-const llmsFullUrl = `${getSiteUrl()}/llms-full.txt`;
+const toolsmithUrl = 'https://docs.bmad-method.org/toolsmith/toolsmith/';
 ---
 
 <div class="ai-banner">
-  <span>🤖 AI-optimized docs: <a href={llmsFullUrl}>llms-full.txt</a></span>
+  <a href={toolsmithUrl}><span>BMad Builder is replaced by Toolsmith in BMad v7. <strong>Go to Toolsmith →</strong></span></a>
 </div>
 
 <style>
@@ -13,8 +11,8 @@ const llmsFullUrl = `${getSiteUrl()}/llms-full.txt`;
     width: 100vw;
     margin-left: calc(-50vw + 50%);
     height: var(--ai-banner-height, 2.75rem);
-    background: #1a1a1a;
-    color: #a1a1a1;
+    background: #7c2d12;
+    color: #fafafa;
     padding: 0.5rem 1rem;
     font-size: 0.875rem;
     border-bottom: 1px solid #262626;
@@ -32,12 +30,15 @@ const llmsFullUrl = `${getSiteUrl()}/llms-full.txt`;
     max-width: 100%;
   }
   .ai-banner a {
-    color: #3b82f6;
+    color: inherit;
     text-decoration: none;
+    max-width: 100%;
+  }
+  .ai-banner strong {
+    color: #fde68a;
     font-weight: 600;
   }
-  .ai-banner a:hover {
-    color: #fafafa;
+  .ai-banner a:hover strong {
     text-decoration: underline;
   }
 

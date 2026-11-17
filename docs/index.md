@@ -5,6 +5,10 @@ description: BMad Builder - Build More, Architect Dreams
 
 # BMad Builder - A BMad Method EcoSystem Module
 
+:::caution[Replaced by Toolsmith in BMad Method v7]
+BMad Builder is no longer developed. These docs cover its last release, `v2.2.2`, which the BMad v6 installer still installs. To build skills, agents, and modules, upgrade to BMad Method v7 and use Toolsmith: read the [Toolsmith docs](https://docs.bmad-method.org/toolsmith/toolsmith/), [install BMad](https://docs.bmad-method.org/start/install-bmad/), and convert a module you built here with [Migrate an Old Module](https://docs.bmad-method.org/toolsmith/migrate-an-old-module/).
+:::
+
 **Build More, Architect Dreams.**
 
 ## The Dream
