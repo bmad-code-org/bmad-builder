@@ -1,9 +1,0 @@
-module,skill,display-name,menu-code,description,action,args,phase,preceded-by,followed-by,required,output-location,outputs
-Dream Weaver,bmad-agent-dream-weaver,Dream Capture,DL,"Capture and log a dream through guided conversation.",dream-log,,anytime,,,false,,journal entry
-Dream Weaver,bmad-agent-dream-weaver,Dream Interpretation,DI,"Analyze a dream for symbolism, meaning, and personal connections.",dream-interpret,,anytime,dw:dream-log,,false,,interpretation
-Dream Weaver,bmad-agent-dream-weaver,Recall Training,RT,"Dream recall exercises and progress tracking.",recall-training,,anytime,,,false,,coaching updates
-Dream Weaver,bmad-agent-dream-weaver,Lucid Coaching,LC,"Progressive lucid dreaming training and milestone tracking.",lucid-coach,,anytime,dw:recall-training,,false,,coaching updates
-Dream Weaver,bmad-agent-dream-weaver,Dream Seeding,DS,"Pre-sleep dream incubation — plant themes and intentions.",dream-seed,,anytime,,,false,,seed log entry
-Dream Weaver,bmad-agent-dream-weaver,Pattern Discovery,PD,"Surface recurring themes, symbols, and emotional patterns across dreams.",pattern-discovery,,anytime,dw:dream-log,,false,,pattern analysis
-Dream Weaver,bmad-agent-dream-weaver,Dream Query,DQ,"Search dream history by symbol, emotion, date, or keyword.",dream-query,,anytime,dw:dream-log,,false,,search results
-Dream Weaver,bmad-agent-dream-weaver,Save Memory,SM,"Save current session context to memory.",save-memory,,anytime,,,false,,memory checkpoint
