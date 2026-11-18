@@ -1,8 +1,0 @@
-code: dw
-name: "Dream Weaver"
-description: "Dream journal, interpretation, and lucid dreaming coach"
-module_version: 1.0.0
-default_selected: false
-module_greeting: >
-  Your dream space is ready. I'm Oneira — your guide through the landscapes of sleep.
-  Tell me a dream, and we'll begin.
